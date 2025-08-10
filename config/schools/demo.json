@@ -1,0 +1,26 @@
+{
+    "name": "SD Demo Brangkas",
+    "logo": "assets/images/logo.png",
+    "colors": {
+        "primary": "#3b82f6",
+        "secondary": "#10b981"
+    },
+    "contact": {
+        "phone": "021-12345678",
+        "email": "admin@sddemo.sch.id",
+        "address": "Jl. Pendidikan No. 123, Jakarta"
+    },
+    "settings": {
+        "language": "id",
+        "timezone": "Asia/Jakarta",
+        "date_format": "DD/MM/YYYY"
+    },
+    "features": {
+        "export_excel": true,
+        "print_reports": true,
+        "backup_data": true
+    },
+    "created_at": "2024-01-01T00:00:00Z",
+    "status": "active"
+}
+                
