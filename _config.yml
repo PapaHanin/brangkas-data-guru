@@ -1,0 +1,32 @@
+# GitHub Pages Configuration
+title: "Brangkas File Data Guru"
+description: "Sistem Manajemen Data Guru Digital untuk Sekolah"
+url: "https://username.github.io"
+baseurl: "/brangkas-data-guru"
+
+# Author information
+author:
+  name: "Nama Sekolah Anda"
+  email: "admin@sekolah.com"
+
+# SEO settings
+lang: id
+locale: id_ID
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Exclude files from build
+exclude:
+  - README.md
+  - LICENSE
+  - node_modules
+
+# Plugin settings
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Custom variables
+version: "2.0.0"

@@ -1,0 +1,26 @@
+{
+  "name": "Brangkas File Data Guru",
+  "short_name": "DataGuru",
+  "description": "Sistem Manajemen Data Guru Digital untuk Sekolah",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Allow access to assets
+Allow: /assets/
+
+# Sitemap location
+Sitemap: https://username.github.io/brangkas-data-guru/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1

@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brangkas File Data Guru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .file-upload { transition: all 0.3s ease; }
+        .file-upload:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .file-item { transition: all 0.2s ease; }
+        .file-item:hover { background-color: #f8fafc; }
+        .progress-bar { transition: width 0.3s ease; }
+        .notification { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-archive text-3xl text-blue-600"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">Brangkas File Data Guru</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-database text-green-600"></i>
+                        <span class="text-sm text-gray-600">Data Tersimpan Otomatis</span>
+                    </div>
+                    <span id="userRole" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Admin</span>
+                    <button onclick="logout()" class="text-red-600 hover:text-red-800 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-6">
+            <div class="flex space-x-8">
+                <button onclick="showSection('dashboard')" class="nav-btn py-4 px-2 border-b-2 border-blue-600 text-blue-600 transition-colors">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                </button>
+                <button onclick="showSection('input-data')" class="nav-btn py-4 px-2 border-b-2 border-transparent hover:border-blue-600 transition-colors text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-user-plus mr-2"></i>Input Data
+                </button>
+                <button onclick="showSection('upload-pribadi')" class="nav-btn py-4 px-2 border-b-2 border-transparent hover:border-blue-600 transition-colors text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-upload mr-2"></i>Berkas Pribadi
+                </button>
+                <button onclick="showSection('upload-keluarga')" class="nav-btn py-4 px-2 border-b-2 border-transparent hover:border-blue-600 transition-colors text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-users mr-2"></i>Berkas Keluarga
+                </button>
+                <button onclick="showSection('backup-restore')" class="nav-btn py-4 px-2 border-b-2 border-transparent hover:border-blue-600 transition-colors text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-shield-alt mr-2"></i>Backup & Restore
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Dashboard Data Guru</h2>
+                    <div class="flex space-x-3">
+                        <button onclick="exportData()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-download mr-2"></i>Export Data
+                        </button>
+                        <button onclick="refreshData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                        <button onclick="showDataStatistics()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-chart-bar mr-2"></i>Statistik
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-100">Total Guru</p>
+                                <p class="text-3xl font-bold" id="totalGuru">0</p>
+                            </div>
+                            <i class="fas fa-users text-4xl text-blue-200"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100">Data Lengkap</p>
+                                <p class="text-3xl font-bold" id="dataLengkap">0</p>
+                            </div>
+                            <i class="fas fa-check-circle text-4xl text-green-200"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-yellow-100">Perlu Update</p>
+                                <p class="text-3xl font-bold" id="perluUpdate">0</p>
+                            </div>
+                            <i class="fas fa-exclamation-triangle text-4xl text-yellow-200"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-100">Total Berkas</p>
+                                <p class="text-3xl font-bold" id="totalBerkas">0</p>
+                            </div>
+                            <i class="fas fa-file-alt text-4xl text-purple-200"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex-1">
+                        <input type="text" id="searchInput" placeholder="Cari nama guru, NIK, atau NIP..." 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <select id="filterJabatan" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Jabatan</option>
+                        <option value="Kepala Sekolah">Kepala Sekolah</option>
+                        <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
+                        <option value="Guru Kelas">Guru Kelas</option>
+                        <option value="Guru Mata Pelajaran">Guru Mata Pelajaran</option>
+                    </select>
+                    <select id="filterStatus" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Status</option>
+                        <option value="PNS">PNS</option>
+                        <option value="PPPK">PPPK</option>
+                        <option value="GTT">GTT</option>
+                        <option value="GTY">GTY</option>
+                    </select>
+                </div>
+
+                <!-- Data Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full bg-white rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Guru</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIK/NIP</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelengkapan</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Berkas</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Data akan diisi oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Data Section -->
+        <div id="input-data" class="section hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Input Data Guru</h2>
+                
+                <form id="teacherForm" class="space-y-6">
+                    <!-- Data Pribadi -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Data Pribadi</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
+                                <input type="text" name="namaGuru" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">NIK *</label>
+                                <input type="text" name="nik" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">NIP</label>
+                                <input type="text" name="nip" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">NUPTK</label>
+                                <input type="text" name="nuptk" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tempat Lahir *</label>
+                                <input type="text" name="tempatLahir" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Lahir *</label>
+                                <input type="date" name="tanggalLahir" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin *</label>
+                                <select name="jenisKelamin" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Jabatan *</label>
+                                <select name="jabatan" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Jabatan</option>
+                                    <option value="Kepala Sekolah">Kepala Sekolah</option>
+                                    <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
+                                    <option value="Guru Kelas">Guru Kelas</option>
+                                    <option value="Guru Mata Pelajaran">Guru Mata Pelajaran</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pendidikan -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Pendidikan Terakhir</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Pendidikan Terakhir *</label>
+                                <select name="pendidikanTerakhir" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Pendidikan</option>
+                                    <option value="SMA/SMK">SMA/SMK</option>
+                                    <option value="D3">D3</option>
+                                    <option value="S1">S1</option>
+                                    <option value="S2">S2</option>
+                                    <option value="S3">S3</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tahun Lulus *</label>
+                                <input type="number" name="tahunLulus" required min="1980" max="2024" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Masa Kerja -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Masa Kerja</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Masa Kerja (Tahun)</label>
+                                <input type="number" name="masaKerjaTahun" min="0" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Masa Kerja (Bulan)</label>
+                                <input type="number" name="masaKerjaBulan" min="0" max="11" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SK Pertama -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">SK Pertama</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">No SK Pertama</label>
+                                <input type="text" name="noSkPertama" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">TMT SK Pertama</label>
+                                <input type="date" name="tmtSkPertama" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tahun Pengangkatan SK Pertama</label>
+                                <input type="number" name="tahunPengangkatanPertama" min="1980" max="2024" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SK Terakhir -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">SK Terakhir</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">No SK Terakhir</label>
+                                <input type="text" name="noSkTerakhir" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">TMT SK Terakhir</label>
+                                <input type="date" name="tmtSkTerakhir" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tahun Pengangkatan SK Terakhir</label>
+                                <input type="number" name="tahunPengangkatanTerakhir" min="1980" max="2024" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Masa Kerja SK Terakhir (Tahun)</label>
+                                <input type="number" name="masaKerjaSkTerakhirTahun" min="0" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Masa Kerja SK Terakhir (Bulan)</label>
+                                <input type="number" name="masaKerjaSkTerakhirBulan" min="0" max="11" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Status Kepegawaian *</label>
+                                <select name="statusKepegawaian" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Status</option>
+                                    <option value="PNS">PNS</option>
+                                    <option value="PPPK">PPPK</option>
+                                    <option value="GTT">GTT (Guru Tidak Tetap)</option>
+                                    <option value="GTY">GTY (Guru Tetap Yayasan)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" onclick="resetForm()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            Reset
+                        </button>
+                        <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-save mr-2"></i>Simpan Data
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Upload Berkas Pribadi Section -->
+        <div id="upload-pribadi" class="section hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Upload Berkas Pribadi</h2>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Guru</label>
+                    <select id="selectGuruPribadi" onchange="loadExistingFiles('pribadi')" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Pilih Guru</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Pas Foto -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-camera text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Pas Foto</h3>
+                            <input type="file" id="pasFoto" accept=".jpg,.jpeg,.png" class="hidden" onchange="handleFileUpload(this, 'pasFoto')">
+                            <button onclick="document.getElementById('pasFoto').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="pasFoto-status" class="mt-2 text-sm"></div>
+                            <div id="pasFoto-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- KTP -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-id-card text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">KTP</h3>
+                            <p class="text-xs text-gray-500 mb-2">Hanya file PDF</p>
+                            <input type="file" id="ktp" accept=".pdf" class="hidden" onchange="handleFileUpload(this, 'ktp')">
+                            <button onclick="document.getElementById('ktp').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="ktp-status" class="mt-2 text-sm"></div>
+                            <div id="ktp-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- KK -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-users text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Kartu Keluarga</h3>
+                            <p class="text-xs text-gray-500 mb-2">Hanya file PDF</p>
+                            <input type="file" id="kk" accept=".pdf" class="hidden" onchange="handleFileUpload(this, 'kk')">
+                            <button onclick="document.getElementById('kk').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="kk-status" class="mt-2 text-sm"></div>
+                            <div id="kk-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Akte -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-certificate text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Akte Kelahiran</h3>
+                            <p class="text-xs text-gray-500 mb-2">Hanya file PDF</p>
+                            <input type="file" id="akte" accept=".pdf" class="hidden" onchange="handleFileUpload(this, 'akte')">
+                            <button onclick="document.getElementById('akte').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="akte-status" class="mt-2 text-sm"></div>
+                            <div id="akte-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ijazah -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-graduation-cap text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Ijazah</h3>
+                            <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                            <input type="file" id="ijazah" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'ijazah')">
+                            <button onclick="document.getElementById('ijazah').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="ijazah-status" class="mt-2 text-sm"></div>
+                            <div id="ijazah-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- SK Pangkat -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-medal text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">SK Pangkat</h3>
+                            <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                            <input type="file" id="skPangkat" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'skPangkat')">
+                            <button onclick="document.getElementById('skPangkat').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="skPangkat-status" class="mt-2 text-sm"></div>
+                            <div id="skPangkat-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- SK Berkala -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-file-contract text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">SK Berkala</h3>
+                            <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                            <input type="file" id="skBerkala" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'skBerkala')">
+                            <button onclick="document.getElementById('skBerkala').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="skBerkala-status" class="mt-2 text-sm"></div>
+                            <div id="skBerkala-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- SK Jabatan -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-briefcase text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">SK Jabatan</h3>
+                            <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                            <input type="file" id="skJabatan" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'skJabatan')">
+                            <button onclick="document.getElementById('skJabatan').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="skJabatan-status" class="mt-2 text-sm"></div>
+                            <div id="skJabatan-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sertifikat -->
+                    <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                        <div class="text-center">
+                            <i class="fas fa-award text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Sertifikat Pelatihan/Diklat</h3>
+                            <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                            <input type="file" id="sertifikat" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'sertifikat')">
+                            <button onclick="document.getElementById('sertifikat').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mb-2">
+                                <i class="fas fa-upload mr-2"></i>Upload
+                            </button>
+                            <div id="sertifikat-status" class="mt-2 text-sm"></div>
+                            <div id="sertifikat-files" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Berkas Keluarga Section -->
+        <div id="upload-keluarga" class="section hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Upload Berkas Keluarga</h2>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Guru</label>
+                    <select id="selectGuruKeluarga" onchange="loadExistingFiles('keluarga')" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Pilih Guru</option>
+                    </select>
+                </div>
+
+                <!-- Berkas Pasangan -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Berkas Pasangan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                            <div class="text-center">
+                                <i class="fas fa-id-card text-4xl text-gray-400 mb-4"></i>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">KTP Pasangan</h4>
+                                <p class="text-xs text-gray-500 mb-2">Hanya file PDF</p>
+                                <input type="file" id="ktpPasangan" accept=".pdf" class="hidden" onchange="handleFileUpload(this, 'ktpPasangan')">
+                                <button onclick="document.getElementById('ktpPasangan').click()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mb-2">
+                                    <i class="fas fa-upload mr-2"></i>Upload
+                                </button>
+                                <div id="ktpPasangan-status" class="mt-2 text-sm"></div>
+                                <div id="ktpPasangan-files" class="mt-3 space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                            <div class="text-center">
+                                <i class="fas fa-certificate text-4xl text-gray-400 mb-4"></i>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Akte Pasangan</h4>
+                                <p class="text-xs text-gray-500 mb-2">Hanya file PDF</p>
+                                <input type="file" id="aktePasangan" accept=".pdf" class="hidden" onchange="handleFileUpload(this, 'aktePasangan')">
+                                <button onclick="document.getElementById('aktePasangan').click()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mb-2">
+                                    <i class="fas fa-upload mr-2"></i>Upload
+                                </button>
+                                <div id="aktePasangan-status" class="mt-2 text-sm"></div>
+                                <div id="aktePasangan-files" class="mt-3 space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                            <div class="text-center">
+                                <i class="fas fa-graduation-cap text-4xl text-gray-400 mb-4"></i>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Ijazah Pasangan</h4>
+                                <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                                <input type="file" id="ijazahPasangan" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'ijazahPasangan')">
+                                <button onclick="document.getElementById('ijazahPasangan').click()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mb-2">
+                                    <i class="fas fa-upload mr-2"></i>Upload
+                                </button>
+                                <div id="ijazahPasangan-status" class="mt-2 text-sm"></div>
+                                <div id="ijazahPasangan-files" class="mt-3 space-y-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Berkas Anak -->
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Berkas Anak</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                            <div class="text-center">
+                                <i class="fas fa-id-card text-4xl text-gray-400 mb-4"></i>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">KTP Anak</h4>
+                                <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                                <input type="file" id="ktpAnak" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'ktpAnak')">
+                                <button onclick="document.getElementById('ktpAnak').click()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors mb-2">
+                                    <i class="fas fa-upload mr-2"></i>Upload
+                                </button>
+                                <div id="ktpAnak-status" class="mt-2 text-sm"></div>
+                                <div id="ktpAnak-files" class="mt-3 space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                            <div class="text-center">
+                                <i class="fas fa-certificate text-4xl text-gray-400 mb-4"></i>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Akte Anak</h4>
+                                <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                                <input type="file" id="akteAnak" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'akteAnak')">
+                                <button onclick="document.getElementById('akteAnak').click()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors mb-2">
+                                    <i class="fas fa-upload mr-2"></i>Upload
+                                </button>
+                                <div id="akteAnak-status" class="mt-2 text-sm"></div>
+                                <div id="akteAnak-files" class="mt-3 space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                            <div class="text-center">
+                                <i class="fas fa-graduation-cap text-4xl text-gray-400 mb-4"></i>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Ijazah Anak</h4>
+                                <p class="text-xs text-gray-500 mb-2">Bisa upload lebih dari 1 file PDF</p>
+                                <input type="file" id="ijazahAnak" accept=".pdf" multiple class="hidden" onchange="handleFileUpload(this, 'ijazahAnak')">
+                                <button onclick="document.getElementById('ijazahAnak').click()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors mb-2">
+                                    <i class="fas fa-upload mr-2"></i>Upload
+                                </button>
+                                <div id="ijazahAnak-status" class="mt-2 text-sm"></div>
+                                <div id="ijazahAnak-files" class="mt-3 space-y-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup & Restore Section -->
+        <div id="backup-restore" class="section hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Backup & Restore Data</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Backup Section -->
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold text-blue-800 mb-4">
+                            <i class="fas fa-download mr-2"></i>Backup Data
+                        </h3>
+                        <p class="text-gray-600 mb-4">Unduh semua data guru dan berkas sebagai file backup untuk keamanan data.</p>
+                        <div class="space-y-3">
+                            <button onclick="createFullBackup()" class="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-database mr-2"></i>Backup Lengkap (Data + Berkas)
+                            </button>
+                            <button onclick="backupDataOnly()" class="w-full bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-users mr-2"></i>Backup Data Guru Saja
+                            </button>
+                            <button onclick="backupFilesOnly()" class="w-full bg-blue-400 text-white px-4 py-3 rounded-lg hover:bg-blue-500 transition-colors">
+                                <i class="fas fa-files-o mr-2"></i>Backup Berkas Saja
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Restore Section -->
+                    <div class="bg-green-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold text-green-800 mb-4">
+                            <i class="fas fa-upload mr-2"></i>Restore Data
+                        </h3>
+                        <p class="text-gray-600 mb-4">Pulihkan data dari file backup yang telah disimpan sebelumnya.</p>
+                        <div class="space-y-3">
+                            <input type="file" id="restoreFile" accept=".json" class="hidden" onchange="handleRestore(this)">
+                            <button onclick="document.getElementById('restoreFile').click()" class="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-upload mr-2"></i>Pilih File Backup
+                            </button>
+                            <button onclick="resetAllData()" class="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-colors">
+                                <i class="fas fa-trash-alt mr-2"></i>Reset Semua Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage Info -->
+                <div class="mt-8 bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-info-circle mr-2"></i>Informasi Penyimpanan
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600" id="storageUsed">0 KB</div>
+                            <div class="text-sm text-gray-600">Data Tersimpan</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600" id="lastBackup">Belum Ada</div>
+                            <div class="text-sm text-gray-600">Backup Terakhir</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600" id="autoSave">Aktif</div>
+                            <div class="text-sm text-gray-600">Auto Save</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal untuk Detail Guru -->
+    <div id="teacherModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Detail Data Guru</h3>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    <div id="modalContent">
+                        <!-- Content akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Lihat Berkas -->
+    <div id="fileModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Lihat Berkas</h3>
+                        <button onclick="closeFileModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    <div id="fileModalContent">
+                        <!-- Content akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Data Storage with persistence
+        class DataManager {
+            constructor() {
+                this.teachersKey = 'brangkas_teachers_data';
+                this.filesKey = 'brangkas_files_data';
+                this.settingsKey = 'brangkas_settings';
+                this.init();
+            }
+
+            init() {
+                // Initialize with sample data if empty
+                if (!this.getTeachers().length) {
+                    this.initSampleData();
+                }
+                this.updateStorageInfo();
+            }
+
+            getTeachers() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.teachersKey)) || [];
+                } catch (e) {
+                    console.error('Error loading teachers data:', e);
+                    return [];
+                }
+            }
+
+            saveTeachers(data) {
+                try {
+                    localStorage.setItem(this.teachersKey, JSON.stringify(data));
+                    this.updateStorageInfo();
+                    return true;
+                } catch (e) {
+                    console.error('Error saving teachers data:', e);
+                    showNotification('Gagal menyimpan data guru!', 'error');
+                    return false;
+                }
+            }
+
+            getFiles() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.filesKey)) || {};
+                } catch (e) {
+                    console.error('Error loading files data:', e);
+                    return {};
+                }
+            }
+
+            saveFiles(data) {
+                try {
+                    localStorage.setItem(this.filesKey, JSON.stringify(data));
+                    this.updateStorageInfo();
+                    return true;
+                } catch (e) {
+                    console.error('Error saving files data:', e);
+                    showNotification('Gagal menyimpan data berkas!', 'error');
+                    return false;
+                }
+            }
+
+            getSettings() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.settingsKey)) || {
+                        lastBackup: null,
+                        autoSave: true
+                    };
+                } catch (e) {
+                    return { lastBackup: null, autoSave: true };
+                }
+            }
+
+            saveSettings(settings) {
+                try {
+                    localStorage.setItem(this.settingsKey, JSON.stringify(settings));
+                    return true;
+                } catch (e) {
+                    console.error('Error saving settings:', e);
+                    return false;
+                }
+            }
+
+            updateStorageInfo() {
+                try {
+                    const teachers = localStorage.getItem(this.teachersKey) || '';
+                    const files = localStorage.getItem(this.filesKey) || '';
+                    const settings = localStorage.getItem(this.settingsKey) || '';
+                    
+                    const totalSize = teachers.length + files.length + settings.length;
+                    const sizeKB = Math.round(totalSize / 1024 * 100) / 100;
+                    
+                    const storageElement = document.getElementById('storageUsed');
+                    if (storageElement) {
+                        storageElement.textContent = sizeKB + ' KB';
+                    }
+
+                    const settings_data = this.getSettings();
+                    const lastBackupElement = document.getElementById('lastBackup');
+                    if (lastBackupElement) {
+                        lastBackupElement.textContent = settings_data.lastBackup ? 
+                            new Date(settings_data.lastBackup).toLocaleDateString('id-ID') : 'Belum Ada';
+                    }
+                } catch (e) {
+                    console.error('Error updating storage info:', e);
+                }
+            }
+
+            initSampleData() {
+                const sampleData = [
+                    {
+                        id: Date.now(),
+                        namaGuru: 'Dr. Ahmad Susanto, S.Pd., M.Pd.',
+                        nik: '3201234567890123',
+                        nip: '196501011990031001',
+                        nuptk: '1234567890123456',
+                        tempatLahir: 'Jakarta',
+                        tanggalLahir: '1965-01-01',
+                        jenisKelamin: 'Laki-laki',
+                        jabatan: 'Kepala Sekolah',
+                        pendidikanTerakhir: 'S3',
+                        tahunLulus: 2010,
+                        masaKerjaTahun: 34,
+                        masaKerjaBulan: 2,
+                        statusKepegawaian: 'PNS',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 1,
+                        namaGuru: 'Siti Nurhaliza, S.Pd.',
+                        nik: '3201234567890124',
+                        nip: '197203151998032001',
+                        nuptk: '1234567890123457',
+                        tempatLahir: 'Bandung',
+                        tanggalLahir: '1972-03-15',
+                        jenisKelamin: 'Perempuan',
+                        jabatan: 'Guru Kelas',
+                        pendidikanTerakhir: 'S1',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'PNS',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
+                this.saveTeachers(sampleData);
+            }
+
+            createBackup() {
+                return {
+                    teachers: this.getTeachers(),
+                    files: this.getFiles(),
+                    settings: this.getSettings(),
+                    version: '1.0',
+                    createdAt: new Date().toISOString()
+                };
+            }
+
+            restoreFromBackup(backupData) {
+                try {
+                    if (backupData.teachers) {
+                        this.saveTeachers(backupData.teachers);
+                    }
+                    if (backupData.files) {
+                        this.saveFiles(backupData.files);
+                    }
+                    if (backupData.settings) {
+                        this.saveSettings(backupData.settings);
+                    }
+                    return true;
+                } catch (e) {
+                    console.error('Error restoring backup:', e);
+                    return false;
+                }
+            }
+
+            clearAllData() {
+                try {
+                    localStorage.removeItem(this.teachersKey);
+                    localStorage.removeItem(this.filesKey);
+                    localStorage.removeItem(this.settingsKey);
+                    this.updateStorageInfo();
+                    return true;
+                } catch (e) {
+                    console.error('Error clearing data:', e);
+                    return false;
+                }
+            }
+        }
+
+        // Initialize data manager
+        const dataManager = new DataManager();
+        let teachersData = dataManager.getTeachers();
+        let filesData = dataManager.getFiles();
+        let currentUser = 'admin';
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('border-blue-600', 'text-blue-600');
+                btn.classList.add('border-transparent', 'text-gray-700');
+            });
+            event.target.classList.remove('border-transparent', 'text-gray-700');
+            event.target.classList.add('border-blue-600', 'text-blue-600');
+
+            if (sectionId === 'dashboard') {
+                loadDashboard();
+            } else if (sectionId === 'upload-pribadi' || sectionId === 'upload-keluarga') {
+                loadTeacherOptions();
+            } else if (sectionId === 'backup-restore') {
+                dataManager.updateStorageInfo();
+            }
+        }
+
+        // Load dashboard data
+        function loadDashboard() {
+            teachersData = dataManager.getTeachers();
+            filesData = dataManager.getFiles();
+            
+            const totalGuru = teachersData.length;
+            const dataLengkap = teachersData.filter(teacher => 
+                teacher.namaGuru && teacher.nik && teacher.jabatan && teacher.statusKepegawaian
+            ).length;
+            const perluUpdate = totalGuru - dataLengkap;
+            
+            // Count total files
+            let totalBerkas = 0;
+            Object.values(filesData).forEach(teacherFiles => {
+                Object.values(teacherFiles).forEach(fileArray => {
+                    if (Array.isArray(fileArray)) {
+                        totalBerkas += fileArray.length;
+                    }
+                });
+            });
+
+            document.getElementById('totalGuru').textContent = totalGuru;
+            document.getElementById('dataLengkap').textContent = dataLengkap;
+            document.getElementById('perluUpdate').textContent = perluUpdate;
+            document.getElementById('totalBerkas').textContent = totalBerkas;
+
+            loadTeacherTable();
+        }
+
+        // Load teacher table
+        function loadTeacherTable() {
+            const tbody = document.getElementById('teacherTableBody');
+            tbody.innerHTML = '';
+
+            teachersData.forEach(teacher => {
+                const completeness = calculateCompleteness(teacher);
+                const fileCount = getTeacherFileCount(teacher.id);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${teacher.namaGuru}</div>
+                        <div class="text-xs text-gray-500">Dibuat: ${new Date(teacher.createdAt || Date.now()).toLocaleDateString('id-ID')}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${teacher.nik}</div>
+                        <div class="text-sm text-gray-500">${teacher.nip || '-'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${teacher.jabatan}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(teacher.statusKepegawaian)}">
+                            ${teacher.statusKepegawaian}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                <div class="bg-${completeness >= 80 ? 'green' : completeness >= 50 ? 'yellow' : 'red'}-600 h-2 rounded-full progress-bar" style="width: ${completeness}%"></div>
+                            </div>
+                            <span class="text-sm text-gray-900">${completeness}%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <i class="fas fa-file-alt text-blue-500 mr-1"></i>
+                            <span class="text-sm text-gray-900">${fileCount}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="viewTeacher(${teacher.id})" class="text-blue-600 hover:text-blue-900 mr-3" title="Lihat Detail">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="editTeacher(${teacher.id})" class="text-green-600 hover:text-green-900 mr-3" title="Edit Data">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteTeacher(${teacher.id})" class="text-red-600 hover:text-red-900" title="Hapus Data">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Get teacher file count
+        function getTeacherFileCount(teacherId) {
+            const teacherFiles = filesData[teacherId] || {};
+            let count = 0;
+            Object.values(teacherFiles).forEach(fileArray => {
+                if (Array.isArray(fileArray)) {
+                    count += fileArray.length;
+                }
+            });
+            return count;
+        }
+
+        // Calculate data completeness
+        function calculateCompleteness(teacher) {
+            const requiredFields = ['namaGuru', 'nik', 'tempatLahir', 'tanggalLahir', 'jenisKelamin', 'jabatan', 'pendidikanTerakhir', 'tahunLulus', 'statusKepegawaian'];
+            const filledFields = requiredFields.filter(field => teacher[field] && teacher[field] !== '').length;
+            return Math.round((filledFields / requiredFields.length) * 100);
+        }
+
+        // Get status color
+        function getStatusColor(status) {
+            switch(status) {
+                case 'PNS': return 'bg-green-100 text-green-800';
+                case 'PPPK': return 'bg-blue-100 text-blue-800';
+                case 'GTT': return 'bg-yellow-100 text-yellow-800';
+                case 'GTY': return 'bg-purple-100 text-purple-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Form submission
+        document.getElementById('teacherForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const teacherData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                teacherData[key] = value;
+            }
+            
+            const editId = this.dataset.editId;
+            
+            if (editId) {
+                // Update existing teacher
+                const index = teachersData.findIndex(t => t.id == editId);
+                if (index !== -1) {
+                    teachersData[index] = { ...teachersData[index], ...teacherData, updatedAt: new Date().toISOString() };
+                    showNotification('Data guru berhasil diupdate!', 'success');
+                }
+                delete this.dataset.editId;
+                this.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Simpan Data';
+            } else {
+                // Add new teacher
+                teacherData.id = Date.now();
+                teacherData.createdAt = new Date().toISOString();
+                teacherData.updatedAt = new Date().toISOString();
+                teachersData.push(teacherData);
+                showNotification('Data guru berhasil disimpan!', 'success');
+            }
+            
+            // Save to storage
+            dataManager.saveTeachers(teachersData);
+            
+            // Reset form
+            this.reset();
+            
+            // Refresh dashboard if visible
+            if (!document.getElementById('dashboard').classList.contains('hidden')) {
+                loadDashboard();
+            }
+        });
+
+        // Enhanced file upload handler
+        function handleFileUpload(input, fileType) {
+            const files = input.files;
+            const statusDiv = document.getElementById(fileType + '-status');
+            const selectedTeacher = document.getElementById('selectGuruPribadi').value || document.getElementById('selectGuruKeluarga').value;
+            
+            if (!selectedTeacher) {
+                showNotification('Pilih guru terlebih dahulu!', 'error');
+                return;
+            }
+            
+            if (files.length > 0) {
+                // Initialize teacher files if not exists
+                if (!filesData[selectedTeacher]) {
+                    filesData[selectedTeacher] = {};
+                }
+                if (!filesData[selectedTeacher][fileType]) {
+                    filesData[selectedTeacher][fileType] = [];
+                }
+                
+                // Process files
+                const newFiles = Array.from(files).map(file => ({
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    uploadDate: new Date().toISOString(),
+                    // In real app, you'd upload to server and store URL
+                    url: URL.createObjectURL(file)
+                }));
+                
+                // Add to existing files
+                filesData[selectedTeacher][fileType].push(...newFiles);
+                
+                // Save to storage
+                dataManager.saveFiles(filesData);
+                
+                // Update status
+                statusDiv.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>File berhasil diupload</span>';
+                
+                // Load existing files to show the new ones
+                loadExistingFiles(document.getElementById('selectGuruPribadi').value ? 'pribadi' : 'keluarga');
+                
+                showNotification(`${files.length} file ${fileType} berhasil diupload!`, 'success');
+            }
+        }
+
+        // Load existing files
+        function loadExistingFiles(section) {
+            const selectedTeacher = document.getElementById(section === 'pribadi' ? 'selectGuruPribadi' : 'selectGuruKeluarga').value;
+            
+            if (!selectedTeacher) return;
+            
+            const teacherFiles = filesData[selectedTeacher] || {};
+            
+            // File types based on section
+            const fileTypes = section === 'pribadi' 
+                ? ['pasFoto', 'ktp', 'kk', 'akte', 'ijazah', 'skPangkat', 'skBerkala', 'skJabatan', 'sertifikat']
+                : ['ktpPasangan', 'aktePasangan', 'ijazahPasangan', 'ktpAnak', 'akteAnak', 'ijazahAnak'];
+            
+            fileTypes.forEach(fileType => {
+                const filesContainer = document.getElementById(fileType + '-files');
+                if (filesContainer) {
+                    filesContainer.innerHTML = '';
+                    
+                    const files = teacherFiles[fileType] || [];
+                    files.forEach(file => {
+                        const fileElement = document.createElement('div');
+                        fileElement.className = 'file-item bg-white p-2 rounded border text-xs';
+                        fileElement.innerHTML = `
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1 truncate">
+                                    <div class="font-medium text-gray-800">${file.name}</div>
+                                    <div class="text-gray-500">${formatFileSize(file.size)} • ${new Date(file.uploadDate).toLocaleDateString('id-ID')}</div>
+                                </div>
+                                <div class="flex space-x-1 ml-2">
+                                    <button onclick="viewFile('${file.id}', '${selectedTeacher}', '${fileType}')" class="text-blue-600 hover:text-blue-800" title="Lihat">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button onclick="editFileName('${file.id}', '${selectedTeacher}', '${fileType}')" class="text-green-600 hover:text-green-800" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteFile('${file.id}', '${selectedTeacher}', '${fileType}')" class="text-red-600 hover:text-red-800" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        filesContainer.appendChild(fileElement);
+                    });
+                }
+            });
+        }
+
+        // File management functions
+        function viewFile(fileId, teacherId, fileType) {
+            const file = findFile(fileId, teacherId, fileType);
+            if (!file) return;
+            
+            const modalContent = document.getElementById('fileModalContent');
+            modalContent.innerHTML = `
+                <div class="text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-file-alt text-6xl text-blue-500"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-800 mb-2">${file.name}</h4>
+                    <div class="text-sm text-gray-600 mb-4">
+                        <p>Ukuran: ${formatFileSize(file.size)}</p>
+                        <p>Tipe: ${file.type}</p>
+                        <p>Diupload: ${new Date(file.uploadDate).toLocaleString('id-ID')}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <button onclick="downloadFile('${fileId}', '${teacherId}', '${fileType}')" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Download
+                        </button>
+                        <button onclick="closeFileModal()" class="w-full bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('fileModal').classList.remove('hidden');
+        }
+
+        function editFileName(fileId, teacherId, fileType) {
+            const file = findFile(fileId, teacherId, fileType);
+            if (!file) return;
+            
+            const newName = prompt('Masukkan nama file baru:', file.name);
+            if (newName && newName.trim() !== '') {
+                file.name = newName.trim();
+                dataManager.saveFiles(filesData);
+                loadExistingFiles(document.getElementById('selectGuruPribadi').value ? 'pribadi' : 'keluarga');
+                showNotification('Nama file berhasil diubah!', 'success');
+            }
+        }
+
+        function deleteFile(fileId, teacherId, fileType) {
+            if (confirm('Apakah Anda yakin ingin menghapus file ini?')) {
+                const files = filesData[teacherId][fileType];
+                const index = files.findIndex(f => f.id == fileId);
+                if (index !== -1) {
+                    // Revoke object URL to free memory
+                    if (files[index].url) {
+                        URL.revokeObjectURL(files[index].url);
+                    }
+                    files.splice(index, 1);
+                    dataManager.saveFiles(filesData);
+                    loadExistingFiles(document.getElementById('selectGuruPribadi').value ? 'pribadi' : 'keluarga');
+                    showNotification('File berhasil dihapus!', 'success');
+                }
+            }
+        }
+
+        function downloadFile(fileId, teacherId, fileType) {
+            const file = findFile(fileId, teacherId, fileType);
+            if (!file) return;
+            
+            if (file.url) {
+                const link = document.createElement('a');
+                link.href = file.url;
+                link.download = file.name;
+                link.click();
+            } else {
+                showNotification('File tidak dapat didownload!', 'error');
+            }
+        }
+
+        function findFile(fileId, teacherId, fileType) {
+            const files = filesData[teacherId]?.[fileType] || [];
+            return files.find(f => f.id == fileId);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Load teacher options for file upload
+        function loadTeacherOptions() {
+            const selectPribadi = document.getElementById('selectGuruPribadi');
+            const selectKeluarga = document.getElementById('selectGuruKeluarga');
+            
+            [selectPribadi, selectKeluarga].forEach(select => {
+                if (select) {
+                    select.innerHTML = '<option value="">Pilih Guru</option>';
+                    teachersData.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = teacher.id;
+                        option.textContent = teacher.namaGuru;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // View teacher details
+        function viewTeacher(id) {
+            const teacher = teachersData.find(t => t.id === id);
+            if (!teacher) return;
+
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Data Pribadi</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Nama:</span> ${teacher.namaGuru}</p>
+                            <p><span class="font-medium">NIK:</span> ${teacher.nik}</p>
+                            <p><span class="font-medium">NIP:</span> ${teacher.nip || '-'}</p>
+                            <p><span class="font-medium">NUPTK:</span> ${teacher.nuptk || '-'}</p>
+                            <p><span class="font-medium">Tempat, Tanggal Lahir:</span> ${teacher.tempatLahir}, ${teacher.tanggalLahir}</p>
+                            <p><span class="font-medium">Jenis Kelamin:</span> ${teacher.jenisKelamin}</p>
+                            <p><span class="font-medium">Jabatan:</span> ${teacher.jabatan}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Pendidikan & Kepegawaian</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Pendidikan Terakhir:</span> ${teacher.pendidikanTerakhir} (${teacher.tahunLulus})</p>
+                            <p><span class="font-medium">Masa Kerja:</span> ${teacher.masaKerjaTahun || 0} Tahun ${teacher.masaKerjaBulan || 0} Bulan</p>
+                            <p><span class="font-medium">Status Kepegawaian:</span> ${teacher.statusKepegawaian}</p>
+                            <p><span class="font-medium">No SK Pertama:</span> ${teacher.noSkPertama || '-'}</p>
+                            <p><span class="font-medium">No SK Terakhir:</span> ${teacher.noSkTerakhir || '-'}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-800 mb-2">Status Berkas</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        ${generateFileStatus(teacher.id)}
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-800 mb-2">Informasi Sistem</h4>
+                    <div class="text-sm text-gray-600">
+                        <p>Dibuat: ${new Date(teacher.createdAt || Date.now()).toLocaleString('id-ID')}</p>
+                        <p>Terakhir diupdate: ${new Date(teacher.updatedAt || Date.now()).toLocaleString('id-ID')}</p>
+                        <p>Total berkas: ${getTeacherFileCount(teacher.id)} file</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('teacherModal').classList.remove('hidden');
+        }
+
+        // Generate file status
+        function generateFileStatus(teacherId) {
+            const files = filesData[teacherId] || {};
+            const fileTypes = [
+                { key: 'pasFoto', name: 'Pas Foto' },
+                { key: 'ktp', name: 'KTP' },
+                { key: 'kk', name: 'KK' },
+                { key: 'akte', name: 'Akte' },
+                { key: 'ijazah', name: 'Ijazah' },
+                { key: 'skPangkat', name: 'SK Pangkat' },
+                { key: 'skBerkala', name: 'SK Berkala' },
+                { key: 'skJabatan', name: 'SK Jabatan' },
+                { key: 'sertifikat', name: 'Sertifikat' }
+            ];
+            
+            return fileTypes.map(type => {
+                const hasFile = files[type.key] && files[type.key].length > 0;
+                const fileCount = hasFile ? files[type.key].length : 0;
+                return `
+                    <div class="text-center p-2 rounded ${hasFile ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        <i class="fas fa-${hasFile ? 'check-circle' : 'times-circle'} mb-1"></i>
+                        <div class="text-xs font-medium">${type.name}</div>
+                        ${hasFile ? `<div class="text-xs">${fileCount} file</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Close modals
+        function closeModal() {
+            document.getElementById('teacherModal').classList.add('hidden');
+        }
+
+        function closeFileModal() {
+            document.getElementById('fileModal').classList.add('hidden');
+        }
+
+        // Edit teacher
+        function editTeacher(id) {
+            const teacher = teachersData.find(t => t.id === id);
+            if (!teacher) return;
+
+            const form = document.getElementById('teacherForm');
+            Object.keys(teacher).forEach(key => {
+                const input = form.querySelector(`[name="${key}"]`);
+                if (input) {
+                    input.value = teacher[key] || '';
+                }
+            });
+
+            showSection('input-data');
+            
+            form.dataset.editId = id;
+            form.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Update Data';
+        }
+
+        // Delete teacher
+        function deleteTeacher(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data guru ini? Semua berkas yang terkait juga akan dihapus.')) {
+                teachersData = teachersData.filter(t => t.id !== id);
+                dataManager.saveTeachers(teachersData);
+                
+                // Delete associated files
+                if (filesData[id]) {
+                    // Revoke all object URLs to free memory
+                    Object.values(filesData[id]).forEach(fileArray => {
+                        if (Array.isArray(fileArray)) {
+                            fileArray.forEach(file => {
+                                if (file.url) {
+                                    URL.revokeObjectURL(file.url);
+                                }
+                            });
+                        }
+                    });
+                    delete filesData[id];
+                    dataManager.saveFiles(filesData);
+                }
+                
+                showNotification('Data guru dan berkas berhasil dihapus!', 'success');
+                loadDashboard();
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            const form = document.getElementById('teacherForm');
+            form.reset();
+            delete form.dataset.editId;
+            form.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Simpan Data';
+        }
+
+        // Backup & Restore functions
+        function createFullBackup() {
+            const backup = dataManager.createBackup();
+            downloadJSON(backup, `backup-lengkap-${new Date().toISOString().split('T')[0]}.json`);
+            
+            // Update last backup time
+            const settings = dataManager.getSettings();
+            settings.lastBackup = new Date().toISOString();
+            dataManager.saveSettings(settings);
+            dataManager.updateStorageInfo();
+            
+            showNotification('Backup lengkap berhasil dibuat!', 'success');
+        }
+
+        function backupDataOnly() {
+            const backup = {
+                teachers: dataManager.getTeachers(),
+                version: '1.0',
+                type: 'data-only',
+                createdAt: new Date().toISOString()
+            };
+            downloadJSON(backup, `backup-data-guru-${new Date().toISOString().split('T')[0]}.json`);
+            showNotification('Backup data guru berhasil dibuat!', 'success');
+        }
+
+        function backupFilesOnly() {
+            const backup = {
+                files: dataManager.getFiles(),
+                version: '1.0',
+                type: 'files-only',
+                createdAt: new Date().toISOString()
+            };
+            downloadJSON(backup, `backup-berkas-${new Date().toISOString().split('T')[0]}.json`);
+            showNotification('Backup berkas berhasil dibuat!', 'success');
+        }
+
+        function downloadJSON(data, filename) {
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function handleRestore(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backupData = JSON.parse(e.target.result);
+                    
+                    if (confirm('Apakah Anda yakin ingin mengembalikan data dari backup ini? Data saat ini akan ditimpa.')) {
+                        if (dataManager.restoreFromBackup(backupData)) {
+                            // Reload data
+                            teachersData = dataManager.getTeachers();
+                            filesData = dataManager.getFiles();
+                            
+                            showNotification('Data berhasil dipulihkan dari backup!', 'success');
+                            loadDashboard();
+                        } else {
+                            showNotification('Gagal memulihkan data dari backup!', 'error');
+                        }
+                    }
+                } catch (error) {
+                    showNotification('File backup tidak valid!', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset input
+            input.value = '';
+        }
+
+        function resetAllData() {
+            if (confirm('PERINGATAN: Ini akan menghapus SEMUA data guru dan berkas. Apakah Anda yakin?')) {
+                if (confirm('Konfirmasi sekali lagi: Semua data akan hilang permanen!')) {
+                    dataManager.clearAllData();
+                    teachersData = [];
+                    filesData = {};
+                    showNotification('Semua data berhasil dihapus!', 'success');
+                    loadDashboard();
+                }
+            }
+        }
+
+        // Export data
+        function exportData() {
+            const exportData = {
+                teachers: teachersData,
+                files: filesData,
+                exportDate: new Date().toISOString(),
+                totalTeachers: teachersData.length,
+                totalFiles: Object.values(filesData).reduce((total, teacherFiles) => {
+                    return total + Object.values(teacherFiles).reduce((sum, fileArray) => {
+                        return sum + (Array.isArray(fileArray) ? fileArray.length : 0);
+                    }, 0);
+                }, 0)
+            };
+            
+            downloadJSON(exportData, `export-data-guru-${new Date().toISOString().split('T')[0]}.json`);
+            showNotification('Data berhasil diexport!', 'success');
+        }
+
+        // Refresh data
+        function refreshData() {
+            teachersData = dataManager.getTeachers();
+            filesData = dataManager.getFiles();
+            loadDashboard();
+            showNotification('Data berhasil direfresh!', 'success');
+        }
+
+        // Show data statistics
+        function showDataStatistics() {
+            const stats = {
+                totalGuru: teachersData.length,
+                byStatus: {},
+                byJabatan: {},
+                byPendidikan: {},
+                totalBerkas: 0
+            };
+
+            teachersData.forEach(teacher => {
+                // Count by status
+                stats.byStatus[teacher.statusKepegawaian] = (stats.byStatus[teacher.statusKepegawaian] || 0) + 1;
+                
+                // Count by jabatan
+                stats.byJabatan[teacher.jabatan] = (stats.byJabatan[teacher.jabatan] || 0) + 1;
+                
+                // Count by pendidikan
+                stats.byPendidikan[teacher.pendidikanTerakhir] = (stats.byPendidikan[teacher.pendidikanTerakhir] || 0) + 1;
+            });
+
+            // Count total files
+            Object.values(filesData).forEach(teacherFiles => {
+                Object.values(teacherFiles).forEach(fileArray => {
+                    if (Array.isArray(fileArray)) {
+                        stats.totalBerkas += fileArray.length;
+                    }
+                });
+            });
+
+            let statsHtml = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Status Kepegawaian</h5>
+                        ${Object.entries(stats.byStatus).map(([status, count]) => 
+                            `<div class="flex justify-between"><span>${status}:</span><span>${count}</span></div>`
+                        ).join('')}
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Jabatan</h5>
+                        ${Object.entries(stats.byJabatan).map(([jabatan, count]) => 
+                            `<div class="flex justify-between"><span>${jabatan}:</span><span>${count}</span></div>`
+                        ).join('')}
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Pendidikan</h5>
+                        ${Object.entries(stats.byPendidikan).map(([pendidikan, count]) => 
+                            `<div class="flex justify-between"><span>${pendidikan}:</span><span>${count}</span></div>`
+                        ).join('')}
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <p class="text-lg font-semibold">Total Berkas: ${stats.totalBerkas} file</p>
+                </div>
+            `;
+
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h4 class="text-xl font-semibold text-gray-800 mb-4">Statistik Data Guru</h4>
+                ${statsHtml}
+            `;
+            document.getElementById('teacherModal').classList.remove('hidden');
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                showNotification('Berhasil logout!', 'success');
+                // In real app, clear session and redirect to login
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' : 
+                type === 'error' ? 'bg-red-500 text-white' : 
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#teacherTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Filter functionality
+        document.getElementById('filterJabatan').addEventListener('change', filterTable);
+        document.getElementById('filterStatus').addEventListener('change', filterTable);
+
+        function filterTable() {
+            const jabatanFilter = document.getElementById('filterJabatan').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const rows = document.querySelectorAll('#teacherTableBody tr');
+            
+            rows.forEach(row => {
+                const jabatan = row.cells[2].textContent.trim();
+                const status = row.cells[3].textContent.trim();
+                
+                const jabatanMatch = !jabatanFilter || jabatan === jabatanFilter;
+                const statusMatch = !statusFilter || status === statusFilter;
+                
+                row.style.display = jabatanMatch && statusMatch ? '' : 'none';
+            });
+        }
+
+        // Auto-save functionality
+        setInterval(() => {
+            const settings = dataManager.getSettings();
+            if (settings.autoSave) {
+                dataManager.updateStorageInfo();
+            }
+        }, 30000); // Update every 30 seconds
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            dataManager.updateStorageInfo();
+        });
+
+        // Handle page unload to clean up object URLs
+        window.addEventListener('beforeunload', function() {
+            Object.values(filesData).forEach(teacherFiles => {
+                Object.values(teacherFiles).forEach(fileArray => {
+                    if (Array.isArray(fileArray)) {
+                        fileArray.forEach(file => {
+                            if (file.url) {
+                                URL.revokeObjectURL(file.url);
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cdfa2793b13de9',t:'MTc1NDgxMzAxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

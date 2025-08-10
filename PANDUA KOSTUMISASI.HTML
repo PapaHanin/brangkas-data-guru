@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Kostumisasi - Brangkas File Data Guru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .code-block { background: #2d3748; border-radius: 8px; overflow: hidden; }
+        .nav-item { transition: all 0.3s ease; }
+        .nav-item:hover { transform: translateX(5px); }
+        .section-card { transition: all 0.3s ease; }
+        .section-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .step-number { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .warning-box { border-left: 4px solid #f59e0b; }
+        .info-box { border-left: 4px solid #3b82f6; }
+        .success-box { border-left: 4px solid #10b981; }
+        .danger-box { border-left: 4px solid #ef4444; }
+        .toc-item { border-left: 3px solid transparent; transition: all 0.3s ease; }
+        .toc-item.active { border-left-color: #3b82f6; background-color: #eff6ff; }
+        .highlight { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 2px 6px; border-radius: 4px; }
+        pre[class*="language-"] { margin: 0 !important; }
+        .copy-button { position: absolute; top: 10px; right: 10px; opacity: 0; transition: opacity 0.3s; }
+        .code-block:hover .copy-button { opacity: 1; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-600 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-book text-3xl text-blue-600"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Panduan Kostumisasi</h1>
+                        <p class="text-sm text-gray-600">Brangkas File Data Guru v2.0</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleTheme()" class="text-gray-600 hover:text-gray-800 transition-colors" title="Toggle Theme">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                    <button onclick="printGuide()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-print mr-2"></i>Cetak
+                    </button>
+                    <button onclick="downloadGuide()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-6 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Navigation -->
+            <aside class="lg:w-1/4">
+                <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">
+                        <i class="fas fa-list mr-2"></i>Daftar Isi
+                    </h3>
+                    <nav class="space-y-2" id="tableOfContents">
+                        <a href="#overview" class="toc-item block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 rounded-lg">
+                            <i class="fas fa-eye mr-2"></i>Gambaran Umum
+                        </a>
+                        <a href="#basic-customization" class="toc-item block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 rounded-lg">
+                            <i class="fas fa-palette mr-2"></i>Kostumisasi Dasar
+                        </a>
+                        <a href="#advanced-customization" class="toc-item block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 rounded-lg">
+                            <i class="fas fa-cogs mr-2"></i>Kostumisasi Lanjutan
+                        </a>
+                        <a href="#data-structure" class="toc-item block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 rounded-lg">
+                            <i class="fas fa-database mr-2"></i>Struktur Data
+                        </a>
+                        <a href="#security" class="toc-item block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 rounded-lg">
+                            <i class="fas fa-shield-alt mr-2"></i>Keamanan
+                        </a>
+                        <a href="#deployment" class="toc-item block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 rounded-lg">
+                            <i class="fas fa-rocket mr-2"></i>Deployment
+                        </a>
+                        <a href="#troubleshooting" class="toc-item block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 rounded-lg">
+                            <i class="fas fa-wrench mr-2"></i>Troubleshooting
+                        </a>
+                        <a href="#faq" class="toc-item block px-3 py-2 text-sm text-gray-700 hover:text-blue-600 rounded-lg">
+                            <i class="fas fa-question-circle mr-2"></i>FAQ
+                        </a>
+                    </nav>
+                    
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <h4 class="font-semibold text-blue-800 mb-2">
+                            <i class="fas fa-lightbulb mr-2"></i>Tips
+                        </h4>
+                        <p class="text-sm text-blue-700">Gunakan Ctrl+F untuk mencari topik tertentu dalam panduan ini.</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="lg:w-3/4">
+                <!-- Overview Section -->
+                <section id="overview" class="section-card bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">Gambaran Umum</h2>
+                    </div>
+                    
+                    <div class="prose max-w-none">
+                        <p class="text-lg text-gray-600 mb-6">
+                            Aplikasi <span class="highlight">Brangkas File Data Guru</span> adalah sistem manajemen data guru yang komprehensif dengan fitur-fitur canggih untuk mengelola data personal, berkas, dan keamanan sistem.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="info-box bg-blue-50 p-6 rounded-lg">
+                                <h3 class="font-bold text-blue-800 mb-3">
+                                    <i class="fas fa-star mr-2"></i>Fitur Utama
+                                </h3>
+                                <ul class="text-sm text-blue-700 space-y-2">
+                                    <li><i class="fas fa-check mr-2"></i>Multi-user authentication</li>
+                                    <li><i class="fas fa-check mr-2"></i>File upload & management</li>
+                                    <li><i class="fas fa-check mr-2"></i>Advanced search & filter</li>
+                                    <li><i class="fas fa-check mr-2"></i>Backup & restore system</li>
+                                    <li><i class="fas fa-check mr-2"></i>Admin dashboard</li>
+                                    <li><i class="fas fa-check mr-2"></i>Login history tracking</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="success-box bg-green-50 p-6 rounded-lg">
+                                <h3 class="font-bold text-green-800 mb-3">
+                                    <i class="fas fa-code mr-2"></i>Teknologi
+                                </h3>
+                                <ul class="text-sm text-green-700 space-y-2">
+                                    <li><i class="fas fa-check mr-2"></i>HTML5 + CSS3</li>
+                                    <li><i class="fas fa-check mr-2"></i>JavaScript (ES6+)</li>
+                                    <li><i class="fas fa-check mr-2"></i>Tailwind CSS</li>
+                                    <li><i class="fas fa-check mr-2"></i>Font Awesome Icons</li>
+                                    <li><i class="fas fa-check mr-2"></i>LocalStorage API</li>
+                                    <li><i class="fas fa-check mr-2"></i>Responsive Design</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="warning-box bg-yellow-50 p-6 rounded-lg">
+                            <h3 class="font-bold text-yellow-800 mb-3">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Persyaratan Sistem
+                            </h3>
+                            <div class="text-sm text-yellow-700">
+                                <p class="mb-2"><strong>Browser:</strong> Chrome 80+, Firefox 75+, Safari 13+, Edge 80+</p>
+                                <p class="mb-2"><strong>JavaScript:</strong> Harus diaktifkan</p>
+                                <p class="mb-2"><strong>LocalStorage:</strong> Minimal 10MB tersedia</p>
+                                <p><strong>Resolusi:</strong> Minimal 1024x768 (optimal: 1920x1080)</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Basic Customization Section -->
+                <section id="basic-customization" class="section-card bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">Kostumisasi Dasar</h2>
+                    </div>
+
+                    <!-- Color Scheme -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-paint-brush mr-2"></i>1. Mengubah Skema Warna
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Aplikasi menggunakan sistem warna Tailwind CSS yang mudah dikustomisasi. Berikut panduan lengkap untuk mengubah skema warna:</p>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">📋 Langkah-langkah Detail:</h4>
+                            <ol class="text-sm text-gray-700 space-y-2">
+                                <li><strong>1.</strong> Buka file HTML aplikasi dengan text editor (VS Code, Notepad++, dll)</li>
+                                <li><strong>2.</strong> Gunakan fitur Find & Replace (Ctrl+H) untuk mengganti warna secara massal</li>
+                                <li><strong>3.</strong> Ganti semua instance warna biru dengan warna pilihan Anda</li>
+                                <li><strong>4.</strong> Simpan file dan refresh browser untuk melihat perubahan</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-css">/* PANDUAN LENGKAP PENGGANTIAN WARNA */
+
+/* 1. WARNA UTAMA - Tombol dan Elemen Aktif */
+bg-blue-600 → bg-purple-600    /* Background tombol utama */
+bg-blue-700 → bg-purple-700    /* Background tombol saat hover */
+bg-blue-500 → bg-purple-500    /* Background elemen sekunder */
+bg-blue-800 → bg-purple-800    /* Background elemen gelap */
+
+/* 2. WARNA TEKS */
+text-blue-600 → text-purple-600 /* Teks link dan judul */
+text-blue-700 → text-purple-700 /* Teks tebal */
+text-blue-800 → text-purple-800 /* Teks heading */
+
+/* 3. WARNA BORDER */
+border-blue-600 → border-purple-600 /* Border utama */
+border-blue-500 → border-purple-500 /* Border input focus */
+border-blue-300 → border-purple-300 /* Border ringan */
+
+/* 4. WARNA HOVER EFFECTS */
+hover:bg-blue-700 → hover:bg-purple-700
+hover:text-blue-600 → hover:text-purple-600
+hover:border-blue-600 → hover:border-purple-600
+
+/* 5. WARNA FOCUS STATES */
+focus:ring-blue-500 → focus:ring-purple-500
+focus:border-blue-500 → focus:border-purple-500
+
+/* 6. GRADIENT BACKGROUNDS */
+from-blue-50 → from-purple-50
+to-indigo-100 → to-purple-100
+
+/* CONTOH IMPLEMENTASI CUSTOM CSS */
+.btn-primary {
+    @apply bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors;
+}
+
+.input-field {
+    @apply border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200;
+}
+
+/* CUSTOM GRADIENT UNTUK HEADER */
+.header-gradient {
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
+}
+
+/* CUSTOM SHADOW DENGAN WARNA TEMA */
+.shadow-theme {
+    box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.15);
+}</code></pre>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="info-box bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 mb-2">
+                                    <i class="fas fa-palette mr-2"></i>Pilihan Warna Populer
+                                </h4>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li><strong>Hijau:</strong> green-600, emerald-600</li>
+                                    <li><strong>Merah:</strong> red-600, rose-600</li>
+                                    <li><strong>Ungu:</strong> purple-600, violet-600</li>
+                                    <li><strong>Orange:</strong> orange-600, amber-600</li>
+                                    <li><strong>Teal:</strong> teal-600, cyan-600</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="warning-box bg-yellow-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-yellow-800 mb-2">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>Tips Penting
+                                </h4>
+                                <ul class="text-sm text-yellow-700 space-y-1">
+                                    <li>Gunakan warna yang kontras untuk aksesibilitas</li>
+                                    <li>Test pada berbagai perangkat</li>
+                                    <li>Simpan backup sebelum mengubah</li>
+                                    <li>Konsisten dalam penggunaan shade (600, 700, dll)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="success-box bg-green-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-green-800 mb-2">
+                                <i class="fas fa-lightbulb mr-2"></i>Contoh Penerapan Tema Sekolah
+                            </h4>
+                            <div class="text-sm text-green-700">
+                                <p class="mb-2"><strong>Tema Hijau (Alam/Lingkungan):</strong></p>
+                                <p class="mb-2">Ganti semua <code>blue-600</code> dengan <code>green-600</code></p>
+                                <p class="mb-2"><strong>Tema Merah (Nasionalisme):</strong></p>
+                                <p class="mb-2">Ganti semua <code>blue-600</code> dengan <code>red-600</code></p>
+                                <p><strong>Hasil:</strong> Aplikasi akan memiliki identitas visual yang sesuai dengan tema sekolah Anda.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-box bg-blue-50 p-4 rounded-lg mb-4">
+                            <p class="text-sm text-blue-700">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                <strong>Referensi:</strong> Kunjungi <a href="https://tailwindcss.com/docs/customizing-colors" class="underline font-semibold" target="_blank">Tailwind Color Palette</a> untuk melihat semua pilihan warna dan shade yang tersedia.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Logo and Title -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-image mr-2"></i>2. Mengubah Logo dan Judul
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Personalisasi header aplikasi dengan logo dan nama sekolah Anda. Berikut panduan lengkap untuk mengubah identitas visual aplikasi:</p>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">📋 Langkah-langkah Detail:</h4>
+                            <ol class="text-sm text-gray-700 space-y-2">
+                                <li><strong>1.</strong> Siapkan logo sekolah dalam format PNG/JPG (ukuran optimal: 40x40px atau 80x80px)</li>
+                                <li><strong>2.</strong> Letakkan file logo di folder yang sama dengan file HTML aplikasi</li>
+                                <li><strong>3.</strong> Cari bagian header dalam kode HTML (biasanya di bagian atas)</li>
+                                <li><strong>4.</strong> Ganti icon atau logo yang ada dengan logo sekolah Anda</li>
+                                <li><strong>5.</strong> Ubah teks judul sesuai nama sekolah/instansi</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-html">&lt;!-- PANDUAN LENGKAP MENGUBAH HEADER --&gt;
+
+&lt;!-- OPSI 1: MENGGUNAKAN LOGO GAMBAR --&gt;
+&lt;div class="flex items-center space-x-3"&gt;
+    &lt;!-- Logo sekolah dari file lokal --&gt;
+    &lt;img src="logo-sekolah.png" 
+         alt="Logo SDN 01 Sukamaju" 
+         class="w-12 h-12 rounded-full shadow-md"&gt;
+    
+    &lt;div&gt;
+        &lt;h1 class="text-2xl font-bold text-gray-800"&gt;
+            SDN 01 Sukamaju
+        &lt;/h1&gt;
+        &lt;p class="text-sm text-gray-600"&gt;
+            Sistem Data Guru
+        &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- OPSI 2: MENGGUNAKAN ICON FONT AWESOME --&gt;
+&lt;div class="flex items-center space-x-3"&gt;
+    &lt;!-- Icon sekolah dengan background --&gt;
+    &lt;div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center"&gt;
+        &lt;i class="fas fa-school text-white text-xl"&gt;&lt;/i&gt;
+    &lt;/div&gt;
+    
+    &lt;div&gt;
+        &lt;h1 class="text-2xl font-bold text-gray-800"&gt;
+            SMP Negeri 5 Jakarta
+        &lt;/h1&gt;
+        &lt;p class="text-sm text-gray-600"&gt;
+            Brangkas Data Guru Digital
+        &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- OPSI 3: LOGO + TEKS DENGAN STYLING ADVANCED --&gt;
+&lt;div class="flex items-center space-x-4"&gt;
+    &lt;!-- Logo dengan border dan shadow --&gt;
+    &lt;div class="relative"&gt;
+        &lt;img src="logo-sekolah.png" 
+             alt="Logo Sekolah" 
+             class="w-14 h-14 rounded-lg border-2 border-blue-200 shadow-lg"&gt;
+        &lt;!-- Badge indicator --&gt;
+        &lt;div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="flex-1"&gt;
+        &lt;h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"&gt;
+            MA Al-Hikmah Boarding School
+        &lt;/h1&gt;
+        &lt;p class="text-sm text-gray-600 flex items-center"&gt;
+            &lt;i class="fas fa-database mr-1"&gt;&lt;/i&gt;
+            Sistem Manajemen Data Guru Terpadu
+        &lt;/p&gt;
+        &lt;p class="text-xs text-gray-500 mt-1"&gt;
+            &lt;i class="fas fa-map-marker-alt mr-1"&gt;&lt;/i&gt;
+            Jl. Pendidikan No. 123, Jakarta Selatan
+        &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- OPSI 4: HEADER DENGAN BACKGROUND GRADIENT --&gt;
+&lt;header class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white"&gt;
+    &lt;div class="container mx-auto px-6 py-4"&gt;
+        &lt;div class="flex items-center justify-between"&gt;
+            &lt;div class="flex items-center space-x-4"&gt;
+                &lt;img src="logo-sekolah.png" 
+                     alt="Logo" 
+                     class="w-12 h-12 rounded-full border-2 border-white/20"&gt;
+                &lt;div&gt;
+                    &lt;h1 class="text-2xl font-bold"&gt;
+                        SMAN 1 Bandung
+                    &lt;/h1&gt;
+                    &lt;p class="text-blue-100 text-sm"&gt;
+                        Excellence in Education Since 1950
+                    &lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Info tambahan di header --&gt;
+            &lt;div class="text-right text-sm text-blue-100"&gt;
+                &lt;p&gt;Tahun Ajaran 2024/2025&lt;/p&gt;
+                &lt;p&gt;Total Guru: &lt;span id="totalTeachers"&gt;0&lt;/span&gt;&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/header&gt;</code></pre>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="info-box bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 mb-2">
+                                    <i class="fas fa-image mr-2"></i>Tips Logo
+                                </h4>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li><strong>Format:</strong> PNG dengan background transparan</li>
+                                    <li><strong>Ukuran:</strong> 40x40px hingga 80x80px</li>
+                                    <li><strong>Kualitas:</strong> Resolusi tinggi untuk tampilan tajam</li>
+                                    <li><strong>Nama file:</strong> Gunakan nama sederhana tanpa spasi</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="success-box bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-green-800 mb-2">
+                                    <i class="fas fa-font mr-2"></i>Tips Judul
+                                </h4>
+                                <ul class="text-sm text-green-700 space-y-1">
+                                    <li><strong>Singkat:</strong> Maksimal 3-4 kata</li>
+                                    <li><strong>Jelas:</strong> Mudah dibaca dan dipahami</li>
+                                    <li><strong>Konsisten:</strong> Sesuai dengan identitas sekolah</li>
+                                    <li><strong>Responsive:</strong> Tampil baik di mobile</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="warning-box bg-yellow-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-yellow-800 mb-2">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Perhatian Penting
+                            </h4>
+                            <div class="text-sm text-yellow-700 space-y-2">
+                                <p><strong>Path Logo:</strong> Pastikan path file logo benar. Jika logo tidak muncul, periksa:</p>
+                                <ul class="list-disc list-inside ml-4">
+                                    <li>Nama file logo sesuai dengan yang ditulis di kode</li>
+                                    <li>Logo berada di folder yang sama dengan file HTML</li>
+                                    <li>Tidak ada typo dalam nama file</li>
+                                    <li>Format file didukung (PNG, JPG, SVG)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-icons mr-2"></i>Alternatif Icon Font Awesome
+                            </h4>
+                            <div class="text-sm text-gray-700">
+                                <p class="mb-2">Jika tidak memiliki logo, gunakan icon yang sesuai:</p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div><code>fa-school</code> - Gedung sekolah</div>
+                                    <div><code>fa-graduation-cap</code> - Topi wisuda</div>
+                                    <div><code>fa-book</code> - Buku</div>
+                                    <div><code>fa-university</code> - Universitas</div>
+                                    <div><code>fa-chalkboard-teacher</code> - Guru mengajar</div>
+                                    <div><code>fa-users</code> - Komunitas</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="danger-box bg-red-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-2">
+                                <i class="fas fa-copyright mr-2"></i>Hak Cipta Logo
+                            </h4>
+                            <p class="text-sm text-red-700">
+                                Pastikan Anda memiliki hak untuk menggunakan logo yang dipilih. Gunakan logo resmi sekolah/instansi atau buat logo sendiri untuk menghindari masalah hak cipta.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Form Fields -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-wpforms mr-2"></i>3. Menambah/Mengurangi Field Form
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Sesuaikan form input data guru dengan kebutuhan sekolah Anda. Panduan ini menjelaskan cara menambah, mengurangi, atau memodifikasi field form secara detail:</p>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">📋 Langkah-langkah Menambah Field:</h4>
+                            <ol class="text-sm text-gray-700 space-y-2">
+                                <li><strong>1.</strong> Tentukan jenis field yang dibutuhkan (text, email, number, select, dll)</li>
+                                <li><strong>2.</strong> Tambahkan HTML field di bagian form input</li>
+                                <li><strong>3.</strong> Update JavaScript untuk menyimpan data field baru</li>
+                                <li><strong>4.</strong> Tambahkan field di tampilan detail guru</li>
+                                <li><strong>5.</strong> Update tabel dashboard jika diperlukan</li>
+                                <li><strong>6.</strong> Tambahkan validasi jika diperlukan</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-html">&lt;!-- PANDUAN LENGKAP MENAMBAH FIELD FORM --&gt;
+
+&lt;!-- 1. FIELD TEXT BIASA --&gt;
+&lt;div class="mb-4"&gt;
+    &lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;
+        &lt;i class="fas fa-phone mr-1"&gt;&lt;/i&gt;
+        Nomor Telepon *
+    &lt;/label&gt;
+    &lt;input type="tel" 
+           name="nomorTelepon" 
+           id="nomorTelepon"
+           placeholder="Contoh: 081234567890"
+           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+           required&gt;
+    &lt;p class="text-xs text-gray-500 mt-1"&gt;Format: 08xxxxxxxxxx&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- 2. FIELD EMAIL --&gt;
+&lt;div class="mb-4"&gt;
+    &lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;
+        &lt;i class="fas fa-envelope mr-1"&gt;&lt;/i&gt;
+        Email Pribadi
+    &lt;/label&gt;
+    &lt;input type="email" 
+           name="emailPribadi" 
+           id="emailPribadi"
+           placeholder="contoh@email.com"
+           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"&gt;
+&lt;/div&gt;
+
+&lt;!-- 3. FIELD SELECT/DROPDOWN --&gt;
+&lt;div class="mb-4"&gt;
+    &lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;
+        &lt;i class="fas fa-map-marker-alt mr-1"&gt;&lt;/i&gt;
+        Asal Daerah *
+    &lt;/label&gt;
+    &lt;select name="asalDaerah" 
+            id="asalDaerah"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required&gt;
+        &lt;option value=""&gt;-- Pilih Asal Daerah --&lt;/option&gt;
+        &lt;option value="Jakarta"&gt;DKI Jakarta&lt;/option&gt;
+        &lt;option value="Jawa Barat"&gt;Jawa Barat&lt;/option&gt;
+        &lt;option value="Jawa Tengah"&gt;Jawa Tengah&lt;/option&gt;
+        &lt;option value="Jawa Timur"&gt;Jawa Timur&lt;/option&gt;
+        &lt;option value="Lainnya"&gt;Lainnya&lt;/option&gt;
+    &lt;/select&gt;
+&lt;/div&gt;
+
+&lt;!-- 4. FIELD TEXTAREA --&gt;
+&lt;div class="mb-4"&gt;
+    &lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;
+        &lt;i class="fas fa-sticky-note mr-1"&gt;&lt;/i&gt;
+        Catatan Khusus
+    &lt;/label&gt;
+    &lt;textarea name="catatanKhusus" 
+              id="catatanKhusus"
+              rows="3"
+              placeholder="Masukkan catatan khusus tentang guru ini..."
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+
+&lt;!-- 5. FIELD NUMBER --&gt;
+&lt;div class="mb-4"&gt;
+    &lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;
+        &lt;i class="fas fa-clock mr-1"&gt;&lt;/i&gt;
+        Jam Mengajar per Minggu
+    &lt;/label&gt;
+    &lt;input type="number" 
+           name="jamMengajar" 
+           id="jamMengajar"
+           min="1" 
+           max="40"
+           placeholder="24"
+           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"&gt;
+    &lt;p class="text-xs text-gray-500 mt-1"&gt;Maksimal 40 jam per minggu&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- 6. FIELD CHECKBOX --&gt;
+&lt;div class="mb-4"&gt;
+    &lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;
+        &lt;i class="fas fa-certificate mr-1"&gt;&lt;/i&gt;
+        Sertifikasi yang Dimiliki
+    &lt;/label&gt;
+    &lt;div class="space-y-2"&gt;
+        &lt;label class="flex items-center"&gt;
+            &lt;input type="checkbox" name="sertifikasi[]" value="Sertifikat Pendidik" class="mr-2"&gt;
+            &lt;span class="text-sm"&gt;Sertifikat Pendidik&lt;/span&gt;
+        &lt;/label&gt;
+        &lt;label class="flex items-center"&gt;
+            &lt;input type="checkbox" name="sertifikasi[]" value="Sertifikat Profesi" class="mr-2"&gt;
+            &lt;span class="text-sm"&gt;Sertifikat Profesi&lt;/span&gt;
+        &lt;/label&gt;
+        &lt;label class="flex items-center"&gt;
+            &lt;input type="checkbox" name="sertifikasi[]" value="Sertifikat Keahlian" class="mr-2"&gt;
+            &lt;span class="text-sm"&gt;Sertifikat Keahlian&lt;/span&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 7. FIELD DATE --&gt;
+&lt;div class="mb-4"&gt;
+    &lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;
+        &lt;i class="fas fa-calendar mr-1"&gt;&lt;/i&gt;
+        Tanggal Mulai Mengajar
+    &lt;/label&gt;
+    &lt;input type="date" 
+           name="tanggalMulaiMengajar" 
+           id="tanggalMulaiMengajar"
+           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">// UPDATE JAVASCRIPT UNTUK FIELD BARU
+
+// 1. UPDATE FUNCTION FORM SUBMISSION
+document.getElementById('teacherForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    // Data guru dengan field baru
+    const teacherData = {
+        id: Date.now(),
+        // Field existing
+        namaGuru: formData.get('namaGuru'),
+        nik: formData.get('nik'),
+        nip: formData.get('nip'),
+        // ... field lainnya ...
+        
+        // FIELD BARU - Tambahkan di sini
+        nomorTelepon: formData.get('nomorTelepon'),
+        emailPribadi: formData.get('emailPribadi'),
+        asalDaerah: formData.get('asalDaerah'),
+        catatanKhusus: formData.get('catatanKhusus'),
+        jamMengajar: parseInt(formData.get('jamMengajar')) || 0,
+        tanggalMulaiMengajar: formData.get('tanggalMulaiMengajar'),
+        
+        // Untuk checkbox (multiple values)
+        sertifikasi: formData.getAll('sertifikasi[]'),
+        
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    
+    // Simpan data
+    dataManager.saveTeacher(teacherData);
+    showNotification('Data guru berhasil disimpan!', 'success');
+});
+
+// 2. UPDATE FUNCTION DISPLAY TEACHER DETAIL
+function displayTeacherDetail(teacher) {
+    const detailHTML = `
+        &lt;div class="bg-white rounded-xl shadow-lg p-6"&gt;
+            &lt;!-- Data existing --&gt;
+            &lt;div class="grid grid-cols-1 md:grid-cols-2 gap-4"&gt;
+                &lt;div&gt;
+                    &lt;label class="text-sm font-medium text-gray-500"&gt;Nama Lengkap&lt;/label&gt;
+                    &lt;p class="text-lg font-semibold"&gt;${teacher.namaGuru}&lt;/p&gt;
+                &lt;/div&gt;
+                
+                &lt;!-- FIELD BARU - Tambahkan di tampilan detail --&gt;
+                &lt;div&gt;
+                    &lt;label class="text-sm font-medium text-gray-500"&gt;Nomor Telepon&lt;/label&gt;
+                    &lt;p class="text-lg"&gt;${teacher.nomorTelepon || '-'}&lt;/p&gt;
+                &lt;/div&gt;
+                
+                &lt;div&gt;
+                    &lt;label class="text-sm font-medium text-gray-500"&gt;Email Pribadi&lt;/label&gt;
+                    &lt;p class="text-lg"&gt;${teacher.emailPribadi || '-'}&lt;/p&gt;
+                &lt;/div&gt;
+                
+                &lt;div&gt;
+                    &lt;label class="text-sm font-medium text-gray-500"&gt;Asal Daerah&lt;/label&gt;
+                    &lt;p class="text-lg"&gt;${teacher.asalDaerah || '-'}&lt;/p&gt;
+                &lt;/div&gt;
+                
+                &lt;div&gt;
+                    &lt;label class="text-sm font-medium text-gray-500"&gt;Jam Mengajar/Minggu&lt;/label&gt;
+                    &lt;p class="text-lg"&gt;${teacher.jamMengajar || 0} jam&lt;/p&gt;
+                &lt;/div&gt;
+                
+                &lt;div&gt;
+                    &lt;label class="text-sm font-medium text-gray-500"&gt;Tanggal Mulai Mengajar&lt;/label&gt;
+                    &lt;p class="text-lg"&gt;${teacher.tanggalMulaiMengajar ? new Date(teacher.tanggalMulaiMengajar).toLocaleDateString('id-ID') : '-'}&lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Sertifikasi --&gt;
+            &lt;div class="mt-4"&gt;
+                &lt;label class="text-sm font-medium text-gray-500"&gt;Sertifikasi&lt;/label&gt;
+                &lt;div class="flex flex-wrap gap-2 mt-1"&gt;
+                    ${teacher.sertifikasi && teacher.sertifikasi.length > 0 
+                        ? teacher.sertifikasi.map(cert => `&lt;span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs"&gt;${cert}&lt;/span&gt;`).join('')
+                        : '&lt;span class="text-gray-500"&gt;Tidak ada sertifikasi&lt;/span&gt;'
+                    }
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Catatan Khusus --&gt;
+            ${teacher.catatanKhusus ? `
+                &lt;div class="mt-4"&gt;
+                    &lt;label class="text-sm font-medium text-gray-500"&gt;Catatan Khusus&lt;/label&gt;
+                    &lt;p class="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg mt-1"&gt;${teacher.catatanKhusus}&lt;/p&gt;
+                &lt;/div&gt;
+            ` : ''}
+        &lt;/div&gt;
+    `;
+    
+    document.getElementById('teacherDetail').innerHTML = detailHTML;
+}
+
+// 3. UPDATE FUNCTION EDIT TEACHER (untuk mengisi form saat edit)
+function editTeacher(teacherId) {
+    const teacher = dataManager.getTeacher(teacherId);
+    if (!teacher) return;
+    
+    // Fill existing fields
+    document.getElementById('namaGuru').value = teacher.namaGuru || '';
+    document.getElementById('nik').value = teacher.nik || '';
+    
+    // FILL FIELD BARU
+    document.getElementById('nomorTelepon').value = teacher.nomorTelepon || '';
+    document.getElementById('emailPribadi').value = teacher.emailPribadi || '';
+    document.getElementById('asalDaerah').value = teacher.asalDaerah || '';
+    document.getElementById('catatanKhusus').value = teacher.catatanKhusus || '';
+    document.getElementById('jamMengajar').value = teacher.jamMengajar || '';
+    document.getElementById('tanggalMulaiMengajar').value = teacher.tanggalMulaiMengajar || '';
+    
+    // Fill checkboxes
+    if (teacher.sertifikasi && teacher.sertifikasi.length > 0) {
+        teacher.sertifikasi.forEach(cert => {
+            const checkbox = document.querySelector(`input[name="sertifikasi[]"][value="${cert}"]`);
+            if (checkbox) checkbox.checked = true;
+        });
+    }
+}</code></pre>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="info-box bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 mb-2">
+                                    <i class="fas fa-plus mr-2"></i>Tips Menambah Field
+                                </h4>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li>Gunakan nama field yang deskriptif</li>
+                                    <li>Tambahkan placeholder untuk panduan user</li>
+                                    <li>Berikan validasi yang sesuai (required, min, max)</li>
+                                    <li>Konsisten dengan styling yang ada</li>
+                                    <li>Test di berbagai ukuran layar</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="warning-box bg-yellow-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-yellow-800 mb-2">
+                                    <i class="fas fa-minus mr-2"></i>Tips Mengurangi Field
+                                </h4>
+                                <ul class="text-sm text-yellow-700 space-y-1">
+                                    <li>Hapus HTML field dari form</li>
+                                    <li>Hapus dari JavaScript save function</li>
+                                    <li>Hapus dari tampilan detail</li>
+                                    <li>Hapus dari function edit</li>
+                                    <li>Update validasi jika diperlukan</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="success-box bg-green-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-green-800 mb-2">
+                                <i class="fas fa-lightbulb mr-2"></i>Contoh Field Tambahan yang Berguna
+                            </h4>
+                            <div class="text-sm text-green-700">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="font-semibold mb-1">Data Pribadi:</p>
+                                        <ul class="list-disc list-inside space-y-1">
+                                            <li>Alamat lengkap</li>
+                                            <li>Status pernikahan</li>
+                                            <li>Jumlah anak</li>
+                                            <li>Golongan darah</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold mb-1">Data Profesional:</p>
+                                        <ul class="list-disc list-inside space-y-1">
+                                            <li>Mata pelajaran yang diampu</li>
+                                            <li>Kelas yang diajar</li>
+                                            <li>Pengalaman mengajar</li>
+                                            <li>Prestasi yang diraih</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="danger-box bg-red-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-2">
+                                <i class="fas fa-exclamation-circle mr-2"></i>Penting untuk Diingat
+                            </h4>
+                            <div class="text-sm text-red-700 space-y-2">
+                                <p><strong>Setelah menambah field baru, pastikan untuk update:</strong></p>
+                                <ul class="list-disc list-inside ml-4 space-y-1">
+                                    <li><strong>Form submission:</strong> Tambahkan field di JavaScript save function</li>
+                                    <li><strong>Display detail:</strong> Tampilkan field di halaman detail guru</li>
+                                    <li><strong>Edit function:</strong> Isi field saat edit data guru</li>
+                                    <li><strong>Tabel dashboard:</strong> Tambahkan kolom jika diperlukan</li>
+                                    <li><strong>Export function:</strong> Sertakan field dalam export data</li>
+                                    <li><strong>Backup/restore:</strong> Pastikan field ikut ter-backup</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Types -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-file-alt mr-2"></i>4. Mengubah Jenis Berkas
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Sesuaikan jenis berkas yang dapat diupload dengan kebutuhan administrasi sekolah Anda. Panduan ini menjelaskan cara menambah, mengurangi, atau memodifikasi jenis berkas secara detail:</p>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">📋 Langkah-langkah Menambah Jenis Berkas:</h4>
+                            <ol class="text-sm text-gray-700 space-y-2">
+                                <li><strong>1.</strong> Tentukan nama dan jenis berkas yang dibutuhkan</li>
+                                <li><strong>2.</strong> Pilih icon yang sesuai dari Font Awesome</li>
+                                <li><strong>3.</strong> Tambahkan HTML untuk upload area</li>
+                                <li><strong>4.</strong> Update JavaScript untuk handle upload</li>
+                                <li><strong>5.</strong> Tambahkan validasi file yang sesuai</li>
+                                <li><strong>6.</strong> Update tampilan berkas di detail guru</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-html">&lt;!-- PANDUAN LENGKAP MENAMBAH JENIS BERKAS --&gt;
+
+&lt;!-- 1. BERKAS KESEHATAN --&gt;
+&lt;div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors"&gt;
+    &lt;div class="text-center"&gt;
+        &lt;i class="fas fa-file-medical text-4xl text-green-400 mb-4"&gt;&lt;/i&gt;
+        &lt;h3 class="text-lg font-semibold text-gray-800 mb-2"&gt;Surat Keterangan Sehat&lt;/h3&gt;
+        &lt;p class="text-sm text-gray-600 mb-4"&gt;Upload surat keterangan sehat dari dokter&lt;/p&gt;
+        
+        &lt;input type="file" 
+               id="suratSehat" 
+               accept=".pdf,.jpg,.jpeg,.png" 
+               class="hidden" 
+               onchange="handleFileUpload(this, 'suratSehat')"&gt;
+               
+        &lt;button onclick="document.getElementById('suratSehat').click()" 
+                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"&gt;
+            &lt;i class="fas fa-upload mr-2"&gt;&lt;/i&gt;Upload Berkas
+        &lt;/button&gt;
+        
+        &lt;p class="text-xs text-gray-500 mt-2"&gt;Format: PDF, JPG, PNG (Max: 5MB)&lt;/p&gt;
+        &lt;div id="suratSehat-status" class="mt-2 text-sm"&gt;&lt;/div&gt;
+        &lt;div id="suratSehat-files" class="mt-3 space-y-2"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 2. BERKAS KELUARGA --&gt;
+&lt;div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors"&gt;
+    &lt;div class="text-center"&gt;
+        &lt;i class="fas fa-users text-4xl text-blue-400 mb-4"&gt;&lt;/i&gt;
+        &lt;h3 class="text-lg font-semibold text-gray-800 mb-2"&gt;Kartu Keluarga&lt;/h3&gt;
+        &lt;p class="text-sm text-gray-600 mb-4"&gt;Upload fotocopy Kartu Keluarga&lt;/p&gt;
+        
+        &lt;input type="file" 
+               id="kartuKeluarga" 
+               accept=".pdf,.jpg,.jpeg,.png" 
+               class="hidden" 
+               onchange="handleFileUpload(this, 'kartuKeluarga')"&gt;
+               
+        &lt;button onclick="document.getElementById('kartuKeluarga').click()" 
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"&gt;
+            &lt;i class="fas fa-upload mr-2"&gt;&lt;/i&gt;Upload Berkas
+        &lt;/button&gt;
+        
+        &lt;p class="text-xs text-gray-500 mt-2"&gt;Format: PDF, JPG, PNG (Max: 5MB)&lt;/p&gt;
+        &lt;div id="kartuKeluarga-status" class="mt-2 text-sm"&gt;&lt;/div&gt;
+        &lt;div id="kartuKeluarga-files" class="mt-3 space-y-2"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 3. BERKAS SERTIFIKAT --&gt;
+&lt;div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors"&gt;
+    &lt;div class="text-center"&gt;
+        &lt;i class="fas fa-certificate text-4xl text-yellow-400 mb-4"&gt;&lt;/i&gt;
+        &lt;h3 class="text-lg font-semibold text-gray-800 mb-2"&gt;Sertifikat Profesi&lt;/h3&gt;
+        &lt;p class="text-sm text-gray-600 mb-4"&gt;Upload sertifikat profesi guru&lt;/p&gt;
+        
+        &lt;input type="file" 
+               id="sertifikatProfesi" 
+               accept=".pdf" 
+               multiple
+               class="hidden" 
+               onchange="handleFileUpload(this, 'sertifikatProfesi')"&gt;
+               
+        &lt;button onclick="document.getElementById('sertifikatProfesi').click()" 
+                class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors"&gt;
+            &lt;i class="fas fa-upload mr-2"&gt;&lt;/i&gt;Upload Berkas
+        &lt;/button&gt;
+        
+        &lt;p class="text-xs text-gray-500 mt-2"&gt;Format: PDF (Max: 10MB per file, Multiple files)&lt;/p&gt;
+        &lt;div id="sertifikatProfesi-status" class="mt-2 text-sm"&gt;&lt;/div&gt;
+        &lt;div id="sertifikatProfesi-files" class="mt-3 space-y-2"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 4. BERKAS BANK --&gt;
+&lt;div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors"&gt;
+    &lt;div class="text-center"&gt;
+        &lt;i class="fas fa-university text-4xl text-purple-400 mb-4"&gt;&lt;/i&gt;
+        &lt;h3 class="text-lg font-semibold text-gray-800 mb-2"&gt;Rekening Bank&lt;/h3&gt;
+        &lt;p class="text-sm text-gray-600 mb-4"&gt;Upload fotocopy buku tabungan atau rekening koran&lt;/p&gt;
+        
+        &lt;input type="file" 
+               id="rekeningBank" 
+               accept=".pdf,.jpg,.jpeg,.png" 
+               class="hidden" 
+               onchange="handleFileUpload(this, 'rekeningBank')"&gt;
+               
+        &lt;button onclick="document.getElementById('rekeningBank').click()" 
+                class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"&gt;
+            &lt;i class="fas fa-upload mr-2"&gt;&lt;/i&gt;Upload Berkas
+        &lt;/button&gt;
+        
+        &lt;p class="text-xs text-gray-500 mt-2"&gt;Format: PDF, JPG, PNG (Max: 5MB)&lt;/p&gt;
+        &lt;div id="rekeningBank-status" class="mt-2 text-sm"&gt;&lt;/div&gt;
+        &lt;div id="rekeningBank-files" class="mt-3 space-y-2"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 5. BERKAS NPWP --&gt;
+&lt;div class="file-upload bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors"&gt;
+    &lt;div class="text-center"&gt;
+        &lt;i class="fas fa-file-invoice text-4xl text-red-400 mb-4"&gt;&lt;/i&gt;
+        &lt;h3 class="text-lg font-semibold text-gray-800 mb-2"&gt;NPWP&lt;/h3&gt;
+        &lt;p class="text-sm text-gray-600 mb-4"&gt;Upload fotocopy Nomor Pokok Wajib Pajak&lt;/p&gt;
+        
+        &lt;input type="file" 
+               id="npwp" 
+               accept=".pdf,.jpg,.jpeg,.png" 
+               class="hidden" 
+               onchange="handleFileUpload(this, 'npwp')"&gt;
+               
+        &lt;button onclick="document.getElementById('npwp').click()" 
+                class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"&gt;
+            &lt;i class="fas fa-upload mr-2"&gt;&lt;/i&gt;Upload Berkas
+        &lt;/button&gt;
+        
+        &lt;p class="text-xs text-gray-500 mt-2"&gt;Format: PDF, JPG, PNG (Max: 5MB)&lt;/p&gt;
+        &lt;div id="npwp-status" class="mt-2 text-sm"&gt;&lt;/div&gt;
+        &lt;div id="npwp-files" class="mt-3 space-y-2"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">// UPDATE JAVASCRIPT UNTUK JENIS BERKAS BARU
+
+// 1. UPDATE FUNCTION handleFileUpload untuk berkas baru
+function handleFileUpload(input, fileType) {
+    const files = Array.from(input.files);
+    const statusDiv = document.getElementById(`${fileType}-status`);
+    const filesDiv = document.getElementById(`${fileType}-files`);
+    
+    // Validasi berdasarkan jenis berkas
+    const fileValidation = {
+        'suratSehat': {
+            maxSize: 5 * 1024 * 1024, // 5MB
+            allowedTypes: ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'],
+            maxFiles: 1
+        },
+        'kartuKeluarga': {
+            maxSize: 5 * 1024 * 1024, // 5MB
+            allowedTypes: ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'],
+            maxFiles: 1
+        },
+        'sertifikatProfesi': {
+            maxSize: 10 * 1024 * 1024, // 10MB
+            allowedTypes: ['application/pdf'],
+            maxFiles: 5 // Multiple files allowed
+        },
+        'rekeningBank': {
+            maxSize: 5 * 1024 * 1024, // 5MB
+            allowedTypes: ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'],
+            maxFiles: 1
+        },
+        'npwp': {
+            maxSize: 5 * 1024 * 1024, // 5MB
+            allowedTypes: ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'],
+            maxFiles: 1
+        }
+    };
+    
+    const validation = fileValidation[fileType];
+    if (!validation) {
+        statusDiv.innerHTML = '&lt;span class="text-red-600"&gt;Jenis berkas tidak dikenali&lt;/span&gt;';
+        return;
+    }
+    
+    // Validasi jumlah file
+    if (files.length > validation.maxFiles) {
+        statusDiv.innerHTML = `&lt;span class="text-red-600"&gt;Maksimal ${validation.maxFiles} file&lt;/span&gt;`;
+        return;
+    }
+    
+    // Validasi setiap file
+    for (let file of files) {
+        // Validasi ukuran
+        if (file.size > validation.maxSize) {
+            statusDiv.innerHTML = `&lt;span class="text-red-600"&gt;File ${file.name} terlalu besar (max: ${(validation.maxSize / 1024 / 1024).toFixed(1)}MB)&lt;/span&gt;`;
+            return;
+        }
+        
+        // Validasi tipe file
+        if (!validation.allowedTypes.includes(file.type)) {
+            statusDiv.innerHTML = `&lt;span class="text-red-600"&gt;Format file ${file.name} tidak didukung&lt;/span&gt;`;
+            return;
+        }
+    }
+    
+    // Proses upload
+    statusDiv.innerHTML = '&lt;span class="text-blue-600"&gt;&lt;i class="fas fa-spinner fa-spin mr-1"&gt;&lt;/i&gt;Mengupload...&lt;/span&gt;';
+    
+    // Simulasi upload (dalam aplikasi nyata, ini akan mengirim ke server)
+    setTimeout(() => {
+        const uploadedFiles = files.map(file => ({
+            id: Date.now() + Math.random(),
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            uploadDate: new Date().toISOString(),
+            url: URL.createObjectURL(file)
+        }));
+        
+        // Simpan ke storage
+        if (!currentTeacherFiles[currentTeacherId]) {
+            currentTeacherFiles[currentTeacherId] = {};
+        }
+        
+        if (!currentTeacherFiles[currentTeacherId][fileType]) {
+            currentTeacherFiles[currentTeacherId][fileType] = [];
+        }
+        
+        // Untuk single file, replace. Untuk multiple, append
+        if (validation.maxFiles === 1) {
+            currentTeacherFiles[currentTeacherId][fileType] = uploadedFiles;
+        } else {
+            currentTeacherFiles[currentTeacherId][fileType].push(...uploadedFiles);
+        }
+        
+        // Update tampilan
+        displayUploadedFiles(fileType, currentTeacherFiles[currentTeacherId][fileType]);
+        statusDiv.innerHTML = `&lt;span class="text-green-600"&gt;&lt;i class="fas fa-check mr-1"&gt;&lt;/i&gt;${files.length} file berhasil diupload&lt;/span&gt;`;
+        
+        // Simpan ke localStorage
+        localStorage.setItem('teacherFiles', JSON.stringify(currentTeacherFiles));
+    }, 1500);
+}
+
+// 2. UPDATE FUNCTION displayUploadedFiles
+function displayUploadedFiles(fileType, files) {
+    const filesDiv = document.getElementById(`${fileType}-files`);
+    
+    if (!files || files.length === 0) {
+        filesDiv.innerHTML = '';
+        return;
+    }
+    
+    const filesHTML = files.map(file => `
+        &lt;div class="flex items-center justify-between bg-white p-3 rounded-lg border"&gt;
+            &lt;div class="flex items-center space-x-3"&gt;
+                &lt;i class="fas ${getFileIcon(file.type)} text-blue-600"&gt;&lt;/i&gt;
+                &lt;div&gt;
+                    &lt;p class="text-sm font-medium text-gray-800"&gt;${file.name}&lt;/p&gt;
+                    &lt;p class="text-xs text-gray-500"&gt;${formatFileSize(file.size)} • ${new Date(file.uploadDate).toLocaleDateString('id-ID')}&lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="flex items-center space-x-2"&gt;
+                &lt;button onclick="viewFile('${file.url}')" 
+                        class="text-blue-600 hover:text-blue-800 text-sm"&gt;
+                    &lt;i class="fas fa-eye"&gt;&lt;/i&gt;
+                &lt;/button&gt;
+                &lt;button onclick="deleteFile('${fileType}', '${file.id}')" 
+                        class="text-red-600 hover:text-red-800 text-sm"&gt;
+                    &lt;i class="fas fa-trash"&gt;&lt;/i&gt;
+                &lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    `).join('');
+    
+    filesDiv.innerHTML = filesHTML;
+}
+
+// 3. FUNCTION untuk mendapatkan icon berdasarkan jenis file
+function getFileIcon(fileType) {
+    const iconMap = {
+        'application/pdf': 'fa-file-pdf',
+        'image/jpeg': 'fa-file-image',
+        'image/jpg': 'fa-file-image',
+        'image/png': 'fa-file-image',
+        'application/msword': 'fa-file-word',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'fa-file-word',
+        'application/vnd.ms-excel': 'fa-file-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'fa-file-excel'
+    };
+    
+    return iconMap[fileType] || 'fa-file';
+}
+
+// 4. FUNCTION untuk format ukuran file
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// 5. FUNCTION untuk hapus file
+function deleteFile(fileType, fileId) {
+    if (!confirm('Yakin ingin menghapus file ini?')) return;
+    
+    if (currentTeacherFiles[currentTeacherId] && currentTeacherFiles[currentTeacherId][fileType]) {
+        currentTeacherFiles[currentTeacherId][fileType] = 
+            currentTeacherFiles[currentTeacherId][fileType].filter(file => file.id !== fileId);
+        
+        displayUploadedFiles(fileType, currentTeacherFiles[currentTeacherId][fileType]);
+        localStorage.setItem('teacherFiles', JSON.stringify(currentTeacherFiles));
+        
+        showNotification('File berhasil dihapus', 'success');
+    }
+}
+
+// 6. FUNCTION untuk view file
+function viewFile(url) {
+    window.open(url, '_blank');
+}</code></pre>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="info-box bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 mb-2">
+                                    <i class="fas fa-file-plus mr-2"></i>Jenis Berkas Umum
+                                </h4>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li><strong>Identitas:</strong> KTP, SIM, Paspor</li>
+                                    <li><strong>Keluarga:</strong> KK, Akta Nikah, Akta Anak</li>
+                                    <li><strong>Pendidikan:</strong> Ijazah, Transkrip, Sertifikat</li>
+                                    <li><strong>Kesehatan:</strong> Surat Sehat, Tes Narkoba</li>
+                                    <li><strong>Keuangan:</strong> Rekening, NPWP, Slip Gaji</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="success-box bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-green-800 mb-2">
+                                    <i class="fas fa-icons mr-2"></i>Icon yang Cocok
+                                </h4>
+                                <div class="text-sm text-green-700 grid grid-cols-2 gap-1">
+                                    <div><code>fa-file-medical</code> - Kesehatan</div>
+                                    <div><code>fa-users</code> - Keluarga</div>
+                                    <div><code>fa-certificate</code> - Sertifikat</div>
+                                    <div><code>fa-university</code> - Bank</div>
+                                    <div><code>fa-file-invoice</code> - Pajak</div>
+                                    <div><code>fa-id-card</code> - Identitas</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="warning-box bg-yellow-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-yellow-800 mb-2">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Tips Validasi File
+                            </h4>
+                            <div class="text-sm text-yellow-700 space-y-2">
+                                <p><strong>Ukuran File:</strong> Sesuaikan dengan kebutuhan (1-10MB)</p>
+                                <p><strong>Format File:</strong> PDF untuk dokumen resmi, JPG/PNG untuk foto</p>
+                                <p><strong>Jumlah File:</strong> Single untuk dokumen utama, multiple untuk sertifikat</p>
+                                <p><strong>Nama File:</strong> Gunakan nama yang deskriptif dan mudah dipahami</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-minus-circle mr-2"></i>Cara Menghapus Jenis Berkas
+                            </h4>
+                            <div class="text-sm text-gray-700 space-y-2">
+                                <p><strong>1.</strong> Hapus HTML upload area untuk jenis berkas tersebut</p>
+                                <p><strong>2.</strong> Hapus validasi untuk jenis berkas dari JavaScript</p>
+                                <p><strong>3.</strong> Update tampilan detail guru (hilangkan bagian berkas tersebut)</p>
+                                <p><strong>4.</strong> Update function backup/restore jika diperlukan</p>
+                            </div>
+                        </div>
+                        
+                        <div class="danger-box bg-red-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-2">
+                                <i class="fas fa-shield-alt mr-2"></i>Keamanan dan Privasi
+                            </h4>
+                            <div class="text-sm text-red-700 space-y-2">
+                                <p><strong>Data Sensitif:</strong> Berkas seperti KTP, NPWP mengandung data pribadi sensitif</p>
+                                <p><strong>Akses Terbatas:</strong> Pastikan hanya admin yang dapat mengakses berkas</p>
+                                <p><strong>Backup Aman:</strong> Enkripsi backup yang mengandung berkas pribadi</p>
+                                <p><strong>Compliance:</strong> Patuhi regulasi perlindungan data pribadi yang berlaku</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Advanced Customization Section -->
+                <section id="advanced-customization" class="section-card bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">Kostumisasi Lanjutan</h2>
+                    </div>
+
+                    <!-- Custom Functions -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-code mr-2"></i>1. Menambah Fungsi Custom
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Contoh menambah fungsi untuk export ke Excel:</p>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">// Fungsi export ke Excel (memerlukan library SheetJS)
+function exportToExcel() {
+    // Include SheetJS library
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    document.head.appendChild(script);
+    
+    script.onload = function() {
+        const data = teachersData.map(teacher => ({
+            'Nama': teacher.namaGuru,
+            'NIK': teacher.nik,
+            'NIP': teacher.nip || '-',
+            'Jabatan': teacher.jabatan,
+            'Status': teacher.statusKepegawaian,
+            'Pendidikan': teacher.pendidikanTerakhir
+        }));
+        
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Data Guru');
+        
+        XLSX.writeFile(wb, `data-guru-${new Date().toISOString().split('T')[0]}.xlsx`);
+        showNotification('Data berhasil diexport ke Excel!', 'success');
+    };
+}
+
+// Tambahkan tombol di dashboard
+const exportButton = `
+    &lt;button onclick="exportToExcel()" 
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"&gt;
+        &lt;i class="fas fa-file-excel mr-2"&gt;&lt;/i&gt;Export Excel
+    &lt;/button&gt;
+`;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Database Integration -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-database mr-2"></i>2. Integrasi Database
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Untuk mengintegrasikan dengan database server (memerlukan backend):</p>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">// API Service Class
+class APIService {
+    constructor(baseURL) {
+        this.baseURL = baseURL;
+    }
+    
+    async saveTeacher(teacherData) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/teachers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.getToken()}`
+                },
+                body: JSON.stringify(teacherData)
+            });
+            
+            if (!response.ok) throw new Error('Failed to save');
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
+        }
+    }
+    
+    async getTeachers() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/teachers`, {
+                headers: {
+                    'Authorization': `Bearer ${this.getToken()}`
+                }
+            });
+            
+            if (!response.ok) throw new Error('Failed to fetch');
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
+        }
+    }
+    
+    getToken() {
+        return localStorage.getItem('auth_token');
+    }
+}
+
+// Penggunaan
+const api = new APIService('https://your-api-server.com');
+
+// Update DataManager untuk menggunakan API
+class DataManager {
+    constructor() {
+        this.api = new APIService('https://your-api-server.com');
+        this.useAPI = true; // Toggle untuk menggunakan API atau localStorage
+    }
+    
+    async saveTeachers(data) {
+        if (this.useAPI) {
+            return await this.api.saveTeacher(data);
+        } else {
+            // Fallback ke localStorage
+            return this.saveToLocalStorage(data);
+        }
+    }
+}</code></pre>
+                        </div>
+                        
+                        <div class="danger-box bg-red-50 p-4 rounded-lg">
+                            <p class="text-sm text-red-700">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                <strong>Catatan:</strong> Integrasi database memerlukan backend server (PHP, Node.js, Python, dll).
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Email Integration -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-envelope mr-2"></i>3. Integrasi Email
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Menambah fitur notifikasi email menggunakan EmailJS:</p>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-html">&lt;!-- Include EmailJS --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+// Initialize EmailJS
+emailjs.init('YOUR_PUBLIC_KEY');
+
+// Fungsi kirim email
+async function sendNotificationEmail(teacherData, action) {
+    const templateParams = {
+        teacher_name: teacherData.namaGuru,
+        teacher_nik: teacherData.nik,
+        action: action,
+        date: new Date().toLocaleDateString('id-ID'),
+        admin_email: 'admin@sekolah.com'
+    };
+    
+    try {
+        await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams);
+        console.log('Email sent successfully');
+    } catch (error) {
+        console.error('Email error:', error);
+    }
+}
+
+// Panggil saat data guru baru ditambahkan
+document.getElementById('teacherForm').addEventListener('submit', function(e) {
+    // ... existing code ...
+    
+    // Kirim notifikasi email
+    if (isNewTeacher) {
+        sendNotificationEmail(teacherData, 'Data guru baru ditambahkan');
+    }
+});
+&lt;/script&gt;</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Custom Validation -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-check-circle mr-2"></i>4. Validasi Custom
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Menambah validasi khusus untuk NIK dan NIP:</p>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">// Validasi NIK (16 digit)
+function validateNIK(nik) {
+    const nikRegex = /^[0-9]{16}$/;
+    if (!nikRegex.test(nik)) {
+        return { valid: false, message: 'NIK harus 16 digit angka' };
+    }
+    
+    // Validasi tanggal lahir dalam NIK
+    const day = parseInt(nik.substring(6, 8));
+    const month = parseInt(nik.substring(8, 10));
+    const year = parseInt('19' + nik.substring(10, 12));
+    
+    if (day < 1 || day > 31 || month < 1 || month > 12) {
+        return { valid: false, message: 'Format tanggal dalam NIK tidak valid' };
+    }
+    
+    return { valid: true, message: 'NIK valid' };
+}
+
+// Validasi NIP (18 digit)
+function validateNIP(nip) {
+    if (!nip) return { valid: true, message: 'NIP opsional' };
+    
+    const nipRegex = /^[0-9]{18}$/;
+    if (!nipRegex.test(nip)) {
+        return { valid: false, message: 'NIP harus 18 digit angka' };
+    }
+    
+    return { valid: true, message: 'NIP valid' };
+}
+
+// Implementasi real-time validation
+document.querySelector('input[name="nik"]').addEventListener('blur', function() {
+    const validation = validateNIK(this.value);
+    const feedback = this.parentNode.querySelector('.validation-feedback') || 
+                    document.createElement('div');
+    
+    feedback.className = `validation-feedback text-sm mt-1 ${validation.valid ? 'text-green-600' : 'text-red-600'}`;
+    feedback.textContent = validation.message;
+    
+    if (!this.parentNode.querySelector('.validation-feedback')) {
+        this.parentNode.appendChild(feedback);
+    }
+});
+
+// Validasi saat submit form
+document.getElementById('teacherForm').addEventListener('submit', function(e) {
+    const nik = this.querySelector('input[name="nik"]').value;
+    const nip = this.querySelector('input[name="nip"]').value;
+    
+    const nikValidation = validateNIK(nik);
+    const nipValidation = validateNIP(nip);
+    
+    if (!nikValidation.valid || !nipValidation.valid) {
+        e.preventDefault();
+        showNotification('Periksa kembali data yang diinput!', 'error');
+        return false;
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Structure Section -->
+                <section id="data-structure" class="section-card bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">Struktur Data</h2>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-user mr-2"></i>1. Data Guru (Teachers)
+                        </h3>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-json">{
+  "id": 1640995200000,
+  "namaGuru": "Dr. Ahmad Susanto, S.Pd., M.Pd.",
+  "nik": "3201234567890123",
+  "nip": "196501011990031001",
+  "nuptk": "1234567890123456",
+  "tempatLahir": "Jakarta",
+  "tanggalLahir": "1965-01-01",
+  "jenisKelamin": "Laki-laki",
+  "jabatan": "Kepala Sekolah",
+  "pendidikanTerakhir": "S3",
+  "tahunLulus": 2010,
+  "masaKerjaTahun": 34,
+  "masaKerjaBulan": 2,
+  "noSkPertama": "SK001/2023",
+  "tmtSkPertama": "2023-01-01",
+  "tahunPengangkatanPertama": 1990,
+  "noSkTerakhir": "SK002/2023",
+  "tmtSkTerakhir": "2023-07-01",
+  "tahunPengangkatanTerakhir": 2023,
+  "masaKerjaSkTerakhirTahun": 5,
+  "masaKerjaSkTerakhirBulan": 6,
+  "statusKepegawaian": "PNS",
+  "createdAt": "2023-12-01T10:00:00.000Z",
+  "updatedAt": "2023-12-01T10:00:00.000Z"
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-file mr-2"></i>2. Data Berkas (Files)
+                        </h3>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-json">{
+  "1640995200000": {
+    "pasFoto": [
+      {
+        "id": "1640995200001",
+        "name": "foto-ahmad.jpg",
+        "size": 245760,
+        "type": "image/jpeg",
+        "uploadDate": "2023-12-01T10:30:00.000Z",
+        "url": "blob:http://localhost/..."
+      }
+    ],
+    "ktp": [
+      {
+        "id": "1640995200002",
+        "name": "ktp-ahmad.pdf",
+        "size": 1048576,
+        "type": "application/pdf",
+        "uploadDate": "2023-12-01T10:35:00.000Z",
+        "url": "blob:http://localhost/..."
+      }
+    ],
+    "ijazah": [
+      {
+        "id": "1640995200003",
+        "name": "ijazah-s1.pdf",
+        "size": 2097152,
+        "type": "application/pdf",
+        "uploadDate": "2023-12-01T10:40:00.000Z",
+        "url": "blob:http://localhost/..."
+      },
+      {
+        "id": "1640995200004",
+        "name": "ijazah-s2.pdf",
+        "size": 1572864,
+        "type": "application/pdf",
+        "uploadDate": "2023-12-01T10:45:00.000Z",
+        "url": "blob:http://localhost/..."
+      }
+    ]
+  }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-key mr-2"></i>3. Data Password
+                        </h3>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-json">{
+  "admin": "admin123",
+  "1640995200000": "123456",
+  "1640995200001": "password123"
+}</code></pre>
+                        </div>
+                        
+                        <div class="warning-box bg-yellow-50 p-4 rounded-lg">
+                            <p class="text-sm text-yellow-700">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <strong>Keamanan:</strong> Dalam implementasi production, password harus di-hash menggunakan bcrypt atau algoritma serupa.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-history mr-2"></i>4. Data Login History
+                        </h3>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-json">[
+  {
+    "id": 1640995200000,
+    "userId": "admin",
+    "userName": "Administrator",
+    "timestamp": "2023-12-01T10:00:00.000Z",
+    "success": true,
+    "ip": "192.168.1.100",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36..."
+  },
+  {
+    "id": 1640995200001,
+    "userId": "1640995200000",
+    "userName": "Dr. Ahmad Susanto, S.Pd., M.Pd.",
+    "timestamp": "2023-12-01T11:00:00.000Z",
+    "success": false,
+    "ip": "192.168.1.101",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36..."
+  }
+]</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Security Section -->
+                <section id="security" class="section-card bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">Keamanan</h2>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-lock mr-2"></i>1. Password Hashing
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Implementasi password hashing untuk keamanan yang lebih baik:</p>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">// Include crypto-js library
+// &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"&gt;&lt;/script&gt;
+
+class SecurityManager {
+    // Hash password menggunakan SHA-256
+    static hashPassword(password, salt = null) {
+        if (!salt) {
+            salt = CryptoJS.lib.WordArray.random(128/8).toString();
+        }
+        
+        const hash = CryptoJS.SHA256(password + salt).toString();
+        return { hash, salt };
+    }
+    
+    // Verifikasi password
+    static verifyPassword(password, hash, salt) {
+        const newHash = CryptoJS.SHA256(password + salt).toString();
+        return newHash === hash;
+    }
+    
+    // Generate secure random password
+    static generateSecurePassword(length = 12) {
+        const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+        let password = '';
+        
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            password += charset[randomIndex];
+        }
+        
+        return password;
+    }
+}
+
+// Update DataManager untuk menggunakan hashing
+class DataManager {
+    setUserPassword(userId, password) {
+        const passwords = this.getPasswords();
+        const { hash, salt } = SecurityManager.hashPassword(password);
+        
+        passwords[userId] = { hash, salt };
+        return this.savePasswords(passwords);
+    }
+    
+    verifyPassword(userId, password) {
+        const passwords = this.getPasswords();
+        const userData = passwords[userId];
+        
+        if (typeof userData === 'string') {
+            // Backward compatibility untuk password lama
+            return userData === password;
+        }
+        
+        return SecurityManager.verifyPassword(password, userData.hash, userData.salt);
+    }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-user-shield mr-2"></i>2. Session Management
+                        </h3>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">class SessionManager {
+    static SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    
+    static createSession(userId, userData) {
+        const sessionData = {
+            userId: userId,
+            userData: userData,
+            loginTime: Date.now(),
+            lastActivity: Date.now(),
+            sessionId: this.generateSessionId(),
+            expiresAt: Date.now() + this.SESSION_TIMEOUT
+        };
+        
+        localStorage.setItem('user_session', JSON.stringify(sessionData));
+        this.startSessionTimer();
+        
+        return sessionData;
+    }
+    
+    static validateSession() {
+        const session = this.getSession();
+        if (!session) return false;
+        
+        if (Date.now() > session.expiresAt) {
+            this.destroySession();
+            return false;
+        }
+        
+        // Update last activity
+        session.lastActivity = Date.now();
+        session.expiresAt = Date.now() + this.SESSION_TIMEOUT;
+        localStorage.setItem('user_session', JSON.stringify(session));
+        
+        return true;
+    }
+    
+    static getSession() {
+        try {
+            return JSON.parse(localStorage.getItem('user_session'));
+        } catch (e) {
+            return null;
+        }
+    }
+    
+    static destroySession() {
+        localStorage.removeItem('user_session');
+        localStorage.removeItem('currentUser');
+    }
+    
+    static generateSessionId() {
+        return 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    static startSessionTimer() {
+        setInterval(() => {
+            if (!this.validateSession()) {
+                showNotification('Sesi berakhir. Silakan login kembali.', 'warning');
+                setTimeout(() => {
+                    changeUser();
+                }, 2000);
+            }
+        }, 60000); // Check every minute
+    }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-eye mr-2"></i>3. Audit Trail
+                        </h3>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">class AuditManager {
+    static logAction(action, details = {}) {
+        const auditLog = this.getAuditLog();
+        const logEntry = {
+            id: Date.now(),
+            timestamp: new Date().toISOString(),
+            userId: currentUser,
+            userName: currentUserData?.namaGuru || 'Unknown',
+            action: action,
+            details: details,
+            ip: 'Local', // In real app, get actual IP
+            userAgent: navigator.userAgent.substring(0, 100)
+        };
+        
+        auditLog.unshift(logEntry);
+        
+        // Keep only last 100 entries
+        if (auditLog.length > 100) {
+            auditLog.splice(100);
+        }
+        
+        localStorage.setItem('audit_log', JSON.stringify(auditLog));
+    }
+    
+    static getAuditLog() {
+        try {
+            return JSON.parse(localStorage.getItem('audit_log')) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+    
+    static exportAuditLog() {
+        const auditLog = this.getAuditLog();
+        const exportData = {
+            auditLog: auditLog,
+            exportDate: new Date().toISOString(),
+            totalEntries: auditLog.length
+        };
+        
+        downloadJSON(exportData, `audit-log-${new Date().toISOString().split('T')[0]}.json`);
+    }
+}
+
+// Implementasi logging
+// Saat menambah guru baru
+AuditManager.logAction('CREATE_TEACHER', {
+    teacherId: teacherData.id,
+    teacherName: teacherData.namaGuru
+});
+
+// Saat mengupdate data
+AuditManager.logAction('UPDATE_TEACHER', {
+    teacherId: teacherId,
+    changes: changedFields
+});
+
+// Saat menghapus data
+AuditManager.logAction('DELETE_TEACHER', {
+    teacherId: teacherId,
+    teacherName: teacherName
+});</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Deployment Section -->
+                <section id="deployment" class="section-card bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">Deployment</h2>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-server mr-2"></i>1. Hosting Statis
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Aplikasi ini dapat di-deploy ke hosting statis seperti:</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="info-box bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-bold text-blue-800 mb-2">
+                                    <i class="fab fa-github mr-2"></i>GitHub Pages
+                                </h4>
+                                <ol class="text-sm text-blue-700 space-y-1">
+                                    <li>1. Upload file ke repository GitHub</li>
+                                    <li>2. Aktifkan GitHub Pages di Settings</li>
+                                    <li>3. Pilih branch main/master</li>
+                                    <li>4. Akses via username.github.io/repo-name</li>
+                                </ol>
+                            </div>
+                            
+                            <div class="success-box bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-bold text-green-800 mb-2">
+                                    <i class="fas fa-cloud mr-2"></i>Netlify
+                                </h4>
+                                <ol class="text-sm text-green-700 space-y-1">
+                                    <li>1. Drag & drop folder ke Netlify</li>
+                                    <li>2. Atau connect dengan Git repository</li>
+                                    <li>3. Auto-deploy saat ada perubahan</li>
+                                    <li>4. Custom domain tersedia</li>
+                                </ol>
+                            </div>
+                        </div>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-bash"># Struktur folder untuk deployment
+project-folder/
+├── index.html          # File utama aplikasi
+├── assets/
+│   ├── css/
+│   ├── js/
+│   └── images/
+├── docs/              # Dokumentasi
+├── README.md
+└── .gitignore
+
+# .gitignore content
+node_modules/
+.env
+*.log
+.DS_Store</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-cog mr-2"></i>2. Konfigurasi Production
+                        </h3>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-javascript">// config.js - Konfigurasi environment
+const CONFIG = {
+    development: {
+        API_URL: 'http://localhost:3000',
+        DEBUG: true,
+        AUTO_SAVE_INTERVAL: 10000
+    },
+    production: {
+        API_URL: 'https://api.sekolah.com',
+        DEBUG: false,
+        AUTO_SAVE_INTERVAL: 30000
+    }
+};
+
+// Deteksi environment
+const ENV = window.location.hostname === 'localhost' ? 'development' : 'production';
+const currentConfig = CONFIG[ENV];
+
+// Gunakan dalam aplikasi
+if (currentConfig.DEBUG) {
+    console.log('Debug mode enabled');
+}
+
+// Service Worker untuk caching (optional)
+if ('serviceWorker' in navigator && ENV === 'production') {
+    navigator.serviceWorker.register('/sw.js')
+        .then(registration => console.log('SW registered'))
+        .catch(error => console.log('SW registration failed'));
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-mobile-alt mr-2"></i>3. PWA (Progressive Web App)
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4">Mengubah aplikasi menjadi PWA untuk pengalaman mobile yang lebih baik:</p>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-json">// manifest.json
+{
+  "name": "Brangkas File Data Guru",
+  "short_name": "DataGuru",
+  "description": "Sistem Manajemen Data Guru",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}</code></pre>
+                        </div>
+                        
+                        <div class="code-block relative mb-4">
+                            <button class="copy-button bg-gray-700 text-white px-3 py-1 rounded text-sm" onclick="copyCode(this)">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                            <pre><code class="language-html">&lt;!-- Tambahkan di &lt;head&gt; --&gt;
+&lt;link rel="manifest" href="/manifest.json"&gt;
+&lt;meta name="theme-color" content="#2563eb"&gt;
+&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;
+&lt;meta name="apple-mobile-web-app-status-bar-style" content="default"&gt;
+&lt;meta name="apple-mobile-web-app-title" content="DataGuru"&gt;
+&lt;link rel="apple-touch-icon" href="/icons/icon-152x152.png"&gt;</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Troubleshooting Section -->
+                <section id="troubleshooting" class="section-card bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">Troubleshooting</h2>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="border-l-4 border-red-500 bg-red-50 p-4 rounded-r-lg">
+                            <h3 class="font-bold text-red-800 mb-2">
+                                <i class="fas fa-exclamation-circle mr-2"></i>Data Tidak Tersimpan
+                            </h3>
+                            <div class="text-sm text-red-700">
+                                <p class="mb-2"><strong>Penyebab:</strong></p>
+                                <ul class="list-disc list-inside mb-3">
+                                    <li>LocalStorage penuh atau diblokir browser</li>
+                                    <li>Mode incognito/private browsing</li>
+                                    <li>JavaScript error</li>
+                                </ul>
+                                <p class="mb-2"><strong>Solusi:</strong></p>
+                                <ul class="list-disc list-inside">
+                                    <li>Bersihkan cache browser</li>
+                                    <li>Gunakan mode normal browser</li>
+                                    <li>Periksa console untuk error</li>
+                                    <li>Pastikan JavaScript aktif</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded-r-lg">
+                            <h3 class="font-bold text-yellow-800 mb-2">
+                                <i class="fas fa-upload mr-2"></i>File Tidak Bisa Diupload
+                            </h3>
+                            <div class="text-sm text-yellow-700">
+                                <p class="mb-2"><strong>Penyebab:</strong></p>
+                                <ul class="list-disc list-inside mb-3">
+                                    <li>File terlalu besar (>10MB)</li>
+                                    <li>Format file tidak didukung</li>
+                                    <li>Browser tidak mendukung File API</li>
+                                </ul>
+                                <p class="mb-2"><strong>Solusi:</strong></p>
+                                <ul class="list-disc list-inside">
+                                    <li>Kompres file sebelum upload</li>
+                                    <li>Gunakan format PDF untuk dokumen</li>
+                                    <li>Update browser ke versi terbaru</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+                            <h3 class="font-bold text-blue-800 mb-2">
+                                <i class="fas fa-mobile-alt mr-2"></i>Tampilan Tidak Responsif
+                            </h3>
+                            <div class="text-sm text-blue-700">
+                                <p class="mb-2"><strong>Penyebab:</strong></p>
+                                <ul class="list-disc list-inside mb-3">
+                                    <li>CSS tidak termuat dengan benar</li>
+                                    <li>Viewport meta tag hilang</li>
+                                    <li>Tailwind CSS tidak aktif</li>
+                                </ul>
+                                <p class="mb-2"><strong>Solusi:</strong></p>
+                                <ul class="list-disc list-inside">
+                                    <li>Periksa koneksi internet</li>
+                                    <li>Refresh halaman (Ctrl+F5)</li>
+                                    <li>Pastikan CDN Tailwind tersedia</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded-r-lg">
+                            <h3 class="font-bold text-green-800 mb-2">
+                                <i class="fas fa-key mr-2"></i>Lupa Password
+                            </h3>
+                            <div class="text-sm text-green-700">
+                                <p class="mb-2"><strong>Solusi untuk Admin:</strong></p>
+                                <ul class="list-disc list-inside mb-3">
+                                    <li>Buka Developer Tools (F12)</li>
+                                    <li>Masuk ke tab Console</li>
+                                    <li>Ketik: <code>dataManager.setUserPassword('admin', 'admin123')</code></li>
+                                    <li>Login dengan password: admin123</li>
+                                </ul>
+                                <p class="mb-2"><strong>Solusi untuk Guru:</strong></p>
+                                <ul class="list-disc list-inside">
+                                    <li>Hubungi administrator</li>
+                                    <li>Admin dapat reset password melalui menu Password Manager</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FAQ Section -->
+                <section id="faq" class="section-card bg-white rounded-xl shadow-lg p-8 mb-8 fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="step-number w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">FAQ (Frequently Asked Questions)</h2>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg">
+                            <button class="w-full px-6 py-4 text-left font-medium text-gray-800 hover:bg-gray-50 focus:outline-none" onclick="toggleFAQ(this)">
+                                <div class="flex justify-between items-center">
+                                    <span>Apakah data aman tersimpan di browser?</span>
+                                    <i class="fas fa-chevron-down transform transition-transform"></i>
+                                </div>
+                            </button>
+                            <div class="hidden px-6 pb-4 text-gray-600">
+                                <p>Data disimpan di LocalStorage browser yang bersifat lokal dan tidak dapat diakses oleh website lain. Namun, untuk keamanan maksimal, disarankan untuk:</p>
+                                <ul class="list-disc list-inside mt-2">
+                                    <li>Rutin melakukan backup data</li>
+                                    <li>Menggunakan password yang kuat</li>
+                                    <li>Tidak menggunakan komputer publik</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg">
+                            <button class="w-full px-6 py-4 text-left font-medium text-gray-800 hover:bg-gray-50 focus:outline-none" onclick="toggleFAQ(this)">
+                                <div class="flex justify-between items-center">
+                                    <span>Bisakah digunakan tanpa koneksi internet?</span>
+                                    <i class="fas fa-chevron-down transform transition-transform"></i>
+                                </div>
+                            </button>
+                            <div class="hidden px-6 pb-4 text-gray-600">
+                                <p>Ya, aplikasi dapat berfungsi offline setelah dimuat pertama kali. Namun, beberapa fitur memerlukan internet:</p>
+                                <ul class="list-disc list-inside mt-2">
+                                    <li>Loading CSS dan JavaScript dari CDN</li>
+                                    <li>Font Awesome icons</li>
+                                    <li>Fitur email notification (jika diaktifkan)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg">
+                            <button class="w-full px-6 py-4 text-left font-medium text-gray-800 hover:bg-gray-50 focus:outline-none" onclick="toggleFAQ(this)">
+                                <div class="flex justify-between items-center">
+                                    <span>Bagaimana cara memindahkan data ke komputer lain?</span>
+                                    <i class="fas fa-chevron-down transform transition-transform"></i>
+                                </div>
+                            </button>
+                            <div class="hidden px-6 pb-4 text-gray-600">
+                                <p>Gunakan fitur Backup & Restore:</p>
+                                <ol class="list-decimal list-inside mt-2">
+                                    <li>Di komputer lama: Buka menu "Backup & Restore"</li>
+                                    <li>Klik "Backup Lengkap" untuk download file backup</li>
+                                    <li>Di komputer baru: Upload file backup menggunakan "Pilih File Backup"</li>
+                                    <li>Semua data dan pengaturan akan dipulihkan</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg">
+                            <button class="w-full px-6 py-4 text-left font-medium text-gray-800 hover:bg-gray-50 focus:outline-none" onclick="toggleFAQ(this)">
+                                <div class="flex justify-between items-center">
+                                    <span>Apakah bisa diintegrasikan dengan sistem lain?</span>
+                                    <i class="fas fa-chevron-down transform transition-transform"></i>
+                                </div>
+                            </button>
+                            <div class="hidden px-6 pb-4 text-gray-600">
+                                <p>Ya, aplikasi dapat diintegrasikan dengan:</p>
+                                <ul class="list-disc list-inside mt-2">
+                                    <li><strong>Database Server:</strong> MySQL, PostgreSQL, MongoDB</li>
+                                    <li><strong>API Backend:</strong> PHP, Node.js, Python, Java</li>
+                                    <li><strong>Cloud Storage:</strong> Google Drive, Dropbox</li>
+                                    <li><strong>Email Service:</strong> EmailJS, SendGrid</li>
+                                </ul>
+                                <p class="mt-2">Lihat bagian "Kostumisasi Lanjutan" untuk detail implementasi.</p>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg">
+                            <button class="w-full px-6 py-4 text-left font-medium text-gray-800 hover:bg-gray-50 focus:outline-none" onclick="toggleFAQ(this)">
+                                <div class="flex justify-between items-center">
+                                    <span>Berapa batas maksimal data yang bisa disimpan?</span>
+                                    <i class="fas fa-chevron-down transform transition-transform"></i>
+                                </div>
+                            </button>
+                            <div class="hidden px-6 pb-4 text-gray-600">
+                                <p>Batas penyimpanan tergantung browser:</p>
+                                <ul class="list-disc list-inside mt-2">
+                                    <li><strong>Chrome/Edge:</strong> ~10MB per domain</li>
+                                    <li><strong>Firefox:</strong> ~10MB per domain</li>
+                                    <li><strong>Safari:</strong> ~5MB per domain</li>
+                                </ul>
+                                <p class="mt-2">Untuk data lebih besar, disarankan menggunakan backend server dengan database.</p>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg">
+                            <button class="w-full px-6 py-4 text-left font-medium text-gray-800 hover:bg-gray-50 focus:outline-none" onclick="toggleFAQ(this)">
+                                <div class="flex justify-between items-center">
+                                    <span>Bagaimana cara menambah user admin baru?</span>
+                                    <i class="fas fa-chevron-down transform transition-transform"></i>
+                                </div>
+                            </button>
+                            <div class="hidden px-6 pb-4 text-gray-600">
+                                <p>Saat ini sistem hanya mendukung satu admin. Untuk menambah admin baru, modifikasi kode:</p>
+                                <ol class="list-decimal list-inside mt-2">
+                                    <li>Edit fungsi <code>loginAsAdmin()</code></li>
+                                    <li>Tambah validasi untuk multiple admin</li>
+                                    <li>Update struktur data password</li>
+                                    <li>Modifikasi UI untuk menampilkan daftar admin</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <footer class="text-center py-8 text-gray-600">
+                    <div class="border-t border-gray-200 pt-8">
+                        <p class="mb-2">
+                            <i class="fas fa-heart text-red-500 mr-1"></i>
+                            Dibuat dengan penuh dedikasi untuk kemajuan pendidikan Indonesia
+                        </p>
+                        <p class="text-sm">
+                            © 2024 Brangkas File Data Guru v2.0 - 
+                            <a href="#" class="text-blue-600 hover:underline">Dokumentasi Lengkap</a> | 
+                            <a href="#" class="text-blue-600 hover:underline">Support</a>
+                        </p>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Update active nav item
+                    document.querySelectorAll('.toc-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.parentNode.querySelector('code');
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
+                button.classList.add('bg-green-600');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('bg-green-600');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // FAQ toggle functionality
+        function toggleFAQ(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Theme toggle (basic implementation)
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            
+            if (body.classList.contains('dark')) {
+                body.classList.remove('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Print functionality
+        function printGuide() {
+            window.print();
+        }
+
+        // Download guide as HTML
+        function downloadGuide() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'panduan-kostumisasi-brangkas-data-guru.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Intersection Observer for active navigation
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -70% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    document.querySelectorAll('.toc-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    const activeLink = document.querySelector(`a[href="#${id}"]`);
+                    if (activeLink) {
+                        activeLink.classList.add('active');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section[id]').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Initialize theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                document.getElementById('themeIcon').classList.remove('fa-moon');
+                document.getElementById('themeIcon').classList.add('fa-sun');
+            }
+        });
+
+        // Add fade-in animation on scroll
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        fadeElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            fadeObserver.observe(el);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96ce6e4fd1beec6a',t:'MTc1NDgxNzc2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
