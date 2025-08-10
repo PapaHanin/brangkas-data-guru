@@ -32,7 +32,14 @@
                         <i class="fas fa-database text-green-600"></i>
                         <span class="text-sm text-gray-600">Data Tersimpan Otomatis</span>
                     </div>
-                    <span id="userRole" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Admin</span>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-600">Login sebagai:</span>
+                        <span id="currentUserName" class="font-medium text-gray-800"></span>
+                    </div>
+                    <span id="userRole" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"></span>
+                    <button onclick="changeUser()" class="text-blue-600 hover:text-blue-800 transition-colors">
+                        <i class="fas fa-user-cog"></i> Ganti User
+                    </button>
                     <button onclick="logout()" class="text-red-600 hover:text-red-800 transition-colors">
                         <i class="fas fa-sign-out-alt"></i> Keluar
                     </button>
@@ -132,10 +139,28 @@
                     </div>
                     <select id="filterJabatan" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         <option value="">Semua Jabatan</option>
-                        <option value="Kepala Sekolah">Kepala Sekolah</option>
-                        <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
-                        <option value="Guru Kelas">Guru Kelas</option>
-                        <option value="Guru Mata Pelajaran">Guru Mata Pelajaran</option>
+                        <optgroup label="Tenaga Pendidik">
+                            <option value="Kepala Sekolah">Kepala Sekolah</option>
+                            <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
+                            <option value="Guru Kelas">Guru Kelas</option>
+                            <option value="Guru Mata Pelajaran">Guru Mata Pelajaran</option>
+                            <option value="Guru BK">Guru BK</option>
+                            <option value="Guru Olahraga">Guru Olahraga</option>
+                            <option value="Guru Agama">Guru Agama</option>
+                            <option value="Guru Seni">Guru Seni</option>
+                        </optgroup>
+                        <optgroup label="Tenaga Kependidikan">
+                            <option value="Kepala Tata Usaha">Kepala Tata Usaha</option>
+                            <option value="Bendahara">Bendahara</option>
+                            <option value="Operator Sekolah">Operator Sekolah</option>
+                            <option value="Pustakawan">Pustakawan</option>
+                            <option value="Laboran">Laboran</option>
+                            <option value="Teknisi">Teknisi</option>
+                            <option value="Satpam">Satpam</option>
+                            <option value="Penjaga Sekolah">Penjaga Sekolah</option>
+                            <option value="Cleaning Service">Cleaning Service</option>
+                            <option value="Tukang Kebun">Tukang Kebun</option>
+                        </optgroup>
                     </select>
                     <select id="filterStatus" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         <option value="">Semua Status</option>
@@ -144,6 +169,27 @@
                         <option value="GTT">GTT</option>
                         <option value="GTY">GTY</option>
                     </select>
+                    <button onclick="clearAllFilters()" class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors" title="Bersihkan Filter">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button onclick="exportFilteredData()" class="px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors" title="Export Data Terfilter">
+                        <i class="fas fa-file-export"></i>
+                    </button>
+                </div>
+
+                <!-- Admin Dashboard Features -->
+                <div id="adminFeatures" class="mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <button onclick="showPasswordManager()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-key mr-2"></i>Kelola Password
+                        </button>
+                        <button onclick="showLoginHistory()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-history mr-2"></i>Riwayat Login
+                        </button>
+                        <button onclick="showSystemSettings()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-cogs mr-2"></i>Pengaturan Sistem
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Data Table -->
@@ -157,6 +203,7 @@
                                 <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelengkapan</th>
                                 <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Berkas</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Login Terakhir</th>
                                 <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
@@ -214,10 +261,28 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Jabatan *</label>
                                 <select name="jabatan" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                                     <option value="">Pilih Jabatan</option>
-                                    <option value="Kepala Sekolah">Kepala Sekolah</option>
-                                    <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
-                                    <option value="Guru Kelas">Guru Kelas</option>
-                                    <option value="Guru Mata Pelajaran">Guru Mata Pelajaran</option>
+                                    <optgroup label="Tenaga Pendidik">
+                                        <option value="Kepala Sekolah">Kepala Sekolah</option>
+                                        <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
+                                        <option value="Guru Kelas">Guru Kelas</option>
+                                        <option value="Guru Mata Pelajaran">Guru Mata Pelajaran</option>
+                                        <option value="Guru BK">Guru BK (Bimbingan Konseling)</option>
+                                        <option value="Guru Olahraga">Guru Olahraga</option>
+                                        <option value="Guru Agama">Guru Agama</option>
+                                        <option value="Guru Seni">Guru Seni</option>
+                                    </optgroup>
+                                    <optgroup label="Tenaga Kependidikan">
+                                        <option value="Kepala Tata Usaha">Kepala Tata Usaha</option>
+                                        <option value="Bendahara">Bendahara</option>
+                                        <option value="Operator Sekolah">Operator Sekolah</option>
+                                        <option value="Pustakawan">Pustakawan</option>
+                                        <option value="Laboran">Laboran</option>
+                                        <option value="Teknisi">Teknisi</option>
+                                        <option value="Satpam">Satpam</option>
+                                        <option value="Penjaga Sekolah">Penjaga Sekolah</option>
+                                        <option value="Cleaning Service">Cleaning Service</option>
+                                        <option value="Tukang Kebun">Tukang Kebun</option>
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>
@@ -693,6 +758,177 @@
         </div>
     </div>
 
+    <!-- Modal untuk Pilih User -->
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Login Sistem</h3>
+                        <button onclick="closeUserModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <!-- Admin Login -->
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-blue-800 mb-3">
+                                <i class="fas fa-user-shield mr-2"></i>Login sebagai Administrator
+                            </h4>
+                            <div class="space-y-3">
+                                <input type="password" id="adminPassword" placeholder="Masukkan password admin..." 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <button onclick="loginAsAdmin()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                    Login Admin
+                                </button>
+                                <div class="text-xs text-gray-600">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Password default: <strong>admin123</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Teacher Login -->
+                        <div class="border-t pt-4">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">
+                                <i class="fas fa-users mr-2"></i>Login sebagai Guru/Staff
+                            </h4>
+                            <div class="space-y-3">
+                                <select id="selectedTeacher" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Guru/Staff</option>
+                                </select>
+                                <input type="password" id="teacherPassword" placeholder="Masukkan password..." 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <button onclick="loginAsSelectedTeacher()" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                    Login Guru/Staff
+                                </button>
+                                <div class="text-xs text-gray-600">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Password default untuk semua guru: <strong>123456</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Change Password Section -->
+                        <div class="border-t pt-4">
+                            <button onclick="showChangePasswordForm()" class="w-full bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors">
+                                <i class="fas fa-key mr-2"></i>Ganti Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Ganti Password -->
+    <div id="changePasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Ganti Password</h3>
+                        <button onclick="closeChangePasswordModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih User</label>
+                            <select id="changePasswordUser" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Pilih User</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password Lama</label>
+                            <input type="password" id="oldPassword" placeholder="Masukkan password lama..." 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
+                            <div class="relative">
+                                <input type="password" id="newPassword" placeholder="Masukkan password baru..." 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <div id="passwordStrength" class="mt-1 text-xs"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password Baru</label>
+                            <input type="password" id="confirmPassword" placeholder="Konfirmasi password baru..." 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="flex space-x-3">
+                            <button onclick="changePassword()" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-save mr-2"></i>Simpan
+                            </button>
+                            <button onclick="closeChangePasswordModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                                Batal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Password Manager -->
+    <div id="passwordManagerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Kelola Password User</h3>
+                        <button onclick="closePasswordManagerModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    <div id="passwordManagerContent">
+                        <!-- Content akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Login History -->
+    <div id="loginHistoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Riwayat Login</h3>
+                        <button onclick="closeLoginHistoryModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    <div id="loginHistoryContent">
+                        <!-- Content akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk System Settings -->
+    <div id="systemSettingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Pengaturan Sistem</h3>
+                        <button onclick="closeSystemSettingsModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    <div id="systemSettingsContent">
+                        <!-- Content akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Enhanced Data Storage with persistence
         class DataManager {
@@ -700,6 +936,9 @@
                 this.teachersKey = 'brangkas_teachers_data';
                 this.filesKey = 'brangkas_files_data';
                 this.settingsKey = 'brangkas_settings';
+                this.passwordsKey = 'brangkas_passwords';
+                this.loginHistoryKey = 'brangkas_login_history';
+                this.sessionKey = 'brangkas_session';
                 this.init();
             }
 
@@ -708,7 +947,92 @@
                 if (!this.getTeachers().length) {
                     this.initSampleData();
                 }
+                // Initialize default passwords if empty
+                if (!this.getPasswords().admin) {
+                    this.initDefaultPasswords();
+                }
                 this.updateStorageInfo();
+                this.initAutoLogout();
+            }
+
+            initAutoLogout() {
+                // Auto logout after 30 minutes of inactivity
+                let inactivityTimer;
+                const INACTIVITY_TIME = 30 * 60 * 1000; // 30 minutes
+
+                const resetTimer = () => {
+                    clearTimeout(inactivityTimer);
+                    inactivityTimer = setTimeout(() => {
+                        this.autoLogout();
+                    }, INACTIVITY_TIME);
+                };
+
+                // Reset timer on user activity
+                ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
+                    document.addEventListener(event, resetTimer, true);
+                });
+
+                resetTimer(); // Start the timer
+            }
+
+            autoLogout() {
+                showNotification('Sesi berakhir karena tidak ada aktivitas. Silakan login kembali.', 'warning');
+                setTimeout(() => {
+                    this.clearSession();
+                    changeUser();
+                }, 2000);
+            }
+
+            saveSession(userId, userData) {
+                const session = {
+                    userId: userId,
+                    userData: userData,
+                    loginTime: new Date().toISOString(),
+                    lastActivity: new Date().toISOString()
+                };
+                localStorage.setItem(this.sessionKey, JSON.stringify(session));
+            }
+
+            getSession() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.sessionKey));
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            clearSession() {
+                localStorage.removeItem(this.sessionKey);
+                localStorage.removeItem('currentUser');
+            }
+
+            saveLoginHistory(userId, userName, success = true) {
+                const history = this.getLoginHistory();
+                const loginRecord = {
+                    id: Date.now(),
+                    userId: userId,
+                    userName: userName,
+                    timestamp: new Date().toISOString(),
+                    success: success,
+                    ip: 'Local', // In real app, get actual IP
+                    userAgent: navigator.userAgent.substring(0, 100)
+                };
+                
+                history.unshift(loginRecord);
+                // Keep only last 50 records
+                if (history.length > 50) {
+                    history.splice(50);
+                }
+                
+                localStorage.setItem(this.loginHistoryKey, JSON.stringify(history));
+            }
+
+            getLoginHistory() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.loginHistoryKey)) || [];
+                } catch (e) {
+                    return [];
+                }
             }
 
             getTeachers() {
@@ -774,6 +1098,43 @@
                 }
             }
 
+            getPasswords() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.passwordsKey)) || {};
+                } catch (e) {
+                    console.error('Error loading passwords:', e);
+                    return {};
+                }
+            }
+
+            savePasswords(passwords) {
+                try {
+                    localStorage.setItem(this.passwordsKey, JSON.stringify(passwords));
+                    return true;
+                } catch (e) {
+                    console.error('Error saving passwords:', e);
+                    return false;
+                }
+            }
+
+            initDefaultPasswords() {
+                const defaultPasswords = {
+                    admin: 'admin123' // Default admin password
+                };
+                this.savePasswords(defaultPasswords);
+            }
+
+            setUserPassword(userId, password) {
+                const passwords = this.getPasswords();
+                passwords[userId] = password;
+                return this.savePasswords(passwords);
+            }
+
+            verifyPassword(userId, password) {
+                const passwords = this.getPasswords();
+                return passwords[userId] === password;
+            }
+
             updateStorageInfo() {
                 try {
                     const teachers = localStorage.getItem(this.teachersKey) || '';
@@ -836,9 +1197,72 @@
                         statusKepegawaian: 'PNS',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 2,
+                        namaGuru: 'Budi Santoso, S.Kom.',
+                        nik: '3201234567890125',
+                        nip: '198505102010011001',
+                        nuptk: '1234567890123458',
+                        tempatLahir: 'Surabaya',
+                        tanggalLahir: '1985-05-10',
+                        jenisKelamin: 'Laki-laki',
+                        jabatan: 'Operator Sekolah',
+                        pendidikanTerakhir: 'S1',
+                        tahunLulus: 2008,
+                        masaKerjaTahun: 14,
+                        masaKerjaBulan: 3,
+                        statusKepegawaian: 'PPPK',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 3,
+                        namaGuru: 'Dewi Sartika, S.E.',
+                        nik: '3201234567890126',
+                        nip: '198012252005022001',
+                        nuptk: '1234567890123459',
+                        tempatLahir: 'Yogyakarta',
+                        tanggalLahir: '1980-12-25',
+                        jenisKelamin: 'Perempuan',
+                        jabatan: 'Bendahara',
+                        pendidikanTerakhir: 'S1',
+                        tahunLulus: 2003,
+                        masaKerjaTahun: 19,
+                        masaKerjaBulan: 1,
+                        statusKepegawaian: 'PNS',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 4,
+                        namaGuru: 'Andi Wijaya',
+                        nik: '3201234567890127',
+                        nip: '',
+                        nuptk: '',
+                        tempatLahir: 'Medan',
+                        tanggalLahir: '1990-08-15',
+                        jenisKelamin: 'Laki-laki',
+                        jabatan: 'Satpam',
+                        pendidikanTerakhir: 'SMA/SMK',
+                        tahunLulus: 2008,
+                        masaKerjaTahun: 8,
+                        masaKerjaBulan: 6,
+                        statusKepegawaian: 'GTT',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
                     }
                 ];
                 this.saveTeachers(sampleData);
+                
+                // Initialize default passwords for sample users
+                const passwords = this.getPasswords();
+                sampleData.forEach(teacher => {
+                    if (!passwords[teacher.id]) {
+                        passwords[teacher.id] = '123456'; // Default password for all teachers
+                    }
+                });
+                this.savePasswords(passwords);
             }
 
             createBackup() {
@@ -846,6 +1270,7 @@
                     teachers: this.getTeachers(),
                     files: this.getFiles(),
                     settings: this.getSettings(),
+                    passwords: this.getPasswords(),
                     version: '1.0',
                     createdAt: new Date().toISOString()
                 };
@@ -861,6 +1286,9 @@
                     }
                     if (backupData.settings) {
                         this.saveSettings(backupData.settings);
+                    }
+                    if (backupData.passwords) {
+                        this.savePasswords(backupData.passwords);
                     }
                     return true;
                 } catch (e) {
@@ -887,7 +1315,266 @@
         const dataManager = new DataManager();
         let teachersData = dataManager.getTeachers();
         let filesData = dataManager.getFiles();
-        let currentUser = 'admin';
+        let currentUser = localStorage.getItem('currentUser') || 'admin';
+        let currentUserData = null;
+
+        // User Management Functions
+        function initializeUser() {
+            if (currentUser === 'admin') {
+                currentUserData = { namaGuru: 'Administrator', jabatan: 'Admin' };
+                document.getElementById('currentUserName').textContent = 'Administrator';
+                document.getElementById('userRole').textContent = 'Admin';
+                document.getElementById('userRole').className = 'px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium';
+            } else {
+                currentUserData = teachersData.find(t => t.id == currentUser);
+                if (currentUserData) {
+                    document.getElementById('currentUserName').textContent = currentUserData.namaGuru;
+                    document.getElementById('userRole').textContent = 'Guru/Staff';
+                    document.getElementById('userRole').className = 'px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium';
+                } else {
+                    // User not found, reset to admin
+                    currentUser = 'admin';
+                    localStorage.setItem('currentUser', 'admin');
+                    initializeUser();
+                }
+            }
+            
+            // Show/hide sections based on user role
+            updateUIForUser();
+        }
+
+        function updateUIForUser() {
+            const isAdmin = currentUser === 'admin';
+            const navButtons = document.querySelectorAll('.nav-btn');
+            
+            // Show/hide navigation based on role
+            navButtons.forEach(btn => {
+                const section = btn.getAttribute('onclick').match(/showSection\('(.+?)'\)/)[1];
+                if (!isAdmin && (section === 'backup-restore')) {
+                    btn.style.display = 'none';
+                } else {
+                    btn.style.display = 'block';
+                }
+            });
+
+            // If not admin, auto-select current user in upload sections
+            if (!isAdmin && currentUserData) {
+                setTimeout(() => {
+                    const selectPribadi = document.getElementById('selectGuruPribadi');
+                    const selectKeluarga = document.getElementById('selectGuruKeluarga');
+                    if (selectPribadi) {
+                        selectPribadi.value = currentUser;
+                        selectPribadi.disabled = true;
+                        loadExistingFiles('pribadi');
+                    }
+                    if (selectKeluarga) {
+                        selectKeluarga.value = currentUser;
+                        selectKeluarga.disabled = true;
+                        loadExistingFiles('keluarga');
+                    }
+                }, 100);
+            }
+
+            // Pre-fill form if not admin
+            if (!isAdmin && currentUserData) {
+                setTimeout(() => {
+                    const form = document.getElementById('teacherForm');
+                    if (form && !form.dataset.editId) {
+                        Object.keys(currentUserData).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input && key !== 'id' && key !== 'createdAt' && key !== 'updatedAt') {
+                                input.value = currentUserData[key] || '';
+                            }
+                        });
+                        form.dataset.editId = currentUser;
+                        form.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Update Data Saya';
+                    }
+                }, 100);
+            }
+        }
+
+        function changeUser() {
+            loadTeacherUserList();
+            document.getElementById('userModal').classList.remove('hidden');
+        }
+
+        function loadTeacherUserList() {
+            const selectedTeacher = document.getElementById('selectedTeacher');
+            selectedTeacher.innerHTML = '<option value="">Pilih Guru/Staff</option>';
+            
+            teachersData.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.id;
+                option.textContent = `${teacher.namaGuru} - ${teacher.jabatan}`;
+                selectedTeacher.appendChild(option);
+            });
+        }
+
+        function loginAsAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            
+            if (!password) {
+                showNotification('Masukkan password admin!', 'error');
+                return;
+            }
+            
+            if (!dataManager.verifyPassword('admin', password)) {
+                showNotification('Password admin salah!', 'error');
+                dataManager.saveLoginHistory('admin', 'Administrator', false);
+                document.getElementById('adminPassword').value = '';
+                return;
+            }
+            
+            currentUser = 'admin';
+            currentUserData = { namaGuru: 'Administrator', jabatan: 'Admin' };
+            localStorage.setItem('currentUser', 'admin');
+            
+            // Save session and login history
+            dataManager.saveSession('admin', currentUserData);
+            dataManager.saveLoginHistory('admin', 'Administrator', true);
+            
+            initializeUser();
+            closeUserModal();
+            showSection('dashboard');
+            showNotification('Login sebagai Administrator berhasil!', 'success');
+            
+            // Clear password field
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function loginAsSelectedTeacher() {
+            const teacherId = document.getElementById('selectedTeacher').value;
+            const password = document.getElementById('teacherPassword').value;
+            
+            if (!teacherId) {
+                showNotification('Pilih guru/staff terlebih dahulu!', 'error');
+                return;
+            }
+            
+            if (!password) {
+                showNotification('Masukkan password!', 'error');
+                return;
+            }
+            
+            const teacher = teachersData.find(t => t.id == teacherId);
+            if (!teacher) {
+                showNotification('Data guru tidak ditemukan!', 'error');
+                return;
+            }
+            
+            if (!dataManager.verifyPassword(teacherId, password)) {
+                showNotification('Password salah!', 'error');
+                dataManager.saveLoginHistory(teacherId, teacher.namaGuru, false);
+                document.getElementById('teacherPassword').value = '';
+                return;
+            }
+            
+            currentUser = teacherId;
+            currentUserData = teacher;
+            localStorage.setItem('currentUser', teacherId);
+            
+            // Save session and login history
+            dataManager.saveSession(teacherId, currentUserData);
+            dataManager.saveLoginHistory(teacherId, teacher.namaGuru, true);
+            
+            initializeUser();
+            closeUserModal();
+            showSection('input-data');
+            showNotification(`Login sebagai ${currentUserData.namaGuru} berhasil!`, 'success');
+            
+            // Clear form
+            document.getElementById('selectedTeacher').value = '';
+            document.getElementById('teacherPassword').value = '';
+        }
+
+        function loginAsTeacher(teacherId) {
+            // This function is kept for backward compatibility but now requires password
+            const teacher = teachersData.find(t => t.id == teacherId);
+            if (teacher) {
+                document.getElementById('selectedTeacher').value = teacherId;
+                document.getElementById('teacherPassword').focus();
+            }
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.add('hidden');
+            // Clear all password fields
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('selectedTeacher').value = '';
+            document.getElementById('teacherPassword').value = '';
+        }
+
+        function showChangePasswordForm() {
+            // Load users for password change
+            const changePasswordUser = document.getElementById('changePasswordUser');
+            changePasswordUser.innerHTML = '<option value="">Pilih User</option>';
+            changePasswordUser.innerHTML += '<option value="admin">Administrator</option>';
+            
+            teachersData.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.id;
+                option.textContent = `${teacher.namaGuru} - ${teacher.jabatan}`;
+                changePasswordUser.appendChild(option);
+            });
+            
+            closeUserModal();
+            document.getElementById('changePasswordModal').classList.remove('hidden');
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('hidden');
+            // Clear all fields
+            document.getElementById('changePasswordUser').value = '';
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        function changePassword() {
+            const userId = document.getElementById('changePasswordUser').value;
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!userId) {
+                showNotification('Pilih user terlebih dahulu!', 'error');
+                return;
+            }
+            
+            if (!oldPassword) {
+                showNotification('Masukkan password lama!', 'error');
+                return;
+            }
+            
+            if (!newPassword) {
+                showNotification('Masukkan password baru!', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showNotification('Password baru minimal 6 karakter!', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('Konfirmasi password tidak cocok!', 'error');
+                return;
+            }
+            
+            if (!dataManager.verifyPassword(userId, oldPassword)) {
+                showNotification('Password lama salah!', 'error');
+                return;
+            }
+            
+            if (dataManager.setUserPassword(userId, newPassword)) {
+                const userName = userId === 'admin' ? 'Administrator' : 
+                    teachersData.find(t => t.id == userId)?.namaGuru || 'User';
+                showNotification(`Password ${userName} berhasil diubah!`, 'success');
+                closeChangePasswordModal();
+            } else {
+                showNotification('Gagal mengubah password!', 'error');
+            }
+        }
 
         // Navigation
         function showSection(sectionId) {
@@ -908,8 +1595,11 @@
                 loadDashboard();
             } else if (sectionId === 'upload-pribadi' || sectionId === 'upload-keluarga') {
                 loadTeacherOptions();
+                updateUIForUser(); // Update UI for current user
             } else if (sectionId === 'backup-restore') {
                 dataManager.updateStorageInfo();
+            } else if (sectionId === 'input-data') {
+                updateUIForUser(); // Update form for current user
             }
         }
 
@@ -946,10 +1636,17 @@
         function loadTeacherTable() {
             const tbody = document.getElementById('teacherTableBody');
             tbody.innerHTML = '';
+            
+            // Hide admin features if not admin
+            const adminFeatures = document.getElementById('adminFeatures');
+            if (adminFeatures) {
+                adminFeatures.style.display = currentUser === 'admin' ? 'block' : 'none';
+            }
 
             teachersData.forEach(teacher => {
                 const completeness = calculateCompleteness(teacher);
                 const fileCount = getTeacherFileCount(teacher.id);
+                const lastLogin = getLastLogin(teacher.id);
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -982,20 +1679,62 @@
                             <span class="text-sm text-gray-900">${fileCount}</span>
                         </div>
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${lastLogin.date}</div>
+                        <div class="text-xs ${lastLogin.success ? 'text-green-600' : 'text-red-600'}">${lastLogin.status}</div>
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button onclick="viewTeacher(${teacher.id})" class="text-blue-600 hover:text-blue-900 mr-3" title="Lihat Detail">
                             <i class="fas fa-eye"></i>
                         </button>
+                        ${currentUser === 'admin' || currentUser == teacher.id ? `
                         <button onclick="editTeacher(${teacher.id})" class="text-green-600 hover:text-green-900 mr-3" title="Edit Data">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="deleteTeacher(${teacher.id})" class="text-red-600 hover:text-red-900" title="Hapus Data">
+                        ` : ''}
+                        ${currentUser === 'admin' ? `
+                        <button onclick="deleteTeacher(${teacher.id})" class="text-red-600 hover:text-red-900 mr-3" title="Hapus Data">
                             <i class="fas fa-trash"></i>
                         </button>
+                        <button onclick="resetUserPassword('${teacher.id}')" class="text-yellow-600 hover:text-yellow-900" title="Reset Password">
+                            <i class="fas fa-key"></i>
+                        </button>
+                        ` : ''}
                     </td>
                 `;
                 tbody.appendChild(row);
             });
+        }
+
+        // Get last login info
+        function getLastLogin(userId) {
+            const history = dataManager.getLoginHistory();
+            const userLogins = history.filter(h => h.userId == userId && h.success);
+            
+            if (userLogins.length === 0) {
+                return { date: 'Belum pernah', status: 'Belum login', success: false };
+            }
+            
+            const lastLogin = userLogins[0]; // Already sorted by newest first
+            const date = new Date(lastLogin.timestamp);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            let dateStr;
+            if (diffDays === 1) {
+                dateStr = 'Kemarin';
+            } else if (diffDays < 7) {
+                dateStr = `${diffDays} hari lalu`;
+            } else {
+                dateStr = date.toLocaleDateString('id-ID');
+            }
+            
+            return { 
+                date: dateStr, 
+                status: 'Login berhasil', 
+                success: true 
+            };
         }
 
         // Get teacher file count
@@ -1046,24 +1785,49 @@
                 const index = teachersData.findIndex(t => t.id == editId);
                 if (index !== -1) {
                     teachersData[index] = { ...teachersData[index], ...teacherData, updatedAt: new Date().toISOString() };
-                    showNotification('Data guru berhasil diupdate!', 'success');
+                    
+                    // Update current user data if editing own data
+                    if (currentUser == editId) {
+                        currentUserData = teachersData[index];
+                        document.getElementById('currentUserName').textContent = currentUserData.namaGuru;
+                    }
+                    
+                    showNotification('Data berhasil diupdate!', 'success');
                 }
-                delete this.dataset.editId;
-                this.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Simpan Data';
+                
+                // Don't reset form and editId if user is editing their own data
+                if (currentUser !== 'admin' && currentUser == editId) {
+                    // Keep the form in edit mode for non-admin users
+                } else {
+                    delete this.dataset.editId;
+                    this.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Simpan Data';
+                }
             } else {
-                // Add new teacher
-                teacherData.id = Date.now();
-                teacherData.createdAt = new Date().toISOString();
-                teacherData.updatedAt = new Date().toISOString();
-                teachersData.push(teacherData);
-                showNotification('Data guru berhasil disimpan!', 'success');
+                // Add new teacher (only admin can do this)
+                if (currentUser === 'admin') {
+                    teacherData.id = Date.now();
+                    teacherData.createdAt = new Date().toISOString();
+                    teacherData.updatedAt = new Date().toISOString();
+                    teachersData.push(teacherData);
+                    
+                    // Set default password for new teacher
+                    dataManager.setUserPassword(teacherData.id, '123456');
+                    
+                    showNotification('Data guru berhasil disimpan! Password default: 123456', 'success');
+                    this.reset();
+                } else {
+                    showNotification('Hanya admin yang dapat menambah data guru baru!', 'error');
+                    return;
+                }
             }
             
             // Save to storage
             dataManager.saveTeachers(teachersData);
             
-            // Reset form
-            this.reset();
+            // Reset form only if admin or adding new data
+            if (currentUser === 'admin' && !editId) {
+                this.reset();
+            }
             
             // Refresh dashboard if visible
             if (!document.getElementById('dashboard').classList.contains('hidden')) {
@@ -1260,13 +2024,29 @@
             
             [selectPribadi, selectKeluarga].forEach(select => {
                 if (select) {
+                    // Reset select options
                     select.innerHTML = '<option value="">Pilih Guru</option>';
-                    teachersData.forEach(teacher => {
-                        const option = document.createElement('option');
-                        option.value = teacher.id;
-                        option.textContent = teacher.namaGuru;
-                        select.appendChild(option);
-                    });
+                    select.disabled = false;
+                    
+                    // Add all teachers for admin, or just current user for non-admin
+                    if (currentUser === 'admin') {
+                        teachersData.forEach(teacher => {
+                            const option = document.createElement('option');
+                            option.value = teacher.id;
+                            option.textContent = teacher.namaGuru;
+                            select.appendChild(option);
+                        });
+                    } else {
+                        // For non-admin users, only show their own data
+                        if (currentUserData) {
+                            const option = document.createElement('option');
+                            option.value = currentUser;
+                            option.textContent = currentUserData.namaGuru;
+                            select.appendChild(option);
+                            select.value = currentUser;
+                            select.disabled = true;
+                        }
+                    }
                 }
             });
         }
@@ -1362,6 +2142,12 @@
 
         // Edit teacher
         function editTeacher(id) {
+            // Only admin can edit other teachers, teachers can only edit themselves
+            if (currentUser !== 'admin' && currentUser != id) {
+                showNotification('Anda hanya dapat mengedit data Anda sendiri!', 'error');
+                return;
+            }
+
             const teacher = teachersData.find(t => t.id === id);
             if (!teacher) return;
 
@@ -1381,6 +2167,12 @@
 
         // Delete teacher
         function deleteTeacher(id) {
+            // Only admin can delete teachers
+            if (currentUser !== 'admin') {
+                showNotification('Hanya admin yang dapat menghapus data guru!', 'error');
+                return;
+            }
+
             if (confirm('Apakah Anda yakin ingin menghapus data guru ini? Semua berkas yang terkait juga akan dihapus.')) {
                 teachersData = teachersData.filter(t => t.id !== id);
                 dataManager.saveTeachers(teachersData);
@@ -1400,6 +2192,11 @@
                     delete filesData[id];
                     dataManager.saveFiles(filesData);
                 }
+                
+                // Delete password
+                const passwords = dataManager.getPasswords();
+                delete passwords[id];
+                dataManager.savePasswords(passwords);
                 
                 showNotification('Data guru dan berkas berhasil dihapus!', 'success');
                 loadDashboard();
@@ -1594,11 +2391,496 @@
             document.getElementById('teacherModal').classList.remove('hidden');
         }
 
+        // Admin Functions
+        function showPasswordManager() {
+            if (currentUser !== 'admin') {
+                showNotification('Hanya admin yang dapat mengakses fitur ini!', 'error');
+                return;
+            }
+            
+            const passwords = dataManager.getPasswords();
+            let content = `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-blue-800 mb-2">
+                            <i class="fas fa-info-circle mr-2"></i>Informasi Password
+                        </h4>
+                        <p class="text-sm text-blue-700">Kelola password untuk semua user dalam sistem. Password default untuk guru baru adalah "123456".</p>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full bg-white rounded-lg overflow-hidden border">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jabatan</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Password</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <div class="font-medium text-gray-900">Administrator</div>
+                                        <div class="text-sm text-gray-500">admin</div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">Admin Sistem</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${passwords.admin === 'admin123' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                                            ${passwords.admin === 'admin123' ? 'Default' : 'Custom'}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <button onclick="resetUserPassword('admin')" class="text-blue-600 hover:text-blue-800 mr-2" title="Reset Password">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                        <button onclick="changeUserPasswordAdmin('admin')" class="text-green-600 hover:text-green-800" title="Ganti Password">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+            `;
+            
+            teachersData.forEach(teacher => {
+                const hasPassword = passwords[teacher.id];
+                const isDefault = passwords[teacher.id] === '123456';
+                content += `
+                    <tr>
+                        <td class="px-4 py-3">
+                            <div class="font-medium text-gray-900">${teacher.namaGuru}</div>
+                            <div class="text-sm text-gray-500">ID: ${teacher.id}</div>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${teacher.jabatan}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full ${!hasPassword ? 'bg-red-100 text-red-800' : isDefault ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                                ${!hasPassword ? 'Tidak Ada' : isDefault ? 'Default' : 'Custom'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <button onclick="resetUserPassword('${teacher.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Reset Password">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            <button onclick="changeUserPasswordAdmin('${teacher.id}')" class="text-green-600 hover:text-green-800" title="Ganti Password">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            content += `
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button onclick="resetAllPasswords()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            <i class="fas fa-refresh mr-2"></i>Reset Semua Password
+                        </button>
+                        <button onclick="closePasswordManagerModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('passwordManagerContent').innerHTML = content;
+            document.getElementById('passwordManagerModal').classList.remove('hidden');
+        }
+
+        function showLoginHistory() {
+            if (currentUser !== 'admin') {
+                showNotification('Hanya admin yang dapat mengakses fitur ini!', 'error');
+                return;
+            }
+            
+            const history = dataManager.getLoginHistory();
+            let content = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div class="bg-blue-50 p-4 rounded-lg flex-1 mr-4">
+                            <h4 class="font-semibold text-blue-800 mb-2">
+                                <i class="fas fa-chart-line mr-2"></i>Statistik Login
+                            </h4>
+                            <div class="grid grid-cols-3 gap-4 text-sm">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-blue-600">${history.length}</div>
+                                    <div class="text-blue-700">Total Login</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">${history.filter(h => h.success).length}</div>
+                                    <div class="text-green-700">Berhasil</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-red-600">${history.filter(h => !h.success).length}</div>
+                                    <div class="text-red-700">Gagal</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <button onclick="clearLoginHistory()" class="block w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
+                                <i class="fas fa-trash mr-2"></i>Hapus Riwayat
+                            </button>
+                            <button onclick="exportLoginHistory()" class="block w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+                                <i class="fas fa-download mr-2"></i>Export
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto max-h-96">
+                        <table class="w-full bg-white rounded-lg overflow-hidden border">
+                            <thead class="bg-gray-50 sticky top-0">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Browser</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+            `;
+            
+            if (history.length === 0) {
+                content += `
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                            <i class="fas fa-history text-4xl mb-2"></i>
+                            <div>Belum ada riwayat login</div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                history.forEach(record => {
+                    content += `
+                        <tr class="${record.success ? '' : 'bg-red-50'}">
+                            <td class="px-4 py-3 text-sm text-gray-900">
+                                ${new Date(record.timestamp).toLocaleString('id-ID')}
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="font-medium text-gray-900">${record.userName}</div>
+                                <div class="text-sm text-gray-500">ID: ${record.userId}</div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full ${record.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                    <i class="fas fa-${record.success ? 'check' : 'times'} mr-1"></i>
+                                    ${record.success ? 'Berhasil' : 'Gagal'}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">
+                                ${record.userAgent.substring(0, 50)}...
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            content += `
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button onclick="closeLoginHistoryModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('loginHistoryContent').innerHTML = content;
+            document.getElementById('loginHistoryModal').classList.remove('hidden');
+        }
+
+        function showSystemSettings() {
+            if (currentUser !== 'admin') {
+                showNotification('Hanya admin yang dapat mengakses fitur ini!', 'error');
+                return;
+            }
+            
+            const settings = dataManager.getSettings();
+            const content = `
+                <div class="space-y-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-blue-800 mb-2">
+                            <i class="fas fa-cogs mr-2"></i>Pengaturan Sistem
+                        </h4>
+                        <p class="text-sm text-blue-700">Kelola pengaturan sistem dan keamanan aplikasi.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-4 rounded-lg border">
+                            <h5 class="font-semibold text-gray-800 mb-3">Keamanan</h5>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">Auto Logout (30 menit)</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="autoLogout" ${settings.autoLogout !== false ? 'checked' : ''} class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">Auto Save Data</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="autoSave" ${settings.autoSave !== false ? 'checked' : ''} class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-700">Simpan Riwayat Login</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="saveLoginHistory" ${settings.saveLoginHistory !== false ? 'checked' : ''} class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg border">
+                            <h5 class="font-semibold text-gray-800 mb-3">Backup</h5>
+                            <div class="space-y-3">
+                                <div class="text-sm text-gray-600">
+                                    <div class="flex justify-between">
+                                        <span>Backup Terakhir:</span>
+                                        <span class="font-medium">${settings.lastBackup ? new Date(settings.lastBackup).toLocaleDateString('id-ID') : 'Belum Ada'}</span>
+                                    </div>
+                                </div>
+                                <button onclick="createAutoBackup()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                                    <i class="fas fa-download mr-2"></i>Backup Sekarang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-lg border">
+                        <h5 class="font-semibold text-gray-800 mb-3">Informasi Sistem</h5>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-blue-600">${teachersData.length}</div>
+                                <div class="text-gray-600">Total User</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-green-600">${Object.keys(filesData).length}</div>
+                                <div class="text-gray-600">User dengan Berkas</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-purple-600">${dataManager.getLoginHistory().length}</div>
+                                <div class="text-gray-600">Total Login</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-orange-600" id="systemStorageSize">0 KB</div>
+                                <div class="text-gray-600">Storage Used</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <button onclick="resetSystemSettings()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            <i class="fas fa-undo mr-2"></i>Reset Pengaturan
+                        </button>
+                        <div class="space-x-3">
+                            <button onclick="saveSystemSettings()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-save mr-2"></i>Simpan
+                            </button>
+                            <button onclick="closeSystemSettingsModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('systemSettingsContent').innerHTML = content;
+            document.getElementById('systemSettingsModal').classList.remove('hidden');
+            
+            // Update storage size
+            setTimeout(() => {
+                dataManager.updateStorageInfo();
+                const storageElement = document.getElementById('systemStorageSize');
+                if (storageElement) {
+                    storageElement.textContent = document.getElementById('storageUsed').textContent;
+                }
+            }, 100);
+        }
+
+        // Modal close functions
+        function closePasswordManagerModal() {
+            document.getElementById('passwordManagerModal').classList.add('hidden');
+        }
+
+        function closeLoginHistoryModal() {
+            document.getElementById('loginHistoryModal').classList.add('hidden');
+        }
+
+        function closeSystemSettingsModal() {
+            document.getElementById('systemSettingsModal').classList.add('hidden');
+        }
+
+        // Password management functions
+        function resetUserPassword(userId) {
+            const defaultPassword = userId === 'admin' ? 'admin123' : '123456';
+            const userName = userId === 'admin' ? 'Administrator' : teachersData.find(t => t.id == userId)?.namaGuru || 'User';
+            
+            if (confirm(`Reset password ${userName} ke default (${defaultPassword})?`)) {
+                if (dataManager.setUserPassword(userId, defaultPassword)) {
+                    showNotification(`Password ${userName} berhasil direset!`, 'success');
+                    showPasswordManager(); // Refresh the modal
+                } else {
+                    showNotification('Gagal reset password!', 'error');
+                }
+            }
+        }
+
+        function changeUserPasswordAdmin(userId) {
+            const userName = userId === 'admin' ? 'Administrator' : teachersData.find(t => t.id == userId)?.namaGuru || 'User';
+            const newPassword = prompt(`Masukkan password baru untuk ${userName}:`);
+            
+            if (newPassword && newPassword.length >= 6) {
+                if (dataManager.setUserPassword(userId, newPassword)) {
+                    showNotification(`Password ${userName} berhasil diubah!`, 'success');
+                    showPasswordManager(); // Refresh the modal
+                } else {
+                    showNotification('Gagal mengubah password!', 'error');
+                }
+            } else if (newPassword) {
+                showNotification('Password minimal 6 karakter!', 'error');
+            }
+        }
+
+        function resetAllPasswords() {
+            if (confirm('PERINGATAN: Ini akan mereset semua password ke default. Lanjutkan?')) {
+                const passwords = { admin: 'admin123' };
+                teachersData.forEach(teacher => {
+                    passwords[teacher.id] = '123456';
+                });
+                
+                if (dataManager.savePasswords(passwords)) {
+                    showNotification('Semua password berhasil direset!', 'success');
+                    showPasswordManager(); // Refresh the modal
+                } else {
+                    showNotification('Gagal reset password!', 'error');
+                }
+            }
+        }
+
+        // Login history functions
+        function clearLoginHistory() {
+            if (confirm('Hapus semua riwayat login?')) {
+                localStorage.removeItem(dataManager.loginHistoryKey);
+                showNotification('Riwayat login berhasil dihapus!', 'success');
+                showLoginHistory(); // Refresh the modal
+            }
+        }
+
+        function exportLoginHistory() {
+            const history = dataManager.getLoginHistory();
+            const exportData = {
+                loginHistory: history,
+                exportDate: new Date().toISOString(),
+                totalRecords: history.length
+            };
+            
+            downloadJSON(exportData, `riwayat-login-${new Date().toISOString().split('T')[0]}.json`);
+            showNotification('Riwayat login berhasil diexport!', 'success');
+        }
+
+        // System settings functions
+        function saveSystemSettings() {
+            const settings = dataManager.getSettings();
+            settings.autoLogout = document.getElementById('autoLogout').checked;
+            settings.autoSave = document.getElementById('autoSave').checked;
+            settings.saveLoginHistory = document.getElementById('saveLoginHistory').checked;
+            
+            if (dataManager.saveSettings(settings)) {
+                showNotification('Pengaturan sistem berhasil disimpan!', 'success');
+                closeSystemSettingsModal();
+            } else {
+                showNotification('Gagal menyimpan pengaturan!', 'error');
+            }
+        }
+
+        function resetSystemSettings() {
+            if (confirm('Reset semua pengaturan ke default?')) {
+                const defaultSettings = {
+                    autoLogout: true,
+                    autoSave: true,
+                    saveLoginHistory: true,
+                    lastBackup: null
+                };
+                
+                if (dataManager.saveSettings(defaultSettings)) {
+                    showNotification('Pengaturan berhasil direset!', 'success');
+                    showSystemSettings(); // Refresh the modal
+                } else {
+                    showNotification('Gagal reset pengaturan!', 'error');
+                }
+            }
+        }
+
+        function createAutoBackup() {
+            createFullBackup();
+            closeSystemSettingsModal();
+        }
+
+        // Enhanced password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let feedback = [];
+            
+            if (password.length >= 8) strength += 1;
+            else feedback.push('Minimal 8 karakter');
+            
+            if (/[a-z]/.test(password)) strength += 1;
+            else feedback.push('Huruf kecil');
+            
+            if (/[A-Z]/.test(password)) strength += 1;
+            else feedback.push('Huruf besar');
+            
+            if (/[0-9]/.test(password)) strength += 1;
+            else feedback.push('Angka');
+            
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            else feedback.push('Karakter khusus');
+            
+            const levels = ['Sangat Lemah', 'Lemah', 'Sedang', 'Kuat', 'Sangat Kuat'];
+            const colors = ['text-red-600', 'text-orange-600', 'text-yellow-600', 'text-blue-600', 'text-green-600'];
+            
+            return {
+                strength: strength,
+                level: levels[strength] || 'Sangat Lemah',
+                color: colors[strength] || 'text-red-600',
+                feedback: feedback
+            };
+        }
+
+        // Add password strength checker to new password input
+        document.addEventListener('DOMContentLoaded', function() {
+            const newPasswordInput = document.getElementById('newPassword');
+            if (newPasswordInput) {
+                newPasswordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    const strengthDiv = document.getElementById('passwordStrength');
+                    
+                    if (password.length > 0) {
+                        const result = checkPasswordStrength(password);
+                        strengthDiv.innerHTML = `
+                            <div class="${result.color} font-medium">Kekuatan: ${result.level}</div>
+                            ${result.feedback.length > 0 ? `<div class="text-gray-500">Perlu: ${result.feedback.join(', ')}</div>` : ''}
+                        `;
+                    } else {
+                        strengthDiv.innerHTML = '';
+                    }
+                });
+            }
+        });
+
         // Logout
         function logout() {
             if (confirm('Apakah Anda yakin ingin keluar?')) {
+                dataManager.clearSession();
                 showNotification('Berhasil logout!', 'success');
-                // In real app, clear session and redirect to login
+                setTimeout(() => {
+                    changeUser();
+                }, 1000);
             }
         }
 
@@ -1608,11 +2890,12 @@
             notification.className = `notification fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
                 type === 'success' ? 'bg-green-500 text-white' : 
                 type === 'error' ? 'bg-red-500 text-white' : 
+                type === 'warning' ? 'bg-yellow-500 text-white' :
                 'bg-blue-500 text-white'
             }`;
             notification.innerHTML = `
                 <div class="flex items-center">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} mr-2"></i>
                     ${message}
                 </div>
             `;
@@ -1621,38 +2904,97 @@
             
             setTimeout(() => {
                 notification.remove();
-            }, 3000);
+            }, type === 'warning' ? 5000 : 3000);
         }
 
-        // Search functionality
+        // Enhanced search functionality
         document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#teacherTableBody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
+            performSearch();
         });
 
-        // Filter functionality
-        document.getElementById('filterJabatan').addEventListener('change', filterTable);
-        document.getElementById('filterStatus').addEventListener('change', filterTable);
-
-        function filterTable() {
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const jabatanFilter = document.getElementById('filterJabatan').value;
             const statusFilter = document.getElementById('filterStatus').value;
             const rows = document.querySelectorAll('#teacherTableBody tr');
             
+            let visibleCount = 0;
+            
             rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
                 const jabatan = row.cells[2].textContent.trim();
                 const status = row.cells[3].textContent.trim();
                 
+                const searchMatch = !searchTerm || text.includes(searchTerm);
                 const jabatanMatch = !jabatanFilter || jabatan === jabatanFilter;
                 const statusMatch = !statusFilter || status === statusFilter;
                 
-                row.style.display = jabatanMatch && statusMatch ? '' : 'none';
+                const shouldShow = searchMatch && jabatanMatch && statusMatch;
+                row.style.display = shouldShow ? '' : 'none';
+                
+                if (shouldShow) visibleCount++;
             });
+            
+            // Show search results count
+            updateSearchResults(visibleCount, rows.length);
+        }
+
+        function updateSearchResults(visible, total) {
+            let resultDiv = document.getElementById('searchResults');
+            if (!resultDiv) {
+                resultDiv = document.createElement('div');
+                resultDiv.id = 'searchResults';
+                resultDiv.className = 'text-sm text-gray-600 mb-4';
+                document.querySelector('.overflow-x-auto').parentNode.insertBefore(resultDiv, document.querySelector('.overflow-x-auto'));
+            }
+            
+            if (visible < total) {
+                resultDiv.innerHTML = `<i class="fas fa-search mr-2"></i>Menampilkan ${visible} dari ${total} data guru`;
+                resultDiv.style.display = 'block';
+            } else {
+                resultDiv.style.display = 'none';
+            }
+        }
+
+        // Filter functionality
+        document.getElementById('filterJabatan').addEventListener('change', performSearch);
+        document.getElementById('filterStatus').addEventListener('change', performSearch);
+
+        // Advanced search features
+        function clearAllFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterJabatan').value = '';
+            document.getElementById('filterStatus').value = '';
+            performSearch();
+            showNotification('Filter berhasil dibersihkan!', 'success');
+        }
+
+        function exportFilteredData() {
+            const visibleRows = Array.from(document.querySelectorAll('#teacherTableBody tr')).filter(row => row.style.display !== 'none');
+            const filteredData = visibleRows.map(row => {
+                const cells = row.cells;
+                return {
+                    nama: cells[0].textContent.split('\n')[0].trim(),
+                    nik: cells[1].textContent.split('\n')[0].trim(),
+                    jabatan: cells[2].textContent.trim(),
+                    status: cells[3].textContent.trim()
+                };
+            });
+            
+            const exportData = {
+                filteredTeachers: filteredData,
+                filterCriteria: {
+                    search: document.getElementById('searchInput').value,
+                    jabatan: document.getElementById('filterJabatan').value,
+                    status: document.getElementById('filterStatus').value
+                },
+                exportDate: new Date().toISOString(),
+                totalFiltered: filteredData.length,
+                totalAll: teachersData.length
+            };
+            
+            downloadJSON(exportData, `data-guru-filtered-${new Date().toISOString().split('T')[0]}.json`);
+            showNotification(`${filteredData.length} data guru berhasil diexport!`, 'success');
         }
 
         // Auto-save functionality
@@ -1665,8 +3007,16 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            initializeUser();
             loadDashboard();
             dataManager.updateStorageInfo();
+            
+            // Show user selection modal if no user is selected or user doesn't exist
+            if (!currentUser || (currentUser !== 'admin' && !teachersData.find(t => t.id == currentUser))) {
+                setTimeout(() => {
+                    changeUser();
+                }, 500);
+            }
         });
 
         // Handle page unload to clean up object URLs
@@ -1684,5 +3034,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cdfa2793b13de9',t:'MTc1NDgxMzAxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96ce2feac061f8dc',t:'MTc1NDgxNTIxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
