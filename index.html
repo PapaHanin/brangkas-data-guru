@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <script src="assets/js/school-detector.js"></script>
-<style>
-    :root { --primary-color: #3b82f6; --secondary-color: #10b981; }
-</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brangkas File Data Guru</title>
@@ -29,7 +25,7 @@
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <i class="fas fa-archive text-3xl text-blue-600"></i>
-                    <h1 class="text-2xl font-bold text-gray-800">Brangkas File Data Guru</h1>
+                    <h1 class="text-2xl font-bold text-gray-800">Brangkas Digital SD Negeri 4 Palasa</h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-2">
@@ -378,8 +374,7 @@
                                     <option value="">Pilih Status</option>
                                     <option value="PNS">PNS</option>
                                     <option value="PPPK">PPPK</option>
-                                    <option value="GTT">GTT (Guru Tidak Tetap)</option>
-                                    <option value="GTY">GTY (Guru Tetap Yayasan)</option>
+                                    <option value="HONORER">HONORER</option>
                                 </select>
                             </div>
                         </div>
@@ -1123,7 +1118,7 @@
 
             initDefaultPasswords() {
                 const defaultPasswords = {
-                    admin: 'admin123' // Default admin password
+                    admin: 'Adminsdn4palasa' // Default admin password
                 };
                 this.savePasswords(defaultPasswords);
             }
@@ -1168,33 +1163,33 @@
                 const sampleData = [
                     {
                         id: Date.now(),
-                        namaGuru: 'Dr. Ahmad Susanto, S.Pd., M.Pd.',
-                        nik: '3201234567890123',
-                        nip: '196501011990031001',
-                        nuptk: '1234567890123456',
-                        tempatLahir: 'Jakarta',
-                        tanggalLahir: '1965-01-01',
+                        namaGuru: 'MOH. FADLI.',
+                        nik: '7208182004990001',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: 'Palasa',
+                        tanggalLahir: '1999-03-20',
                         jenisKelamin: 'Laki-laki',
-                        jabatan: 'Kepala Sekolah',
-                        pendidikanTerakhir: 'S3',
+                        jabatan: 'Admin',
+                        pendidikanTerakhir: 'SMA',
                         tahunLulus: 2010,
-                        masaKerjaTahun: 34,
-                        masaKerjaBulan: 2,
-                        statusKepegawaian: 'PNS',
+                        masaKerjaTahun: 5,
+                        masaKerjaBulan: 1,
+                        statusKepegawaian: 'HONORER',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString()
                     },
                     {
                         id: Date.now() + 1,
-                        namaGuru: 'Siti Nurhaliza, S.Pd.',
-                        nik: '3201234567890124',
-                        nip: '197203151998032001',
-                        nuptk: '1234567890123457',
-                        tempatLahir: 'Bandung',
-                        tanggalLahir: '1972-03-15',
-                        jenisKelamin: 'Perempuan',
-                        jabatan: 'Guru Kelas',
-                        pendidikanTerakhir: 'S1',
+                        namaGuru: 'Hadjrin, S.Pd.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Kepas Sekolah',
+                        pendidikanTerakhir: ' ',
                         tahunLulus: 1995,
                         masaKerjaTahun: 26,
                         masaKerjaBulan: 8,
@@ -1204,55 +1199,163 @@
                     },
                     {
                         id: Date.now() + 2,
-                        namaGuru: 'Budi Santoso, S.Kom.',
-                        nik: '3201234567890125',
-                        nip: '198505102010011001',
-                        nuptk: '1234567890123458',
-                        tempatLahir: 'Surabaya',
-                        tanggalLahir: '1985-05-10',
-                        jenisKelamin: 'Laki-laki',
-                        jabatan: 'Operator Sekolah',
-                        pendidikanTerakhir: 'S1',
-                        tahunLulus: 2008,
-                        masaKerjaTahun: 14,
-                        masaKerjaBulan: 3,
-                        statusKepegawaian: 'PPPK',
+                        namaGuru: 'Asmat, S.Pd.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru PJOK',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'PNS',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString()
                     },
                     {
                         id: Date.now() + 3,
-                        namaGuru: 'Dewi Sartika, S.E.',
-                        nik: '3201234567890126',
-                        nip: '198012252005022001',
-                        nuptk: '1234567890123459',
-                        tempatLahir: 'Yogyakarta',
-                        tanggalLahir: '1980-12-25',
-                        jenisKelamin: 'Perempuan',
-                        jabatan: 'Bendahara',
-                        pendidikanTerakhir: 'S1',
-                        tahunLulus: 2003,
-                        masaKerjaTahun: 19,
-                        masaKerjaBulan: 1,
+                        namaGuru: 'Lisnawati.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru PAI',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
                         statusKepegawaian: 'PNS',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString()
                     },
                     {
                         id: Date.now() + 4,
-                        namaGuru: 'Andi Wijaya',
-                        nik: '3201234567890127',
-                        nip: '',
-                        nuptk: '',
-                        tempatLahir: 'Medan',
-                        tanggalLahir: '1990-08-15',
-                        jenisKelamin: 'Laki-laki',
-                        jabatan: 'Satpam',
-                        pendidikanTerakhir: 'SMA/SMK',
-                        tahunLulus: 2008,
-                        masaKerjaTahun: 8,
-                        masaKerjaBulan: 6,
-                        statusKepegawaian: 'GTT',
+                        namaGuru: 'Susanti, S.Pd.SD.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru Kelas 4',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'PNS',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 5,
+                        namaGuru: 'Marwini, A.Ma.Pd.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru Kelas 2',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'PNS',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 6,
+                        namaGuru: 'Rahmawati, S.Pd.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru Kelas 3',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'PNS',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 7,
+                        namaGuru: 'Rahmawati Ali Taung, S.Pd.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru Kelas 1',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'PNS',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 8,
+                        namaGuru: 'Magfira, S.Pd.SD.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru Kelas 5',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'PPPK',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 9,
+                        namaGuru: 'Saina, S.Pd.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru Kelas 6',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'HONORER',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 10,
+                        namaGuru: 'Hartati, S.Pd.',
+                        nik: ' ',
+                        nip: ' ',
+                        nuptk: ' ',
+                        tempatLahir: ' ',
+                        tanggalLahir: ' ',
+                        jenisKelamin: ' ',
+                        jabatan: 'Guru Seni',
+                        pendidikanTerakhir: ' ',
+                        tahunLulus: 1995,
+                        masaKerjaTahun: 26,
+                        masaKerjaBulan: 8,
+                        statusKepegawaian: 'HONORER',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString()
                     }
