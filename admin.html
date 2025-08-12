@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Multi-Sekolah - Brangkas Data Guru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .school-card { transition: all 0.3s ease; }
+        .school-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .modal { backdrop-filter: blur(5px); }
+        .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .action-btn { transition: all 0.2s ease; }
+        .action-btn:hover { transform: scale(1.05); }
+        .sidebar { transition: transform 0.3s ease; }
+        .sidebar.collapsed { transform: translateX(-100%); }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-4">
+                <button id="sidebarToggle" class="md:hidden text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 w-10 h-10 rounded-full flex items-center justify-center">
+                        <i class="fas fa-school text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Admin Panel Multi-Sekolah</h1>
+                        <p class="text-sm text-gray-600">Kelola semua sekolah dalam satu tempat</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                    <i class="fas fa-clock text-gray-500"></i>
+                    <span id="currentTime" class="text-sm text-gray-700"></span>
+                </div>
+                <div id="syncButtonContainer" class="hidden">
+                    <button onclick="syncWithServer()" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm">
+                        <i class="fas fa-sync-alt mr-1"></i>Sync
+                    </button>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div id="connectionStatus" class="w-3 h-3 rounded-full bg-gray-400" title="Status koneksi"></div>
+                    <button onclick="showProfile()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-user mr-2"></i>Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed md:relative bg-white w-64 h-screen shadow-lg z-40">
+            <div class="p-6">
+                <nav class="space-y-2">
+                    <a href="#dashboard" onclick="showSection('dashboard')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#schools" onclick="showSection('schools')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-school"></i>
+                        <span>Kelola Sekolah</span>
+                    </a>
+                    <a href="#bulk" onclick="showSection('bulk')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-tasks"></i>
+                        <span>Bulk Operations</span>
+                    </a>
+                    <a href="#settings" onclick="showSection('settings')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-cog"></i>
+                        <span>Pengaturan</span>
+                    </a>
+                    <a href="#backup" onclick="showSection('backup')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-database"></i>
+                        <span>Backup & Restore</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Dashboard</h2>
+                    <p class="text-gray-600">Ringkasan sistem multi-sekolah Anda</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stats-card text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-white opacity-80">Total Sekolah</p>
+                                <p id="totalSchools" class="text-3xl font-bold">0</p>
+                            </div>
+                            <i class="fas fa-school text-4xl opacity-80"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-white opacity-80">Sekolah Aktif</p>
+                                <p id="activeSchools" class="text-3xl font-bold">0</p>
+                            </div>
+                            <i class="fas fa-check-circle text-4xl opacity-80"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-white opacity-80">Perlu Setup</p>
+                                <p id="pendingSchools" class="text-3xl font-bold">0</p>
+                            </div>
+                            <i class="fas fa-exclamation-triangle text-4xl opacity-80"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-white opacity-80">Backup Terakhir</p>
+                                <p id="lastBackup" class="text-lg font-bold">Belum ada</p>
+                            </div>
+                            <i class="fas fa-save text-4xl opacity-80"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button onclick="addNewSchool()" class="action-btn bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 text-center">
+                            <i class="fas fa-plus text-2xl mb-2"></i>
+                            <p class="font-semibold">Tambah Sekolah</p>
+                        </button>
+                        <button onclick="bulkUpdateColors()" class="action-btn bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 text-center">
+                            <i class="fas fa-palette text-2xl mb-2"></i>
+                            <p class="font-semibold">Update Warna</p>
+                        </button>
+                        <button onclick="exportAllSchools()" class="action-btn bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 text-center">
+                            <i class="fas fa-download text-2xl mb-2"></i>
+                            <p class="font-semibold">Export Data</p>
+                        </button>
+                        <button onclick="createBackup()" class="action-btn bg-orange-600 text-white p-4 rounded-lg hover:bg-orange-700 text-center">
+                            <i class="fas fa-database text-2xl mb-2"></i>
+                            <p class="font-semibold">Backup</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Server Connection Guide -->
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 mb-8">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-server text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-blue-800 mb-2">Koneksi ke Server</h3>
+                            <p class="text-blue-700 mb-4">Untuk menghubungkan admin panel ke aplikasi yang sudah dihosting, ikuti langkah berikut:</p>
+                            
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-start space-x-2">
+                                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                                    <div>
+                                        <strong>Update URL API:</strong> Ganti <code class="bg-blue-100 px-2 py-1 rounded">API_BASE_URL</code> di line 438 dengan domain hosting Anda
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-2">
+                                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                                    <div>
+                                        <strong>Buat file PHP:</strong> Upload <code class="bg-blue-100 px-2 py-1 rounded">config.php</code> dan <code class="bg-blue-100 px-2 py-1 rounded">ping.php</code> ke folder <code class="bg-blue-100 px-2 py-1 rounded">/api/</code>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-2">
+                                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                                    <div>
+                                        <strong>Test koneksi:</strong> Klik tombol <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Sync</span> untuk test koneksi
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 flex space-x-3">
+                                <button onclick="showServerSetupGuide()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                                    <i class="fas fa-book mr-2"></i>Panduan Lengkap
+                                </button>
+                                <button onclick="downloadServerFiles()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm">
+                                    <i class="fas fa-download mr-2"></i>Download File PHP
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4">Aktivitas Terbaru</h3>
+                    <div id="recentActivity" class="space-y-3">
+                        <!-- Activity items will be populated here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schools Management Section -->
+            <section id="schools-section" class="section hidden">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Kelola Sekolah</h2>
+                        <p class="text-gray-600">Tambah, edit, dan kelola semua sekolah</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="addNewSchool()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-plus mr-2"></i>Tambah Sekolah
+                        </button>
+                        <button onclick="importSchools()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-upload mr-2"></i>Import
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                        <div class="flex-1 max-w-md">
+                            <div class="relative">
+                                <input type="text" id="searchSchools" placeholder="Cari sekolah..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3">
+                            <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Semua Status</option>
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Tidak Aktif</option>
+                                <option value="setup">Perlu Setup</option>
+                            </select>
+                            <button onclick="refreshSchoolsList()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-sync-alt mr-2"></i>Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schools List -->
+                <div id="schoolsList" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- School cards will be populated here -->
+                </div>
+            </section>
+
+            <!-- Bulk Operations Section -->
+            <section id="bulk-section" class="section hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Bulk Operations</h2>
+                    <p class="text-gray-600">Operasi massal untuk semua sekolah</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Color Update -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-palette text-2xl text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">Update Warna</h3>
+                            <p class="text-gray-600 text-sm">Ganti warna semua sekolah sekaligus</p>
+                        </div>
+                        <button onclick="bulkUpdateColors()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                            Update Semua Warna
+                        </button>
+                    </div>
+
+                    <!-- Status Update -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-toggle-on text-2xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">Update Status</h3>
+                            <p class="text-gray-600 text-sm">Aktifkan/nonaktifkan sekolah</p>
+                        </div>
+                        <button onclick="bulkUpdateStatus()" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700">
+                            Update Status
+                        </button>
+                    </div>
+
+                    <!-- Validation -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <div class="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-check-circle text-2xl text-yellow-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">Validasi Config</h3>
+                            <p class="text-gray-600 text-sm">Periksa kesalahan konfigurasi</p>
+                        </div>
+                        <button onclick="bulkValidate()" class="w-full bg-yellow-600 text-white py-3 rounded-lg hover:bg-yellow-700">
+                            Validasi Semua
+                        </button>
+                    </div>
+
+                    <!-- Export -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-download text-2xl text-purple-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">Export Data</h3>
+                            <p class="text-gray-600 text-sm">Download semua konfigurasi</p>
+                        </div>
+                        <button onclick="exportAllSchools()" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700">
+                            Export Semua
+                        </button>
+                    </div>
+
+                    <!-- Import -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-upload text-2xl text-indigo-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">Import Data</h3>
+                            <p class="text-gray-600 text-sm">Upload konfigurasi sekolah</p>
+                        </div>
+                        <button onclick="importSchools()" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">
+                            Import Data
+                        </button>
+                    </div>
+
+                    <!-- Reset -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-4">
+                            <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-redo text-2xl text-red-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">Reset Data</h3>
+                            <p class="text-gray-600 text-sm">Reset semua ke default</p>
+                        </div>
+                        <button onclick="bulkReset()" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700">
+                            Reset Semua
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="section hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Pengaturan</h2>
+                    <p class="text-gray-600">Konfigurasi sistem dan preferensi</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- General Settings -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">Pengaturan Umum</h3>
+                        <form id="generalSettings" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Domain Utama</label>
+                                <input type="text" id="mainDomain" value="yourdomain.com" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Email Admin</label>
+                                <input type="email" id="adminEmail" value="admin@yourdomain.com" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Timezone</label>
+                                <select id="timezone" class="w-full px-3 py-2 border rounded-lg">
+                                    <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
+                                    <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
+                                    <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                                Simpan Pengaturan
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Default School Template -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">Template Sekolah Default</h3>
+                        <form id="defaultTemplate" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-gray-700 font-bold mb-2">Warna Utama</label>
+                                    <input type="color" id="defaultPrimary" value="#3b82f6" class="w-full h-10 border rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-bold mb-2">Warna Sekunder</label>
+                                    <input type="color" id="defaultSecondary" value="#10b981" class="w-full h-10 border rounded-lg">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Logo Default</label>
+                                <input type="file" id="defaultLogo" accept="image/*" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+                                Simpan Template
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Backup Section -->
+            <section id="backup-section" class="section hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Backup & Restore</h2>
+                    <p class="text-gray-600">Kelola backup data sekolah</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Create Backup -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">Buat Backup</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Jenis Backup</label>
+                                <select id="backupType" class="w-full px-3 py-2 border rounded-lg">
+                                    <option value="full">Full Backup (Semua Data)</option>
+                                    <option value="config">Config Only (Konfigurasi)</option>
+                                    <option value="schools">Schools Only (Data Sekolah)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Nama Backup</label>
+                                <input type="text" id="backupName" placeholder="backup-2024-01-01" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <button onclick="createBackup()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-save mr-2"></i>Buat Backup
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Restore Backup -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">Restore Backup</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Upload File Backup</label>
+                                <input type="file" id="restoreFile" accept=".json" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                                    <span class="text-sm text-yellow-800">
+                                        <strong>Peringatan:</strong> Restore akan menimpa data yang ada!
+                                    </span>
+                                </div>
+                            </div>
+                            <button onclick="restoreBackup()" class="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700">
+                                <i class="fas fa-upload mr-2"></i>Restore Backup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup History -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+                    <h3 class="text-xl font-bold mb-4">Riwayat Backup</h3>
+                    <div id="backupHistory" class="space-y-3">
+                        <!-- Backup history will be populated here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://yourdomain.com/api'; // Ganti dengan domain Anda
+        const SCHOOLS_BASE_URL = 'https://yourdomain.com/schools'; // Ganti dengan domain Anda
+        
+        let schoolsData = {};
+        
+        // API Functions
+        async function loadSchoolsFromServer() {
+            try {
+                showNotification('Memuat data dari server...', 'info');
+                const response = await fetch(`${API_BASE_URL}/config.php`);
+                if (response.ok) {
+                    const data = await response.json();
+                    schoolsData = data;
+                    showNotification('Data berhasil dimuat dari server!', 'success');
+                } else {
+                    throw new Error('Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('Error loading schools:', error);
+                showNotification('Gagal memuat data dari server, menggunakan data lokal', 'warning');
+                loadLocalData();
+            }
+        }
+        
+        async function saveSchoolsToServer() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/config.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(schoolsData)
+                });
+                
+                if (response.ok) {
+                    showNotification('Data berhasil disimpan ke server!', 'success');
+                    // Also save locally as backup
+                    localStorage.setItem('schoolsData', JSON.stringify(schoolsData));
+                    
+                    // Generate school files
+                    await generateSchoolFiles();
+                } else {
+                    throw new Error('Gagal menyimpan data');
+                }
+            } catch (error) {
+                console.error('Error saving schools:', error);
+                showNotification('Gagal menyimpan ke server, data disimpan lokal', 'warning');
+                localStorage.setItem('schoolsData', JSON.stringify(schoolsData));
+            }
+        }
+        
+        async function generateSchoolFiles() {
+            try {
+                // Generate individual school files
+                for (const [schoolId, school] of Object.entries(schoolsData)) {
+                    const schoolHtml = generateSchoolHTML(schoolId, school);
+                    
+                    // In a real implementation, you would send this to your server
+                    // to create/update the school files
+                    console.log(`Generated HTML for ${schoolId}:`, schoolHtml.substring(0, 100) + '...');
+                }
+                
+                showNotification('File sekolah berhasil digenerate!', 'success');
+            } catch (error) {
+                console.error('Error generating school files:', error);
+                showNotification('Gagal generate file sekolah', 'error');
+            }
+        }
+        
+        function generateSchoolHTML(schoolId, school) {
+            return `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${school.name} - Brangkas Data Guru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: ${school.colors.primary};
+            --secondary-color: ${school.colors.secondary};
+        }
+        .bg-primary { background-color: var(--primary-color); }
+        .text-primary { color: var(--primary-color); }
+        .border-primary { border-color: var(--primary-color); }
+        .bg-secondary { background-color: var(--secondary-color); }
+        .text-secondary { color: var(--secondary-color); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-primary text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <span class="text-xl font-bold">${schoolId.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">${school.name}</h1>
+                        <p class="text-white text-opacity-80">Sistem Brangkas Data Guru</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-white text-opacity-80">Kontak:</p>
+                    <p class="font-semibold">${school.contact.phone || '-'}</p>
+                    <p class="text-sm">${school.contact.email || '-'}</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-6 py-8">
+        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div class="w-24 h-24 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-school text-4xl text-primary"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Selamat Datang di ${school.name}</h2>
+            <p class="text-gray-600 mb-8">Sistem manajemen data guru yang aman dan terpercaya</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="fas fa-users text-3xl text-primary mb-4"></i>
+                    <h3 class="font-bold text-lg mb-2">Data Guru</h3>
+                    <p class="text-gray-600 text-sm">Kelola informasi lengkap guru</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="fas fa-shield-alt text-3xl text-secondary mb-4"></i>
+                    <h3 class="font-bold text-lg mb-2">Keamanan</h3>
+                    <p class="text-gray-600 text-sm">Data terlindungi dengan enkripsi</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="fas fa-chart-bar text-3xl text-primary mb-4"></i>
+                    <h3 class="font-bold text-lg mb-2">Laporan</h3>
+                    <p class="text-gray-600 text-sm">Analisis dan statistik lengkap</p>
+                </div>
+            </div>
+            
+            <button class="bg-primary text-white px-8 py-3 rounded-lg hover:opacity-90 transition-opacity">
+                Masuk ke Sistem
+            </button>
+        </div>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 ${school.name}. Semua hak dilindungi.</p>
+            <p class="text-gray-400 text-sm mt-2">Powered by Brangkas Data Guru System</p>
+        </div>
+    </footer>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dbfe2042bca075',t:'MTc1NDk1OTk3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>`;
+        }
+        
+        function loadLocalData() {
+            // Fallback sample data
+            schoolsData = {
+                'demo': {
+                    name: 'SD Demo Brangkas',
+                    colors: { primary: '#3b82f6', secondary: '#10b981' },
+                    contact: { phone: '021-12345678', email: 'admin@demo.sch.id' },
+                    status: 'active',
+                    created_at: '2024-01-01T00:00:00Z'
+                }
+            };
+            
+            // Try to load from localStorage
+            const savedData = localStorage.getItem('schoolsData');
+            if (savedData) {
+                try {
+                    schoolsData = JSON.parse(savedData);
+                } catch (error) {
+                    console.error('Error parsing local data:', error);
+                }
+            }
+        }
+
+        let activityLog = [];
+        let backupHistory = [];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            // Show loading
+            showNotification('Menginisialisasi admin panel...', 'info');
+            
+            // Load data from server first, fallback to local
+            await loadSchoolsFromServer();
+            
+            // Load other data
+            const savedActivity = localStorage.getItem('activityLog');
+            if (savedActivity) {
+                activityLog = JSON.parse(savedActivity);
+            }
+            
+            const savedBackups = localStorage.getItem('backupHistory');
+            if (savedBackups) {
+                backupHistory = JSON.parse(savedBackups);
+            }
+            
+            // Update UI
+            updateStats();
+            loadSchoolsList();
+            loadRecentActivity();
+            loadBackupHistory();
+            
+            // Start clock
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Add server sync button to header
+            addSyncButton();
+        }
+
+        function setupEventListeners() {
+            // Sidebar toggle
+            document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+            document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+            
+            // Search functionality
+            document.getElementById('searchSchools').addEventListener('input', filterSchools);
+            document.getElementById('statusFilter').addEventListener('change', filterSchools);
+            
+            // Form submissions
+            document.getElementById('generalSettings').addEventListener('submit', saveGeneralSettings);
+            document.getElementById('defaultTemplate').addEventListener('submit', saveDefaultTemplate);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.add('hidden');
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active', 'bg-blue-50', 'text-blue-600');
+            });
+            
+            event.target.classList.add('active', 'bg-blue-50', 'text-blue-600');
+            
+            // Close sidebar on mobile
+            if (window.innerWidth < 768) {
+                closeSidebar();
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID');
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        function updateStats() {
+            const total = Object.keys(schoolsData).length;
+            const active = Object.values(schoolsData).filter(school => school.status === 'active').length;
+            const pending = Object.values(schoolsData).filter(school => school.status === 'setup').length;
+            
+            document.getElementById('totalSchools').textContent = total;
+            document.getElementById('activeSchools').textContent = active;
+            document.getElementById('pendingSchools').textContent = pending;
+            
+            // Update last backup
+            if (backupHistory.length > 0) {
+                const lastBackup = new Date(backupHistory[backupHistory.length - 1].timestamp);
+                document.getElementById('lastBackup').textContent = lastBackup.toLocaleDateString('id-ID');
+            }
+        }
+
+        function loadSchoolsList() {
+            const container = document.getElementById('schoolsList');
+            container.innerHTML = '';
+
+            Object.keys(schoolsData).forEach(schoolId => {
+                const school = schoolsData[schoolId];
+                const schoolCard = createSchoolCard(schoolId, school);
+                container.appendChild(schoolCard);
+            });
+        }
+
+        function createSchoolCard(schoolId, school) {
+            const card = document.createElement('div');
+            card.className = 'school-card bg-white rounded-xl shadow-lg p-6 border-l-4';
+            card.style.borderLeftColor = school.colors.primary;
+            
+            const statusColor = school.status === 'active' ? 'green' : school.status === 'setup' ? 'yellow' : 'red';
+            const statusText = school.status === 'active' ? 'Aktif' : school.status === 'setup' ? 'Perlu Setup' : 'Tidak Aktif';
+            
+            card.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" 
+                             style="background: ${school.colors.primary}">
+                            ${schoolId.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-800">${school.name}</h4>
+                            <p class="text-sm text-gray-600">${schoolId}.yourdomain.com</p>
+                            <span class="inline-block px-2 py-1 text-xs rounded-full bg-${statusColor}-100 text-${statusColor}-800 mt-1">
+                                ${statusText}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="editSchool('${schoolId}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700">
+                            <i class="fas fa-edit mr-1"></i>Edit
+                        </button>
+                        <button onclick="duplicateSchool('${schoolId}')" class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-700">
+                            <i class="fas fa-copy mr-1"></i>Duplikat
+                        </button>
+                        <button onclick="deleteSchool('${schoolId}')" class="bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-700">
+                            <i class="fas fa-trash mr-1"></i>Hapus
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                    <div>
+                        <span class="text-gray-500">Warna Utama:</span>
+                        <div class="flex items-center mt-1">
+                            <div class="w-4 h-4 rounded mr-2" style="background: ${school.colors.primary}"></div>
+                            <span class="font-mono text-xs">${school.colors.primary}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Warna Sekunder:</span>
+                        <div class="flex items-center mt-1">
+                            <div class="w-4 h-4 rounded mr-2" style="background: ${school.colors.secondary}"></div>
+                            <span class="font-mono text-xs">${school.colors.secondary}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Telepon:</span>
+                        <div class="mt-1">${school.contact.phone || '-'}</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Email:</span>
+                        <div class="mt-1 text-xs">${school.contact.email || '-'}</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <div class="text-xs text-gray-500">
+                        Dibuat: ${new Date(school.created_at).toLocaleDateString('id-ID')}
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="previewSchool('${schoolId}')" class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-eye mr-1"></i>Preview
+                        </button>
+                        <button onclick="exportSchool('${schoolId}')" class="text-green-600 hover:text-green-800 text-sm">
+                            <i class="fas fa-download mr-1"></i>Export
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function filterSchools() {
+            const searchTerm = document.getElementById('searchSchools').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            const cards = document.querySelectorAll('.school-card');
+            
+            cards.forEach(card => {
+                const schoolName = card.querySelector('h4').textContent.toLowerCase();
+                const schoolStatus = card.querySelector('.inline-block').textContent.toLowerCase();
+                
+                const matchesSearch = schoolName.includes(searchTerm);
+                const matchesStatus = !statusFilter || schoolStatus.includes(statusFilter);
+                
+                if (matchesSearch && matchesStatus) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function refreshSchoolsList() {
+            loadSchoolsList();
+            updateStats();
+            showNotification('Daftar sekolah berhasil direfresh!', 'success');
+        }
+
+        function addNewSchool() {
+            showModal('Tambah Sekolah Baru', `
+                <form id="addSchoolForm" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">ID Sekolah</label>
+                        <input type="text" id="newSchoolId" placeholder="contoh: sdn4" class="w-full px-3 py-2 border rounded-lg" required>
+                        <p class="text-sm text-gray-500 mt-1">Akan jadi: [id].yourdomain.com</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Nama Sekolah</label>
+                        <input type="text" id="newName" placeholder="SD Negeri 4 Jakarta" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Warna Utama</label>
+                            <input type="color" id="newPrimary" value="#3b82f6" class="w-full h-10 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Warna Sekunder</label>
+                            <input type="color" id="newSecondary" value="#10b981" class="w-full h-10 border rounded-lg">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Telepon</label>
+                        <input type="tel" id="newPhone" placeholder="021-12345678" class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Email</label>
+                        <input type="email" id="newEmail" placeholder="admin@sekolah.sch.id" class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Status</label>
+                        <select id="newStatus" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="active">Aktif</option>
+                            <option value="setup">Perlu Setup</option>
+                            <option value="inactive">Tidak Aktif</option>
+                        </select>
+                    </div>
+                </form>
+            `, [
+                {
+                    text: 'Tambah Sekolah',
+                    class: 'bg-green-600 hover:bg-green-700',
+                    onclick: () => {
+                        const form = document.getElementById('addSchoolForm');
+                        if (form.checkValidity()) {
+                            const schoolId = document.getElementById('newSchoolId').value.toLowerCase();
+                            
+                            if (schoolsData[schoolId]) {
+                                showNotification('ID sekolah sudah ada! Gunakan ID yang berbeda.', 'error');
+                                return;
+                            }
+                            
+                            schoolsData[schoolId] = {
+                                name: document.getElementById('newName').value,
+                                colors: {
+                                    primary: document.getElementById('newPrimary').value,
+                                    secondary: document.getElementById('newSecondary').value
+                                },
+                                contact: {
+                                    phone: document.getElementById('newPhone').value,
+                                    email: document.getElementById('newEmail').value
+                                },
+                                status: document.getElementById('newStatus').value,
+                                created_at: new Date().toISOString()
+                            };
+                            
+                            saveData();
+                            loadSchoolsList();
+                            updateStats();
+                            closeModal();
+                            logActivity(`Menambah sekolah baru: ${schoolsData[schoolId].name}`);
+                            showNotification(`Sekolah ${schoolId} berhasil ditambahkan!`, 'success');
+                        }
+                    }
+                },
+                {
+                    text: 'Batal',
+                    class: 'bg-gray-600 hover:bg-gray-700',
+                    onclick: closeModal
+                }
+            ]);
+        }
+
+        function editSchool(schoolId) {
+            const school = schoolsData[schoolId];
+            showModal(`Edit Sekolah: ${schoolId}`, `
+                <form id="editSchoolForm" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Nama Sekolah</label>
+                        <input type="text" id="editName" value="${school.name}" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Warna Utama</label>
+                            <input type="color" id="editPrimary" value="${school.colors.primary}" class="w-full h-10 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Warna Sekunder</label>
+                            <input type="color" id="editSecondary" value="${school.colors.secondary}" class="w-full h-10 border rounded-lg">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Telepon</label>
+                        <input type="tel" id="editPhone" value="${school.contact.phone || ''}" class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Email</label>
+                        <input type="email" id="editEmail" value="${school.contact.email || ''}" class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Status</label>
+                        <select id="editStatus" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="active" ${school.status === 'active' ? 'selected' : ''}>Aktif</option>
+                            <option value="setup" ${school.status === 'setup' ? 'selected' : ''}>Perlu Setup</option>
+                            <option value="inactive" ${school.status === 'inactive' ? 'selected' : ''}>Tidak Aktif</option>
+                        </select>
+                    </div>
+                </form>
+            `, [
+                {
+                    text: 'Simpan Perubahan',
+                    class: 'bg-blue-600 hover:bg-blue-700',
+                    onclick: () => {
+                        schoolsData[schoolId] = {
+                            ...school,
+                            name: document.getElementById('editName').value,
+                            colors: {
+                                primary: document.getElementById('editPrimary').value,
+                                secondary: document.getElementById('editSecondary').value
+                            },
+                            contact: {
+                                phone: document.getElementById('editPhone').value,
+                                email: document.getElementById('editEmail').value
+                            },
+                            status: document.getElementById('editStatus').value
+                        };
+                        
+                        saveData();
+                        loadSchoolsList();
+                        updateStats();
+                        closeModal();
+                        logActivity(`Mengedit sekolah: ${schoolsData[schoolId].name}`);
+                        showNotification(`Sekolah ${schoolId} berhasil diupdate!`, 'success');
+                    }
+                },
+                {
+                    text: 'Batal',
+                    class: 'bg-gray-600 hover:bg-gray-700',
+                    onclick: closeModal
+                }
+            ]);
+        }
+
+        function duplicateSchool(schoolId) {
+            const school = schoolsData[schoolId];
+            const newId = prompt(`Masukkan ID untuk duplikat sekolah "${schoolId}":`, schoolId + '_copy');
+            
+            if (newId && !schoolsData[newId]) {
+                schoolsData[newId] = {
+                    ...school,
+                    name: school.name + ' (Copy)',
+                    created_at: new Date().toISOString()
+                };
+                
+                saveData();
+                loadSchoolsList();
+                updateStats();
+                logActivity(`Menduplikat sekolah: ${school.name} → ${newId}`);
+                showNotification(`Sekolah berhasil diduplikat ke ${newId}!`, 'success');
+            } else if (schoolsData[newId]) {
+                showNotification('ID sekolah sudah ada!', 'error');
+            }
+        }
+
+        function deleteSchool(schoolId) {
+            if (confirm(`Yakin ingin menghapus sekolah "${schoolId}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
+                const schoolName = schoolsData[schoolId].name;
+                delete schoolsData[schoolId];
+                
+                saveData();
+                loadSchoolsList();
+                updateStats();
+                logActivity(`Menghapus sekolah: ${schoolName}`);
+                showNotification(`Sekolah ${schoolId} berhasil dihapus!`, 'success');
+            }
+        }
+
+        function previewSchool(schoolId) {
+            const school = schoolsData[schoolId];
+            const previewUrl = `https://${schoolId}.yourdomain.com`;
+            
+            showModal(`Preview: ${school.name}`, `
+                <div class="text-center space-y-4">
+                    <div class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-white text-2xl font-bold" 
+                         style="background: ${school.colors.primary}">
+                        ${schoolId.charAt(0).toUpperCase()}
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold">${school.name}</h3>
+                        <p class="text-gray-600">${previewUrl}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="font-semibold">Warna Utama</div>
+                            <div class="flex items-center mt-1">
+                                <div class="w-4 h-4 rounded mr-2" style="background: ${school.colors.primary}"></div>
+                                <span class="font-mono">${school.colors.primary}</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="font-semibold">Warna Sekunder</div>
+                            <div class="flex items-center mt-1">
+                                <div class="w-4 h-4 rounded mr-2" style="background: ${school.colors.secondary}"></div>
+                                <span class="font-mono">${school.colors.secondary}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Ini adalah preview konfigurasi. Untuk melihat aplikasi sebenarnya, 
+                            kunjungi URL di atas setelah deployment.
+                        </p>
+                    </div>
+                </div>
+            `, [
+                {
+                    text: 'Tutup',
+                    class: 'bg-gray-600 hover:bg-gray-700',
+                    onclick: closeModal
+                }
+            ]);
+        }
+
+        function exportSchool(schoolId) {
+            const school = schoolsData[schoolId];
+            const exportData = {
+                [schoolId]: school
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `school-${schoolId}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            logActivity(`Export sekolah: ${school.name}`);
+            showNotification(`Config sekolah ${schoolId} berhasil diexport!`, 'success');
+        }
+
+        function bulkUpdateColors() {
+            showModal('Update Warna Semua Sekolah', `
+                <form id="bulkColorForm" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Warna Utama Baru</label>
+                        <input type="color" id="bulkPrimary" value="#3b82f6" class="w-full h-12 border rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Warna Sekunder Baru</label>
+                        <input type="color" id="bulkSecondary" value="#10b981" class="w-full h-12 border rounded-lg">
+                    </div>
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                            <span class="text-sm text-yellow-800">
+                                Ini akan mengubah warna semua ${Object.keys(schoolsData).length} sekolah!
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            `, [
+                {
+                    text: 'Update Semua',
+                    class: 'bg-orange-600 hover:bg-orange-700',
+                    onclick: () => {
+                        const newPrimary = document.getElementById('bulkPrimary').value;
+                        const newSecondary = document.getElementById('bulkSecondary').value;
+                        
+                        Object.keys(schoolsData).forEach(schoolId => {
+                            schoolsData[schoolId].colors.primary = newPrimary;
+                            schoolsData[schoolId].colors.secondary = newSecondary;
+                        });
+                        
+                        saveData();
+                        loadSchoolsList();
+                        closeModal();
+                        logActivity(`Bulk update warna semua sekolah`);
+                        showNotification('Warna semua sekolah berhasil diupdate!', 'success');
+                    }
+                },
+                {
+                    text: 'Batal',
+                    class: 'bg-gray-600 hover:bg-gray-700',
+                    onclick: closeModal
+                }
+            ]);
+        }
+
+        function bulkUpdateStatus() {
+            showModal('Update Status Semua Sekolah', `
+                <form id="bulkStatusForm" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Status Baru</label>
+                        <select id="bulkStatus" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="active">Aktif</option>
+                            <option value="setup">Perlu Setup</option>
+                            <option value="inactive">Tidak Aktif</option>
+                        </select>
+                    </div>
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                            <span class="text-sm text-yellow-800">
+                                Ini akan mengubah status semua ${Object.keys(schoolsData).length} sekolah!
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            `, [
+                {
+                    text: 'Update Semua',
+                    class: 'bg-green-600 hover:bg-green-700',
+                    onclick: () => {
+                        const newStatus = document.getElementById('bulkStatus').value;
+                        
+                        Object.keys(schoolsData).forEach(schoolId => {
+                            schoolsData[schoolId].status = newStatus;
+                        });
+                        
+                        saveData();
+                        loadSchoolsList();
+                        updateStats();
+                        closeModal();
+                        logActivity(`Bulk update status semua sekolah ke: ${newStatus}`);
+                        showNotification('Status semua sekolah berhasil diupdate!', 'success');
+                    }
+                },
+                {
+                    text: 'Batal',
+                    class: 'bg-gray-600 hover:bg-gray-700',
+                    onclick: closeModal
+                }
+            ]);
+        }
+
+        function bulkValidate() {
+            let errors = [];
+            let warnings = [];
+            
+            Object.keys(schoolsData).forEach(schoolId => {
+                const school = schoolsData[schoolId];
+                
+                // Check required fields
+                if (!school.name) errors.push(`${schoolId}: Nama sekolah kosong`);
+                if (!school.colors || !school.colors.primary) errors.push(`${schoolId}: Warna utama tidak ada`);
+                if (!school.colors || !school.colors.secondary) errors.push(`${schoolId}: Warna sekunder tidak ada`);
+                if (!school.status) errors.push(`${schoolId}: Status tidak ada`);
+                
+                // Check warnings
+                if (!school.contact || !school.contact.email) warnings.push(`${schoolId}: Email tidak ada`);
+                if (!school.contact || !school.contact.phone) warnings.push(`${schoolId}: Telepon tidak ada`);
+                if (!school.created_at) warnings.push(`${schoolId}: Tanggal pembuatan tidak ada`);
+            });
+            
+            const resultHtml = `
+                <div class="space-y-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-gray-800">Hasil Validasi</div>
+                        <div class="text-gray-600">Total sekolah: ${Object.keys(schoolsData).length}</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-red-600">${errors.length}</div>
+                            <div class="text-red-800">Errors</div>
+                        </div>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-yellow-600">${warnings.length}</div>
+                            <div class="text-yellow-800">Warnings</div>
+                        </div>
+                    </div>
+                    
+                    ${errors.length > 0 ? `
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="font-bold text-red-800 mb-2">ERRORS:</div>
+                            <ul class="text-sm text-red-700 space-y-1">
+                                ${errors.map(error => `<li>• ${error}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${warnings.length > 0 ? `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="font-bold text-yellow-800 mb-2">WARNINGS:</div>
+                            <ul class="text-sm text-yellow-700 space-y-1">
+                                ${warnings.map(warning => `<li>• ${warning}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${errors.length === 0 && warnings.length === 0 ? `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                            <i class="fas fa-check-circle text-green-600 text-3xl mb-2"></i>
+                            <div class="text-green-800 font-bold">Semua konfigurasi valid!</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            showModal('Hasil Validasi Config', resultHtml, [
+                {
+                    text: 'Tutup',
+                    class: 'bg-gray-600 hover:bg-gray-700',
+                    onclick: closeModal
+                }
+            ]);
+            
+            logActivity(`Validasi config: ${errors.length} errors, ${warnings.length} warnings`);
+        }
+
+        function bulkReset() {
+            if (confirm('Yakin ingin reset semua data sekolah?\n\nTindakan ini akan menghapus SEMUA data dan tidak dapat dibatalkan!')) {
+                if (confirm('Konfirmasi sekali lagi: SEMUA DATA AKAN HILANG!')) {
+                    schoolsData = {
+                        'demo': {
+                            name: 'SD Demo Brangkas',
+                            colors: { primary: '#3b82f6', secondary: '#10b981' },
+                            contact: { phone: '021-12345678', email: 'admin@demo.sch.id' },
+                            status: 'active',
+                            created_at: new Date().toISOString()
+                        }
+                    };
+                    
+                    saveData();
+                    loadSchoolsList();
+                    updateStats();
+                    logActivity('Reset semua data sekolah');
+                    showNotification('Semua data berhasil direset!', 'success');
+                }
+            }
+        }
+
+        function exportAllSchools() {
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                total_schools: Object.keys(schoolsData).length,
+                schools: schoolsData
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `all-schools-${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            logActivity('Export semua data sekolah');
+            showNotification('Semua data sekolah berhasil diexport!', 'success');
+        }
+
+        function importSchools() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            
+                            // Check if it's a full export or just schools data
+                            const schoolsToImport = importedData.schools || importedData;
+                            
+                            // Merge with existing data
+                            schoolsData = { ...schoolsData, ...schoolsToImport };
+                            
+                            saveData();
+                            loadSchoolsList();
+                            updateStats();
+                            logActivity(`Import ${Object.keys(schoolsToImport).length} sekolah`);
+                            showNotification(`${Object.keys(schoolsToImport).length} sekolah berhasil diimport!`, 'success');
+                        } catch (error) {
+                            showNotification('File JSON tidak valid!', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function createBackup() {
+            const backupType = document.getElementById('backupType')?.value || 'full';
+            const backupName = document.getElementById('backupName')?.value || `backup-${new Date().toISOString().slice(0, 10)}`;
+            
+            let backupData = {};
+            
+            switch (backupType) {
+                case 'full':
+                    backupData = {
+                        timestamp: new Date().toISOString(),
+                        type: 'full',
+                        name: backupName,
+                        schools: schoolsData,
+                        activity_log: activityLog,
+                        backup_history: backupHistory
+                    };
+                    break;
+                case 'config':
+                    backupData = {
+                        timestamp: new Date().toISOString(),
+                        type: 'config',
+                        name: backupName,
+                        schools: schoolsData
+                    };
+                    break;
+                case 'schools':
+                    backupData = {
+                        timestamp: new Date().toISOString(),
+                        type: 'schools',
+                        name: backupName,
+                        schools: schoolsData
+                    };
+                    break;
+            }
+            
+            // Save to backup history
+            const backupRecord = {
+                id: Date.now(),
+                name: backupName,
+                type: backupType,
+                timestamp: new Date().toISOString(),
+                size: JSON.stringify(backupData).length
+            };
+            
+            backupHistory.push(backupRecord);
+            localStorage.setItem('backupHistory', JSON.stringify(backupHistory));
+            
+            // Download backup file
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${backupName}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            updateStats();
+            loadBackupHistory();
+            logActivity(`Membuat backup: ${backupName} (${backupType})`);
+            showNotification(`Backup ${backupName} berhasil dibuat!`, 'success');
+        }
+
+        function restoreBackup() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (confirm('Yakin ingin restore backup?\n\nData yang ada akan ditimpa!')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            try {
+                                const backupData = JSON.parse(e.target.result);
+                                
+                                if (backupData.schools) {
+                                    schoolsData = backupData.schools;
+                                }
+                                
+                                if (backupData.activity_log) {
+                                    activityLog = backupData.activity_log;
+                                }
+                                
+                                if (backupData.backup_history) {
+                                    backupHistory = backupData.backup_history;
+                                }
+                                
+                                saveData();
+                                loadSchoolsList();
+                                updateStats();
+                                loadRecentActivity();
+                                loadBackupHistory();
+                                
+                                logActivity(`Restore backup: ${backupData.name || 'Unknown'}`);
+                                showNotification('Backup berhasil direstore!', 'success');
+                            } catch (error) {
+                                showNotification('File backup tidak valid!', 'error');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                }
+            };
+            input.click();
+        }
+
+        function loadBackupHistory() {
+            const container = document.getElementById('backupHistory');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (backupHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-database text-4xl mb-4"></i>
+                        <p>Belum ada backup yang dibuat</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            backupHistory.slice(-10).reverse().forEach(backup => {
+                const backupItem = document.createElement('div');
+                backupItem.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg';
+                backupItem.innerHTML = `
+                    <div>
+                        <div class="font-semibold">${backup.name}</div>
+                        <div class="text-sm text-gray-600">
+                            ${backup.type.toUpperCase()} • ${new Date(backup.timestamp).toLocaleString('id-ID')} • ${(backup.size / 1024).toFixed(1)} KB
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="downloadBackup('${backup.id}')" class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-download mr-1"></i>Download
+                        </button>
+                        <button onclick="deleteBackup('${backup.id}')" class="text-red-600 hover:text-red-800 text-sm">
+                            <i class="fas fa-trash mr-1"></i>Hapus
+                        </button>
+                    </div>
+                `;
+                container.appendChild(backupItem);
+            });
+        }
+
+        function loadRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (activityLog.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-4">
+                        <i class="fas fa-history text-2xl mb-2"></i>
+                        <p>Belum ada aktivitas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            activityLog.slice(-5).reverse().forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'flex items-center space-x-3 p-3 bg-gray-50 rounded-lg';
+                activityItem.innerHTML = `
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-clock text-blue-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium">${activity.action}</div>
+                        <div class="text-xs text-gray-500">${new Date(activity.timestamp).toLocaleString('id-ID')}</div>
+                    </div>
+                `;
+                container.appendChild(activityItem);
+            });
+        }
+
+        function logActivity(action) {
+            activityLog.push({
+                id: Date.now(),
+                action: action,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Keep only last 100 activities
+            if (activityLog.length > 100) {
+                activityLog = activityLog.slice(-100);
+            }
+            
+            localStorage.setItem('activityLog', JSON.stringify(activityLog));
+            loadRecentActivity();
+        }
+
+        function saveData() {
+            // Save to server first, then local as backup
+            saveSchoolsToServer();
+        }
+        
+        function addSyncButton() {
+            document.getElementById('syncButtonContainer').classList.remove('hidden');
+        }
+        
+        async function syncWithServer() {
+            const syncBtn = document.querySelector('#syncButtonContainer button');
+            const originalText = syncBtn.innerHTML;
+            
+            syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Syncing...';
+            syncBtn.disabled = true;
+            
+            try {
+                await loadSchoolsFromServer();
+                updateStats();
+                loadSchoolsList();
+                updateConnectionStatus(true);
+            } catch (error) {
+                updateConnectionStatus(false);
+            } finally {
+                syncBtn.innerHTML = originalText;
+                syncBtn.disabled = false;
+            }
+        }
+        
+        function updateConnectionStatus(isConnected) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (isConnected) {
+                statusEl.className = 'w-3 h-3 rounded-full bg-green-500';
+                statusEl.title = 'Terhubung ke server';
+            } else {
+                statusEl.className = 'w-3 h-3 rounded-full bg-red-500';
+                statusEl.title = 'Tidak terhubung ke server';
+            }
+        }
+        
+        // Test server connection periodically
+        setInterval(async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/ping.php`);
+                updateConnectionStatus(response.ok);
+            } catch (error) {
+                updateConnectionStatus(false);
+            }
+        }, 30000); // Check every 30 seconds
+        
+        function showServerSetupGuide() {
+            showModal('Panduan Setup Server', `
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 class="font-bold text-blue-800 mb-2">📋 Langkah-langkah Setup:</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-sm text-blue-700">
+                            <li>Buat folder <code class="bg-blue-100 px-2 py-1 rounded">/api/</code> di root hosting Anda</li>
+                            <li>Upload file <code class="bg-blue-100 px-2 py-1 rounded">config.php</code> dan <code class="bg-blue-100 px-2 py-1 rounded">ping.php</code></li>
+                            <li>Pastikan folder memiliki permission 755</li>
+                            <li>Update URL di admin panel (line 438-439)</li>
+                            <li>Test koneksi dengan tombol Sync</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h4 class="font-bold text-green-800 mb-2">🔧 Struktur Folder:</h4>
+                        <pre class="text-sm text-green-700 bg-green-100 p-3 rounded overflow-x-auto">
+yourdomain.com/
+├── index.html (halaman utama)
+├── admin.html (admin panel ini)
+├── api/
+│   ├── config.php
+│   └── ping.php
+└── schools/
+    ├── demo.html
+    ├── sdn1.html
+    └── ...
+                        </pre>
+                    </div>
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <h4 class="font-bold text-yellow-800 mb-2">⚠️ Catatan Penting:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-sm text-yellow-700">
+                            <li>Pastikan hosting mendukung PHP 7.4+</li>
+                            <li>File config.php akan menyimpan data dalam format JSON</li>
+                            <li>Backup data secara berkala</li>
+                            <li>Gunakan HTTPS untuk keamanan</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-bold text-gray-800 mb-2">🌐 URL yang Perlu Diupdate:</h4>
+                        <div class="space-y-2 text-sm">
+                            <div>
+                                <strong>API_BASE_URL:</strong> 
+                                <code class="bg-gray-100 px-2 py-1 rounded">https://yourdomain.com/api</code>
+                            </div>
+                            <div>
+                                <strong>SCHOOLS_BASE_URL:</strong> 
+                                <code class="bg-gray-100 px-2 py-1 rounded">https://yourdomain.com/schools</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `, [
+                {
+                    text: 'Download File PHP',
+                    class: 'bg-green-600 hover:bg-green-700',
+                    onclick: () => {
+                        downloadServerFiles();
+                        closeModal();
+                    }
+                },
+                {
+                    text: 'Tutup',
+                    class: 'bg-gray-600 hover:bg-gray-700',
+                    onclick: closeModal
+                }
+            ]);
+        }
+        
+        function downloadServerFiles() {
+            // Create config.php content
+            const configPhp = \`<?php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type');
+
+$configFile = 'schools_config.json';
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Read configuration
+    if (file_exists($configFile)) {
+        $data = file_get_contents($configFile);
+        echo $data;
+    } else {
+        echo json_encode([]);
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Save configuration
+    $input = file_get_contents('php://input');
+    $data = json_decode($input, true);
+    
+    if ($data !== null) {
+        file_put_contents($configFile, json_encode($data, JSON_PRETTY_PRINT));
+        
+        // Generate individual school files
+        foreach ($data as $schoolId => $school) {
+            generateSchoolFile($schoolId, $school);
+        }
+        
+        echo json_encode(['status' => 'success', 'message' => 'Configuration saved']);
+    } else {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid JSON data']);
+    }
+}
+
+function generateSchoolFile($schoolId, $school) {
+    $schoolsDir = '../schools/';
+    if (!is_dir($schoolsDir)) {
+        mkdir($schoolsDir, 0755, true);
+    }
+    
+    $html = generateSchoolHTML($schoolId, $school);
+    file_put_contents($schoolsDir . $schoolId . '.html', $html);
+}
+
+function generateSchoolHTML($schoolId, $school) {
+    return \`<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{$school['name']} - Brangkas Data Guru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: {$school['colors']['primary']};
+            --secondary-color: {$school['colors']['secondary']};
+        }
+        .bg-primary { background-color: var(--primary-color); }
+        .text-primary { color: var(--primary-color); }
+        .border-primary { border-color: var(--primary-color); }
+        .bg-secondary { background-color: var(--secondary-color); }
+        .text-secondary { color: var(--secondary-color); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-primary text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <span class="text-xl font-bold">\` . strtoupper(substr($schoolId, 0, 1)) . \`</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">{$school['name']}</h1>
+                        <p class="text-white text-opacity-80">Sistem Brangkas Data Guru</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-white text-opacity-80">Kontak:</p>
+                    <p class="font-semibold">\` . ($school['contact']['phone'] ?? '-') . \`</p>
+                    <p class="text-sm">\` . ($school['contact']['email'] ?? '-') . \`</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-6 py-8">
+        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div class="w-24 h-24 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-school text-4xl text-primary"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Selamat Datang di {$school['name']}</h2>
+            <p class="text-gray-600 mb-8">Sistem manajemen data guru yang aman dan terpercaya</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="fas fa-users text-3xl text-primary mb-4"></i>
+                    <h3 class="font-bold text-lg mb-2">Data Guru</h3>
+                    <p class="text-gray-600 text-sm">Kelola informasi lengkap guru</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="fas fa-shield-alt text-3xl text-secondary mb-4"></i>
+                    <h3 class="font-bold text-lg mb-2">Keamanan</h3>
+                    <p class="text-gray-600 text-sm">Data terlindungi dengan enkripsi</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="fas fa-chart-bar text-3xl text-primary mb-4"></i>
+                    <h3 class="font-bold text-lg mb-2">Laporan</h3>
+                    <p class="text-gray-600 text-sm">Analisis dan statistik lengkap</p>
+                </div>
+            </div>
+            
+            <button class="bg-primary text-white px-8 py-3 rounded-lg hover:opacity-90 transition-opacity">
+                Masuk ke Sistem
+            </button>
+        </div>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 {$school['name']}. Semua hak dilindungi.</p>
+            <p class="text-gray-400 text-sm mt-2">Powered by Brangkas Data Guru System</p>
+        </div>
+    </footer>
+</body>
+</html>\`;
+}
+?>\`;
+            
+            // Create ping.php content
+            const pingPhp = \`<?php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
+
+echo json_encode([
+    'status' => 'ok',
+    'timestamp' => date('c'),
+    'server' => $_SERVER['SERVER_NAME'] ?? 'unknown'
+]);
+?>\`;
+            
+            // Download config.php
+            const configBlob = new Blob([configPhp], {type: 'text/plain'});
+            const configUrl = URL.createObjectURL(configBlob);
+            const configLink = document.createElement('a');
+            configLink.href = configUrl;
+            configLink.download = 'config.php';
+            configLink.click();
+            URL.revokeObjectURL(configUrl);
+            
+            // Download ping.php
+            setTimeout(() => {
+                const pingBlob = new Blob([pingPhp], {type: 'text/plain'});
+                const pingUrl = URL.createObjectURL(pingBlob);
+                const pingLink = document.createElement('a');
+                pingLink.href = pingUrl;
+                pingLink.download = 'ping.php';
+                pingLink.click();
+                URL.revokeObjectURL(pingUrl);
+            }, 500);
+            
+            showNotification('File PHP berhasil didownload! Upload ke folder /api/ di hosting Anda.', 'success');
+        }
+
+        function saveGeneralSettings(e) {
+            e.preventDefault();
+            
+            const settings = {
+                mainDomain: document.getElementById('mainDomain').value,
+                adminEmail: document.getElementById('adminEmail').value,
+                timezone: document.getElementById('timezone').value
+            };
+            
+            localStorage.setItem('generalSettings', JSON.stringify(settings));
+            logActivity('Menyimpan pengaturan umum');
+            showNotification('Pengaturan umum berhasil disimpan!', 'success');
+        }
+
+        function saveDefaultTemplate(e) {
+            e.preventDefault();
+            
+            const template = {
+                colors: {
+                    primary: document.getElementById('defaultPrimary').value,
+                    secondary: document.getElementById('defaultSecondary').value
+                }
+            };
+            
+            localStorage.setItem('defaultTemplate', JSON.stringify(template));
+            logActivity('Menyimpan template default');
+            showNotification('Template default berhasil disimpan!', 'success');
+        }
+
+        function showProfile() {
+            showModal('Profil Admin', `
+                <div class="text-center space-y-4">
+                    <div class="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto flex items-center justify-center">
+                        <i class="fas fa-user text-white text-2xl"></i>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold">Administrator</h3>
+                        <p class="text-gray-600">Super Admin Multi-Sekolah</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="font-semibold">Total Sekolah</div>
+                            <div class="text-2xl font-bold text-blue-600">${Object.keys(schoolsData).length}</div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="font-semibold">Aktivitas</div>
+                            <div class="text-2xl font-bold text-green-600">${activityLog.length}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            Anda memiliki akses penuh ke semua fitur admin panel.
+                        </p>
+                    </div>
+                </div>
+            `, [
+                {
+                    text: 'Tutup',
+                    class: 'bg-gray-600 hover:bg-gray-700',
+                    onclick: closeModal
+                }
+            ]);
+        }
+
+        function showModal(title, content, buttons = []) {
+            const modal = document.createElement('div');
+            modal.className = 'modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                        <h3 class="text-xl font-bold">${title}</h3>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6">
+                        ${content}
+                    </div>
+                    
+                    ${buttons.length > 0 ? `
+                        <div class="flex justify-end space-x-3 p-6 border-t border-gray-200">
+                            ${buttons.map(btn => `
+                                <button onclick="${btn.onclick.toString().replace('function ', '').replace('() {', '').replace('}', '')}" 
+                                        class="px-4 py-2 rounded-lg text-white ${btn.class}">
+                                    ${btn.text}
+                                </button>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close on outside click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                success: 'bg-green-600',
+                error: 'bg-red-600',
+                warning: 'bg-yellow-600',
+                info: 'bg-blue-600'
+            };
+            
+            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : type === 'warning' ? 'exclamation' : 'info'}-circle"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
