@@ -3,39 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel Multi-Sekolah - Brangkas Data Guru</title>
+    <title>Admin Panel - Brangkas Data Guru Multi Sekolah</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .school-card { transition: all 0.3s ease; }
-        .school-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        .modal { backdrop-filter: blur(5px); }
-        .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .action-btn { transition: all 0.2s ease; }
-        .action-btn:hover { transform: scale(1.05); }
-        .sidebar { transition: transform 0.3s ease; }
-        .sidebar.collapsed { transform: translateX(-100%); }
+        .sidebar-transition { transition: transform 0.3s ease; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .modal-backdrop { backdrop-filter: blur(5px); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .notification { transition: all 0.3s ease; }
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 font-sans">
     <!-- Header -->
-    <header class="bg-white shadow-lg border-b-4 border-blue-600">
+    <header class="bg-white shadow-lg border-b-4 border-blue-600 sticky top-0 z-40">
         <div class="flex items-center justify-between px-6 py-4">
             <div class="flex items-center space-x-4">
-                <button id="sidebarToggle" class="md:hidden text-gray-600 hover:text-blue-600">
+                <button id="sidebarToggle" class="md:hidden text-gray-600 hover:text-blue-600 transition-colors">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
                 <div class="flex items-center space-x-3">
-                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 w-10 h-10 rounded-full flex items-center justify-center">
-                        <i class="fas fa-school text-white"></i>
+                    <div class="gradient-bg w-12 h-12 rounded-full flex items-center justify-center">
+                        <i class="fas fa-school text-white text-xl"></i>
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-gray-800">Admin Panel Multi-Sekolah</h1>
-                        <p class="text-sm text-gray-600">Kelola semua sekolah dalam satu tempat</p>
+                        <p class="text-sm text-gray-600">Kelola semua sekolah dalam satu dashboard</p>
                     </div>
                 </div>
             </div>
@@ -45,16 +43,30 @@
                     <i class="fas fa-clock text-gray-500"></i>
                     <span id="currentTime" class="text-sm text-gray-700"></span>
                 </div>
-                <div id="syncButtonContainer" class="hidden">
-                    <button onclick="syncWithServer()" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm">
+                
+                <div class="flex items-center space-x-2">
+                    <div id="connectionStatus" class="w-3 h-3 rounded-full bg-gray-400 animate-pulse" title="Status koneksi"></div>
+                    <button onclick="syncData()" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
                         <i class="fas fa-sync-alt mr-1"></i>Sync
                     </button>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <div id="connectionStatus" class="w-3 h-3 rounded-full bg-gray-400" title="Status koneksi"></div>
-                    <button onclick="showProfile()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                
+                <div class="relative">
+                    <button onclick="showUserMenu()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                         <i class="fas fa-user mr-2"></i>Admin
                     </button>
+                    <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+                        <a href="#" onclick="showProfile()" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-user-circle mr-2"></i>Profil
+                        </a>
+                        <a href="#" onclick="showSettings()" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-cog mr-2"></i>Pengaturan
+                        </a>
+                        <hr class="my-1">
+                        <a href="#" onclick="logout()" class="block px-4 py-2 text-red-600 hover:bg-red-50">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -62,35 +74,43 @@
 
     <div class="flex">
         <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar fixed md:relative bg-white w-64 h-screen shadow-lg z-40">
+        <aside id="sidebar" class="sidebar fixed md:relative bg-white w-64 h-screen shadow-lg z-30 sidebar-transition">
             <div class="p-6">
                 <nav class="space-y-2">
-                    <a href="#dashboard" onclick="showSection('dashboard')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 active">
-                        <i class="fas fa-tachometer-alt"></i>
+                    <a href="#" onclick="showSection('dashboard')" class="nav-link active flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-tachometer-alt w-5"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="#schools" onclick="showSection('schools')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600">
-                        <i class="fas fa-school"></i>
+                    <a href="#" onclick="showSection('schools')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-school w-5"></i>
                         <span>Kelola Sekolah</span>
                     </a>
-                    <a href="#bulk" onclick="showSection('bulk')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600">
-                        <i class="fas fa-tasks"></i>
-                        <span>Bulk Operations</span>
+                    <a href="#" onclick="showSection('users')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-users w-5"></i>
+                        <span>Kelola User</span>
                     </a>
-                    <a href="#settings" onclick="showSection('settings')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600">
-                        <i class="fas fa-cog"></i>
+                    <a href="#" onclick="showSection('templates')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-palette w-5"></i>
+                        <span>Template</span>
+                    </a>
+                    <a href="#" onclick="showSection('reports')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-chart-bar w-5"></i>
+                        <span>Laporan</span>
+                    </a>
+                    <a href="#" onclick="showSection('backup')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-database w-5"></i>
+                        <span>Backup</span>
+                    </a>
+                    <a href="#" onclick="showSection('settings')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-cog w-5"></i>
                         <span>Pengaturan</span>
-                    </a>
-                    <a href="#backup" onclick="showSection('backup')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600">
-                        <i class="fas fa-database"></i>
-                        <span>Backup & Restore</span>
                     </a>
                 </nav>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-6">
+        <main class="flex-1 p-6 md:ml-0">
             <!-- Dashboard Section -->
             <section id="dashboard-section" class="section">
                 <div class="mb-8">
@@ -100,7 +120,7 @@
 
                 <!-- Stats Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="stats-card text-white p-6 rounded-xl">
+                    <div class="gradient-bg text-white p-6 rounded-xl card-hover">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-white opacity-80">Total Sekolah</p>
@@ -110,7 +130,7 @@
                         </div>
                     </div>
                     
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl card-hover">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-white opacity-80">Sekolah Aktif</p>
@@ -120,17 +140,17 @@
                         </div>
                     </div>
                     
-                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6 rounded-xl">
+                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6 rounded-xl card-hover">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-white opacity-80">Perlu Setup</p>
-                                <p id="pendingSchools" class="text-3xl font-bold">0</p>
+                                <p class="text-white opacity-80">Total User</p>
+                                <p id="totalUsers" class="text-3xl font-bold">0</p>
                             </div>
-                            <i class="fas fa-exclamation-triangle text-4xl opacity-80"></i>
+                            <i class="fas fa-users text-4xl opacity-80"></i>
                         </div>
                     </div>
                     
-                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-xl">
+                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-xl card-hover">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-white opacity-80">Backup Terakhir</p>
@@ -145,65 +165,22 @@
                 <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
                     <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <button onclick="addNewSchool()" class="action-btn bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 text-center">
+                        <button onclick="addNewSchool()" class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors text-center card-hover">
                             <i class="fas fa-plus text-2xl mb-2"></i>
                             <p class="font-semibold">Tambah Sekolah</p>
                         </button>
-                        <button onclick="bulkUpdateColors()" class="action-btn bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 text-center">
-                            <i class="fas fa-palette text-2xl mb-2"></i>
-                            <p class="font-semibold">Update Warna</p>
+                        <button onclick="addNewUser()" class="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors text-center card-hover">
+                            <i class="fas fa-user-plus text-2xl mb-2"></i>
+                            <p class="font-semibold">Tambah User</p>
                         </button>
-                        <button onclick="exportAllSchools()" class="action-btn bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 text-center">
+                        <button onclick="exportData()" class="bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 transition-colors text-center card-hover">
                             <i class="fas fa-download text-2xl mb-2"></i>
                             <p class="font-semibold">Export Data</p>
                         </button>
-                        <button onclick="createBackup()" class="action-btn bg-orange-600 text-white p-4 rounded-lg hover:bg-orange-700 text-center">
+                        <button onclick="createBackup()" class="bg-orange-600 text-white p-4 rounded-lg hover:bg-orange-700 transition-colors text-center card-hover">
                             <i class="fas fa-database text-2xl mb-2"></i>
                             <p class="font-semibold">Backup</p>
                         </button>
-                    </div>
-                </div>
-
-                <!-- Server Connection Guide -->
-                <div class="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 mb-8">
-                    <div class="flex items-start space-x-4">
-                        <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-server text-blue-600 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-xl font-bold text-blue-800 mb-2">Koneksi ke Server</h3>
-                            <p class="text-blue-700 mb-4">Untuk menghubungkan admin panel ke aplikasi yang sudah dihosting, ikuti langkah berikut:</p>
-                            
-                            <div class="space-y-3 text-sm">
-                                <div class="flex items-start space-x-2">
-                                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
-                                    <div>
-                                        <strong>Update URL API:</strong> Ganti <code class="bg-blue-100 px-2 py-1 rounded">API_BASE_URL</code> di line 438 dengan domain hosting Anda
-                                    </div>
-                                </div>
-                                <div class="flex items-start space-x-2">
-                                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
-                                    <div>
-                                        <strong>Buat file PHP:</strong> Upload <code class="bg-blue-100 px-2 py-1 rounded">config.php</code> dan <code class="bg-blue-100 px-2 py-1 rounded">ping.php</code> ke folder <code class="bg-blue-100 px-2 py-1 rounded">/api/</code>
-                                    </div>
-                                </div>
-                                <div class="flex items-start space-x-2">
-                                    <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
-                                    <div>
-                                        <strong>Test koneksi:</strong> Klik tombol <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Sync</span> untuk test koneksi
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 flex space-x-3">
-                                <button onclick="showServerSetupGuide()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
-                                    <i class="fas fa-book mr-2"></i>Panduan Lengkap
-                                </button>
-                                <button onclick="downloadServerFiles()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm">
-                                    <i class="fas fa-download mr-2"></i>Download File PHP
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -224,10 +201,10 @@
                         <p class="text-gray-600">Tambah, edit, dan kelola semua sekolah</p>
                     </div>
                     <div class="flex space-x-3">
-                        <button onclick="addNewSchool()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        <button onclick="addNewSchool()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                             <i class="fas fa-plus mr-2"></i>Tambah Sekolah
                         </button>
-                        <button onclick="importSchools()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <button onclick="importSchools()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                             <i class="fas fa-upload mr-2"></i>Import
                         </button>
                     </div>
@@ -238,7 +215,7 @@
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
                         <div class="flex-1 max-w-md">
                             <div class="relative">
-                                <input type="text" id="searchSchools" placeholder="Cari sekolah..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" id="searchSchools" placeholder="Cari sekolah..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                             </div>
                         </div>
@@ -247,9 +224,9 @@
                                 <option value="">Semua Status</option>
                                 <option value="active">Aktif</option>
                                 <option value="inactive">Tidak Aktif</option>
-                                <option value="setup">Perlu Setup</option>
+                                <option value="maintenance">Maintenance</option>
                             </select>
-                            <button onclick="refreshSchoolsList()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                            <button onclick="refreshSchoolsList()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                 <i class="fas fa-sync-alt mr-2"></i>Refresh
                             </button>
                         </div>
@@ -262,157 +239,60 @@
                 </div>
             </section>
 
-            <!-- Bulk Operations Section -->
-            <section id="bulk-section" class="section hidden">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Bulk Operations</h2>
-                    <p class="text-gray-600">Operasi massal untuk semua sekolah</p>
+            <!-- Users Management Section -->
+            <section id="users-section" class="section hidden">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Kelola User</h2>
+                        <p class="text-gray-600">Manajemen user dan hak akses</p>
+                    </div>
+                    <button onclick="addNewUser()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-user-plus mr-2"></i>Tambah User
+                    </button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Color Update -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <div class="text-center mb-4">
-                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-palette text-2xl text-blue-600"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Update Warna</h3>
-                            <p class="text-gray-600 text-sm">Ganti warna semua sekolah sekaligus</p>
-                        </div>
-                        <button onclick="bulkUpdateColors()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
-                            Update Semua Warna
-                        </button>
-                    </div>
-
-                    <!-- Status Update -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <div class="text-center mb-4">
-                            <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-toggle-on text-2xl text-green-600"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Update Status</h3>
-                            <p class="text-gray-600 text-sm">Aktifkan/nonaktifkan sekolah</p>
-                        </div>
-                        <button onclick="bulkUpdateStatus()" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700">
-                            Update Status
-                        </button>
-                    </div>
-
-                    <!-- Validation -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <div class="text-center mb-4">
-                            <div class="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-check-circle text-2xl text-yellow-600"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Validasi Config</h3>
-                            <p class="text-gray-600 text-sm">Periksa kesalahan konfigurasi</p>
-                        </div>
-                        <button onclick="bulkValidate()" class="w-full bg-yellow-600 text-white py-3 rounded-lg hover:bg-yellow-700">
-                            Validasi Semua
-                        </button>
-                    </div>
-
-                    <!-- Export -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <div class="text-center mb-4">
-                            <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-download text-2xl text-purple-600"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Export Data</h3>
-                            <p class="text-gray-600 text-sm">Download semua konfigurasi</p>
-                        </div>
-                        <button onclick="exportAllSchools()" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700">
-                            Export Semua
-                        </button>
-                    </div>
-
-                    <!-- Import -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <div class="text-center mb-4">
-                            <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-upload text-2xl text-indigo-600"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Import Data</h3>
-                            <p class="text-gray-600 text-sm">Upload konfigurasi sekolah</p>
-                        </div>
-                        <button onclick="importSchools()" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">
-                            Import Data
-                        </button>
-                    </div>
-
-                    <!-- Reset -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <div class="text-center mb-4">
-                            <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-redo text-2xl text-red-600"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Reset Data</h3>
-                            <p class="text-gray-600 text-sm">Reset semua ke default</p>
-                        </div>
-                        <button onclick="bulkReset()" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700">
-                            Reset Semua
-                        </button>
+                <!-- Users List -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sekolah</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersList" class="bg-white divide-y divide-gray-200">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
 
-            <!-- Settings Section -->
-            <section id="settings-section" class="section hidden">
+            <!-- Templates Section -->
+            <section id="templates-section" class="section hidden">
                 <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Pengaturan</h2>
-                    <p class="text-gray-600">Konfigurasi sistem dan preferensi</p>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Template Sekolah</h2>
+                    <p class="text-gray-600">Kelola template dan tema untuk sekolah</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Template cards will be populated here -->
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="section hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Laporan</h2>
+                    <p class="text-gray-600">Statistik dan analisis sistem</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- General Settings -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-xl font-bold mb-4">Pengaturan Umum</h3>
-                        <form id="generalSettings" class="space-y-4">
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Domain Utama</label>
-                                <input type="text" id="mainDomain" value="yourdomain.com" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Email Admin</label>
-                                <input type="email" id="adminEmail" value="admin@yourdomain.com" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Timezone</label>
-                                <select id="timezone" class="w-full px-3 py-2 border rounded-lg">
-                                    <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
-                                    <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
-                                    <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-                                Simpan Pengaturan
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Default School Template -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-xl font-bold mb-4">Template Sekolah Default</h3>
-                        <form id="defaultTemplate" class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-gray-700 font-bold mb-2">Warna Utama</label>
-                                    <input type="color" id="defaultPrimary" value="#3b82f6" class="w-full h-10 border rounded-lg">
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 font-bold mb-2">Warna Sekunder</label>
-                                    <input type="color" id="defaultSecondary" value="#10b981" class="w-full h-10 border rounded-lg">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Logo Default</label>
-                                <input type="file" id="defaultLogo" accept="image/*" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
-                                Simpan Template
-                            </button>
-                        </form>
-                    </div>
+                    <!-- Charts and reports will be populated here -->
                 </div>
             </section>
 
@@ -420,7 +300,7 @@
             <section id="backup-section" class="section hidden">
                 <div class="mb-8">
                     <h2 class="text-3xl font-bold text-gray-800 mb-2">Backup & Restore</h2>
-                    <p class="text-gray-600">Kelola backup data sekolah</p>
+                    <p class="text-gray-600">Kelola backup data sistem</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -430,17 +310,14 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-gray-700 font-bold mb-2">Jenis Backup</label>
-                                <select id="backupType" class="w-full px-3 py-2 border rounded-lg">
+                                <select id="backupType" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                                     <option value="full">Full Backup (Semua Data)</option>
-                                    <option value="config">Config Only (Konfigurasi)</option>
-                                    <option value="schools">Schools Only (Data Sekolah)</option>
+                                    <option value="schools">Data Sekolah</option>
+                                    <option value="users">Data User</option>
+                                    <option value="settings">Pengaturan</option>
                                 </select>
                             </div>
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Nama Backup</label>
-                                <input type="text" id="backupName" placeholder="backup-2024-01-01" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                            <button onclick="createBackup()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                            <button onclick="createBackup()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
                                 <i class="fas fa-save mr-2"></i>Buat Backup
                             </button>
                         </div>
@@ -462,7 +339,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <button onclick="restoreBackup()" class="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700">
+                            <button onclick="restoreBackup()" class="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition-colors">
                                 <i class="fas fa-upload mr-2"></i>Restore Backup
                             </button>
                         </div>
@@ -477,219 +354,88 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="section hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Pengaturan</h2>
+                    <p class="text-gray-600">Konfigurasi sistem dan preferensi</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- General Settings -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">Pengaturan Umum</h3>
+                        <form id="generalSettings" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Nama Sistem</label>
+                                <input type="text" id="systemName" value="Brangkas Data Guru" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Domain Utama</label>
+                                <input type="text" id="mainDomain" value="yourdomain.com" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Email Admin</label>
+                                <input type="email" id="adminEmail" value="admin@yourdomain.com" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Simpan Pengaturan
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Security Settings -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">Pengaturan Keamanan</h3>
+                        <form id="securitySettings" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Session Timeout (menit)</label>
+                                <input type="number" id="sessionTimeout" value="30" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Max Login Attempts</label>
+                                <input type="number" id="maxLoginAttempts" value="5" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="enableTwoFactor" class="mr-2">
+                                <label for="enableTwoFactor" class="text-gray-700">Enable Two-Factor Authentication</label>
+                            </div>
+                            <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                Simpan Keamanan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
     <!-- Overlay for mobile sidebar -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
     <script>
-        // Configuration
-        const API_BASE_URL = 'https://yourdomain.com/api'; // Ganti dengan domain Anda
-        const SCHOOLS_BASE_URL = 'https://yourdomain.com/schools'; // Ganti dengan domain Anda
-        
+        // Global Variables
         let schoolsData = {};
-        
-        // API Functions
-        async function loadSchoolsFromServer() {
-            try {
-                showNotification('Memuat data dari server...', 'info');
-                const response = await fetch(`${API_BASE_URL}/config.php`);
-                if (response.ok) {
-                    const data = await response.json();
-                    schoolsData = data;
-                    showNotification('Data berhasil dimuat dari server!', 'success');
-                } else {
-                    throw new Error('Gagal memuat data');
-                }
-            } catch (error) {
-                console.error('Error loading schools:', error);
-                showNotification('Gagal memuat data dari server, menggunakan data lokal', 'warning');
-                loadLocalData();
-            }
-        }
-        
-        async function saveSchoolsToServer() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/config.php`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(schoolsData)
-                });
-                
-                if (response.ok) {
-                    showNotification('Data berhasil disimpan ke server!', 'success');
-                    // Also save locally as backup
-                    localStorage.setItem('schoolsData', JSON.stringify(schoolsData));
-                    
-                    // Generate school files
-                    await generateSchoolFiles();
-                } else {
-                    throw new Error('Gagal menyimpan data');
-                }
-            } catch (error) {
-                console.error('Error saving schools:', error);
-                showNotification('Gagal menyimpan ke server, data disimpan lokal', 'warning');
-                localStorage.setItem('schoolsData', JSON.stringify(schoolsData));
-            }
-        }
-        
-        async function generateSchoolFiles() {
-            try {
-                // Generate individual school files
-                for (const [schoolId, school] of Object.entries(schoolsData)) {
-                    const schoolHtml = generateSchoolHTML(schoolId, school);
-                    
-                    // In a real implementation, you would send this to your server
-                    // to create/update the school files
-                    console.log(`Generated HTML for ${schoolId}:`, schoolHtml.substring(0, 100) + '...');
-                }
-                
-                showNotification('File sekolah berhasil digenerate!', 'success');
-            } catch (error) {
-                console.error('Error generating school files:', error);
-                showNotification('Gagal generate file sekolah', 'error');
-            }
-        }
-        
-        function generateSchoolHTML(schoolId, school) {
-            return `<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${school.name} - Brangkas Data Guru</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --primary-color: ${school.colors.primary};
-            --secondary-color: ${school.colors.secondary};
-        }
-        .bg-primary { background-color: var(--primary-color); }
-        .text-primary { color: var(--primary-color); }
-        .border-primary { border-color: var(--primary-color); }
-        .bg-secondary { background-color: var(--secondary-color); }
-        .text-secondary { color: var(--secondary-color); }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <header class="bg-primary text-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                        <span class="text-xl font-bold">${schoolId.charAt(0).toUpperCase()}</span>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold">${school.name}</h1>
-                        <p class="text-white text-opacity-80">Sistem Brangkas Data Guru</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="text-sm text-white text-opacity-80">Kontak:</p>
-                    <p class="font-semibold">${school.contact.phone || '-'}</p>
-                    <p class="text-sm">${school.contact.email || '-'}</p>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <main class="container mx-auto px-6 py-8">
-        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
-            <div class="w-24 h-24 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-school text-4xl text-primary"></i>
-            </div>
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">Selamat Datang di ${school.name}</h2>
-            <p class="text-gray-600 mb-8">Sistem manajemen data guru yang aman dan terpercaya</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-gray-50 p-6 rounded-lg">
-                    <i class="fas fa-users text-3xl text-primary mb-4"></i>
-                    <h3 class="font-bold text-lg mb-2">Data Guru</h3>
-                    <p class="text-gray-600 text-sm">Kelola informasi lengkap guru</p>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-lg">
-                    <i class="fas fa-shield-alt text-3xl text-secondary mb-4"></i>
-                    <h3 class="font-bold text-lg mb-2">Keamanan</h3>
-                    <p class="text-gray-600 text-sm">Data terlindungi dengan enkripsi</p>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-lg">
-                    <i class="fas fa-chart-bar text-3xl text-primary mb-4"></i>
-                    <h3 class="font-bold text-lg mb-2">Laporan</h3>
-                    <p class="text-gray-600 text-sm">Analisis dan statistik lengkap</p>
-                </div>
-            </div>
-            
-            <button class="bg-primary text-white px-8 py-3 rounded-lg hover:opacity-90 transition-opacity">
-                Masuk ke Sistem
-            </button>
-        </div>
-    </main>
-    
-    <footer class="bg-gray-800 text-white py-8 mt-12">
-        <div class="container mx-auto px-6 text-center">
-            <p>&copy; 2024 ${school.name}. Semua hak dilindungi.</p>
-            <p class="text-gray-400 text-sm mt-2">Powered by Brangkas Data Guru System</p>
-        </div>
-    </footer>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dbfe2042bca075',t:'MTc1NDk1OTk3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>`;
-        }
-        
-        function loadLocalData() {
-            // Fallback sample data
-            schoolsData = {
-                'demo': {
-                    name: 'SD Demo Brangkas',
-                    colors: { primary: '#3b82f6', secondary: '#10b981' },
-                    contact: { phone: '021-12345678', email: 'admin@demo.sch.id' },
-                    status: 'active',
-                    created_at: '2024-01-01T00:00:00Z'
-                }
-            };
-            
-            // Try to load from localStorage
-            const savedData = localStorage.getItem('schoolsData');
-            if (savedData) {
-                try {
-                    schoolsData = JSON.parse(savedData);
-                } catch (error) {
-                    console.error('Error parsing local data:', error);
-                }
-            }
-        }
-
+        let usersData = {};
+        let templatesData = {};
         let activityLog = [];
         let backupHistory = [];
+        let currentUser = { username: 'admin', role: 'super_admin' };
 
-        // Initialize app
+        // Initialize Application
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
         });
 
-        async function initializeApp() {
-            // Show loading
-            showNotification('Menginisialisasi admin panel...', 'info');
-            
-            // Load data from server first, fallback to local
-            await loadSchoolsFromServer();
-            
-            // Load other data
-            const savedActivity = localStorage.getItem('activityLog');
-            if (savedActivity) {
-                activityLog = JSON.parse(savedActivity);
-            }
-            
-            const savedBackups = localStorage.getItem('backupHistory');
-            if (savedBackups) {
-                backupHistory = JSON.parse(savedBackups);
-            }
-            
-            // Update UI
+        function initializeApp() {
+            loadSampleData();
             updateStats();
             loadSchoolsList();
+            loadUsersList();
             loadRecentActivity();
             loadBackupHistory();
             
@@ -700,8 +446,88 @@
             // Setup event listeners
             setupEventListeners();
             
-            // Add server sync button to header
-            addSyncButton();
+            // Show welcome notification
+            showNotification('Selamat datang di Admin Panel!', 'success');
+            
+            // Simulate connection status
+            updateConnectionStatus(true);
+        }
+
+        function loadSampleData() {
+            // Sample schools data
+            schoolsData = {
+                'sdn1': {
+                    name: 'SD Negeri 1 Jakarta',
+                    colors: { primary: '#3b82f6', secondary: '#10b981' },
+                    contact: { phone: '021-12345678', email: 'admin@sdn1.sch.id' },
+                    status: 'active',
+                    created_at: '2024-01-01T00:00:00Z',
+                    users_count: 15
+                },
+                'sdn2': {
+                    name: 'SD Negeri 2 Jakarta',
+                    colors: { primary: '#ef4444', secondary: '#f59e0b' },
+                    contact: { phone: '021-87654321', email: 'admin@sdn2.sch.id' },
+                    status: 'active',
+                    created_at: '2024-01-02T00:00:00Z',
+                    users_count: 12
+                },
+                'smp1': {
+                    name: 'SMP Negeri 1 Jakarta',
+                    colors: { primary: '#8b5cf6', secondary: '#06b6d4' },
+                    contact: { phone: '021-11223344', email: 'admin@smp1.sch.id' },
+                    status: 'maintenance',
+                    created_at: '2024-01-03T00:00:00Z',
+                    users_count: 25
+                }
+            };
+
+            // Sample users data
+            usersData = {
+                'admin': {
+                    username: 'admin',
+                    email: 'admin@system.com',
+                    role: 'super_admin',
+                    school: 'all',
+                    status: 'active',
+                    last_login: '2024-01-15T10:30:00Z'
+                },
+                'guru1': {
+                    username: 'guru1',
+                    email: 'guru1@sdn1.sch.id',
+                    role: 'teacher',
+                    school: 'sdn1',
+                    status: 'active',
+                    last_login: '2024-01-15T09:15:00Z'
+                },
+                'admin_sdn2': {
+                    username: 'admin_sdn2',
+                    email: 'admin@sdn2.sch.id',
+                    role: 'school_admin',
+                    school: 'sdn2',
+                    status: 'active',
+                    last_login: '2024-01-15T08:45:00Z'
+                }
+            };
+
+            // Sample activity log
+            activityLog = [
+                { action: 'Login sistem', user: 'admin', timestamp: new Date().toISOString() },
+                { action: 'Menambah sekolah baru: SMP Negeri 1', user: 'admin', timestamp: new Date(Date.now() - 3600000).toISOString() },
+                { action: 'Update profil user guru1', user: 'admin', timestamp: new Date(Date.now() - 7200000).toISOString() },
+                { action: 'Backup data sistem', user: 'admin', timestamp: new Date(Date.now() - 86400000).toISOString() }
+            ];
+
+            // Sample backup history
+            backupHistory = [
+                {
+                    id: Date.now(),
+                    name: 'backup-full-2024-01-15',
+                    type: 'full',
+                    timestamp: new Date().toISOString(),
+                    size: 2048576
+                }
+            ];
         }
 
         function setupEventListeners() {
@@ -710,12 +536,34 @@
             document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
             
             // Search functionality
-            document.getElementById('searchSchools').addEventListener('input', filterSchools);
-            document.getElementById('statusFilter').addEventListener('change', filterSchools);
+            const searchInput = document.getElementById('searchSchools');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterSchools);
+            }
+            
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', filterSchools);
+            }
             
             // Form submissions
-            document.getElementById('generalSettings').addEventListener('submit', saveGeneralSettings);
-            document.getElementById('defaultTemplate').addEventListener('submit', saveDefaultTemplate);
+            const generalForm = document.getElementById('generalSettings');
+            if (generalForm) {
+                generalForm.addEventListener('submit', saveGeneralSettings);
+            }
+            
+            const securityForm = document.getElementById('securitySettings');
+            if (securityForm) {
+                securityForm.addEventListener('submit', saveSecuritySettings);
+            }
+            
+            // Close user menu when clicking outside
+            document.addEventListener('click', function(e) {
+                const userMenu = document.getElementById('userMenu');
+                if (userMenu && !e.target.closest('.relative')) {
+                    userMenu.classList.add('hidden');
+                }
+            });
         }
 
         function toggleSidebar() {
@@ -741,7 +589,10 @@
             });
             
             // Show selected section
-            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
             
             // Update nav links
             document.querySelectorAll('.nav-link').forEach(link => {
@@ -754,22 +605,44 @@
             if (window.innerWidth < 768) {
                 closeSidebar();
             }
+            
+            // Load section-specific data
+            switch(sectionName) {
+                case 'schools':
+                    loadSchoolsList();
+                    break;
+                case 'users':
+                    loadUsersList();
+                    break;
+                case 'templates':
+                    loadTemplatesList();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+                case 'backup':
+                    loadBackupHistory();
+                    break;
+            }
         }
 
         function updateClock() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('id-ID');
-            document.getElementById('currentTime').textContent = timeString;
+            const clockElement = document.getElementById('currentTime');
+            if (clockElement) {
+                clockElement.textContent = timeString;
+            }
         }
 
         function updateStats() {
             const total = Object.keys(schoolsData).length;
             const active = Object.values(schoolsData).filter(school => school.status === 'active').length;
-            const pending = Object.values(schoolsData).filter(school => school.status === 'setup').length;
+            const totalUsersCount = Object.keys(usersData).length;
             
             document.getElementById('totalSchools').textContent = total;
             document.getElementById('activeSchools').textContent = active;
-            document.getElementById('pendingSchools').textContent = pending;
+            document.getElementById('totalUsers').textContent = totalUsersCount;
             
             // Update last backup
             if (backupHistory.length > 0) {
@@ -780,6 +653,8 @@
 
         function loadSchoolsList() {
             const container = document.getElementById('schoolsList');
+            if (!container) return;
+            
             container.innerHTML = '';
 
             Object.keys(schoolsData).forEach(schoolId => {
@@ -791,11 +666,11 @@
 
         function createSchoolCard(schoolId, school) {
             const card = document.createElement('div');
-            card.className = 'school-card bg-white rounded-xl shadow-lg p-6 border-l-4';
+            card.className = 'bg-white rounded-xl shadow-lg p-6 border-l-4 card-hover';
             card.style.borderLeftColor = school.colors.primary;
             
-            const statusColor = school.status === 'active' ? 'green' : school.status === 'setup' ? 'yellow' : 'red';
-            const statusText = school.status === 'active' ? 'Aktif' : school.status === 'setup' ? 'Perlu Setup' : 'Tidak Aktif';
+            const statusColor = school.status === 'active' ? 'green' : school.status === 'maintenance' ? 'yellow' : 'red';
+            const statusText = school.status === 'active' ? 'Aktif' : school.status === 'maintenance' ? 'Maintenance' : 'Tidak Aktif';
             
             card.innerHTML = `
                 <div class="flex items-center justify-between mb-4">
@@ -813,13 +688,10 @@
                         </div>
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="editSchool('${schoolId}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700">
+                        <button onclick="editSchool('${schoolId}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
                             <i class="fas fa-edit mr-1"></i>Edit
                         </button>
-                        <button onclick="duplicateSchool('${schoolId}')" class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-700">
-                            <i class="fas fa-copy mr-1"></i>Duplikat
-                        </button>
-                        <button onclick="deleteSchool('${schoolId}')" class="bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-700">
+                        <button onclick="deleteSchool('${schoolId}')" class="bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-700 transition-colors">
                             <i class="fas fa-trash mr-1"></i>Hapus
                         </button>
                     </div>
@@ -834,11 +706,8 @@
                         </div>
                     </div>
                     <div>
-                        <span class="text-gray-500">Warna Sekunder:</span>
-                        <div class="flex items-center mt-1">
-                            <div class="w-4 h-4 rounded mr-2" style="background: ${school.colors.secondary}"></div>
-                            <span class="font-mono text-xs">${school.colors.secondary}</span>
-                        </div>
+                        <span class="text-gray-500">Total User:</span>
+                        <div class="mt-1 font-semibold">${school.users_count || 0} user</div>
                     </div>
                     <div>
                         <span class="text-gray-500">Telepon:</span>
@@ -855,10 +724,10 @@
                         Dibuat: ${new Date(school.created_at).toLocaleDateString('id-ID')}
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="previewSchool('${schoolId}')" class="text-blue-600 hover:text-blue-800 text-sm">
+                        <button onclick="previewSchool('${schoolId}')" class="text-blue-600 hover:text-blue-800 text-sm transition-colors">
                             <i class="fas fa-eye mr-1"></i>Preview
                         </button>
-                        <button onclick="exportSchool('${schoolId}')" class="text-green-600 hover:text-green-800 text-sm">
+                        <button onclick="exportSchool('${schoolId}')" class="text-green-600 hover:text-green-800 text-sm transition-colors">
                             <i class="fas fa-download mr-1"></i>Export
                         </button>
                     </div>
@@ -868,45 +737,150 @@
             return card;
         }
 
-        function filterSchools() {
-            const searchTerm = document.getElementById('searchSchools').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
+        function loadUsersList() {
+            const container = document.getElementById('usersList');
+            if (!container) return;
             
-            const cards = document.querySelectorAll('.school-card');
-            
-            cards.forEach(card => {
-                const schoolName = card.querySelector('h4').textContent.toLowerCase();
-                const schoolStatus = card.querySelector('.inline-block').textContent.toLowerCase();
-                
-                const matchesSearch = schoolName.includes(searchTerm);
-                const matchesStatus = !statusFilter || schoolStatus.includes(statusFilter);
-                
-                if (matchesSearch && matchesStatus) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+            container.innerHTML = '';
+
+            Object.keys(usersData).forEach(userId => {
+                const user = usersData[userId];
+                const userRow = createUserRow(userId, user);
+                container.appendChild(userRow);
             });
         }
 
-        function refreshSchoolsList() {
-            loadSchoolsList();
-            updateStats();
-            showNotification('Daftar sekolah berhasil direfresh!', 'success');
+        function createUserRow(userId, user) {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50';
+            
+            const roleText = user.role === 'super_admin' ? 'Super Admin' : 
+                           user.role === 'school_admin' ? 'Admin Sekolah' : 'Guru';
+            const schoolText = user.school === 'all' ? 'Semua Sekolah' : 
+                              schoolsData[user.school]?.name || user.school;
+            const statusColor = user.status === 'active' ? 'green' : 'red';
+            const statusText = user.status === 'active' ? 'Aktif' : 'Tidak Aktif';
+            
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">${user.username}</div>
+                            <div class="text-sm text-gray-500">${user.email}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        ${roleText}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    ${schoolText}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-${statusColor}-100 text-${statusColor}-800">
+                        ${statusText}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="editUser('${userId}')" class="text-blue-600 hover:text-blue-900 mr-3 transition-colors">Edit</button>
+                    <button onclick="deleteUser('${userId}')" class="text-red-600 hover:text-red-900 transition-colors">Hapus</button>
+                </td>
+            `;
+            
+            return row;
         }
 
+        function loadRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (activityLog.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-4">
+                        <i class="fas fa-history text-2xl mb-2"></i>
+                        <p>Belum ada aktivitas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            activityLog.slice(-5).reverse().forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'flex items-center space-x-3 p-3 bg-gray-50 rounded-lg';
+                activityItem.innerHTML = `
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-clock text-blue-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium">${activity.action}</div>
+                        <div class="text-xs text-gray-500">
+                            ${activity.user} • ${new Date(activity.timestamp).toLocaleString('id-ID')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(activityItem);
+            });
+        }
+
+        function loadBackupHistory() {
+            const container = document.getElementById('backupHistory');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (backupHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-database text-4xl mb-4"></i>
+                        <p>Belum ada backup yang dibuat</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            backupHistory.slice(-10).reverse().forEach(backup => {
+                const backupItem = document.createElement('div');
+                backupItem.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg';
+                backupItem.innerHTML = `
+                    <div>
+                        <div class="font-semibold">${backup.name}</div>
+                        <div class="text-sm text-gray-600">
+                            ${backup.type.toUpperCase()} • ${new Date(backup.timestamp).toLocaleString('id-ID')} • ${(backup.size / 1024).toFixed(1)} KB
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="downloadBackup('${backup.id}')" class="text-blue-600 hover:text-blue-800 text-sm transition-colors">
+                            <i class="fas fa-download mr-1"></i>Download
+                        </button>
+                        <button onclick="deleteBackup('${backup.id}')" class="text-red-600 hover:text-red-800 text-sm transition-colors">
+                            <i class="fas fa-trash mr-1"></i>Hapus
+                        </button>
+                    </div>
+                `;
+                container.appendChild(backupItem);
+            });
+        }
+
+        // School Management Functions
         function addNewSchool() {
             showModal('Tambah Sekolah Baru', `
                 <form id="addSchoolForm" class="space-y-4">
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">ID Sekolah</label>
-                        <input type="text" id="newSchoolId" placeholder="contoh: sdn4" class="w-full px-3 py-2 border rounded-lg" required>
+                        <input type="text" id="newSchoolId" placeholder="contoh: sdn4" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                         <p class="text-sm text-gray-500 mt-1">Akan jadi: [id].yourdomain.com</p>
                     </div>
                     
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Nama Sekolah</label>
-                        <input type="text" id="newName" placeholder="SD Negeri 4 Jakarta" class="w-full px-3 py-2 border rounded-lg" required>
+                        <input type="text" id="newName" placeholder="SD Negeri 4 Jakarta" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4">
@@ -922,19 +896,19 @@
                     
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Telepon</label>
-                        <input type="tel" id="newPhone" placeholder="021-12345678" class="w-full px-3 py-2 border rounded-lg">
+                        <input type="tel" id="newPhone" placeholder="021-12345678" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Email</label>
-                        <input type="email" id="newEmail" placeholder="admin@sekolah.sch.id" class="w-full px-3 py-2 border rounded-lg">
+                        <input type="email" id="newEmail" placeholder="admin@sekolah.sch.id" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Status</label>
-                        <select id="newStatus" class="w-full px-3 py-2 border rounded-lg">
+                        <select id="newStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                             <option value="active">Aktif</option>
-                            <option value="setup">Perlu Setup</option>
+                            <option value="maintenance">Maintenance</option>
                             <option value="inactive">Tidak Aktif</option>
                         </select>
                     </div>
@@ -964,10 +938,10 @@
                                     email: document.getElementById('newEmail').value
                                 },
                                 status: document.getElementById('newStatus').value,
-                                created_at: new Date().toISOString()
+                                created_at: new Date().toISOString(),
+                                users_count: 0
                             };
                             
-                            saveData();
                             loadSchoolsList();
                             updateStats();
                             closeModal();
@@ -990,7 +964,7 @@
                 <form id="editSchoolForm" class="space-y-4">
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Nama Sekolah</label>
-                        <input type="text" id="editName" value="${school.name}" class="w-full px-3 py-2 border rounded-lg" required>
+                        <input type="text" id="editName" value="${school.name}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4">
@@ -1006,19 +980,19 @@
                     
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Telepon</label>
-                        <input type="tel" id="editPhone" value="${school.contact.phone || ''}" class="w-full px-3 py-2 border rounded-lg">
+                        <input type="tel" id="editPhone" value="${school.contact.phone || ''}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Email</label>
-                        <input type="email" id="editEmail" value="${school.contact.email || ''}" class="w-full px-3 py-2 border rounded-lg">
+                        <input type="email" id="editEmail" value="${school.contact.email || ''}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Status</label>
-                        <select id="editStatus" class="w-full px-3 py-2 border rounded-lg">
+                        <select id="editStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                             <option value="active" ${school.status === 'active' ? 'selected' : ''}>Aktif</option>
-                            <option value="setup" ${school.status === 'setup' ? 'selected' : ''}>Perlu Setup</option>
+                            <option value="maintenance" ${school.status === 'maintenance' ? 'selected' : ''}>Maintenance</option>
                             <option value="inactive" ${school.status === 'inactive' ? 'selected' : ''}>Tidak Aktif</option>
                         </select>
                     </div>
@@ -1042,7 +1016,6 @@
                             status: document.getElementById('editStatus').value
                         };
                         
-                        saveData();
                         loadSchoolsList();
                         updateStats();
                         closeModal();
@@ -1058,33 +1031,11 @@
             ]);
         }
 
-        function duplicateSchool(schoolId) {
-            const school = schoolsData[schoolId];
-            const newId = prompt(`Masukkan ID untuk duplikat sekolah "${schoolId}":`, schoolId + '_copy');
-            
-            if (newId && !schoolsData[newId]) {
-                schoolsData[newId] = {
-                    ...school,
-                    name: school.name + ' (Copy)',
-                    created_at: new Date().toISOString()
-                };
-                
-                saveData();
-                loadSchoolsList();
-                updateStats();
-                logActivity(`Menduplikat sekolah: ${school.name} → ${newId}`);
-                showNotification(`Sekolah berhasil diduplikat ke ${newId}!`, 'success');
-            } else if (schoolsData[newId]) {
-                showNotification('ID sekolah sudah ada!', 'error');
-            }
-        }
-
         function deleteSchool(schoolId) {
             if (confirm(`Yakin ingin menghapus sekolah "${schoolId}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
                 const schoolName = schoolsData[schoolId].name;
                 delete schoolsData[schoolId];
                 
-                saveData();
                 loadSchoolsList();
                 updateStats();
                 logActivity(`Menghapus sekolah: ${schoolName}`);
@@ -1161,94 +1112,73 @@
             showNotification(`Config sekolah ${schoolId} berhasil diexport!`, 'success');
         }
 
-        function bulkUpdateColors() {
-            showModal('Update Warna Semua Sekolah', `
-                <form id="bulkColorForm" class="space-y-4">
+        // User Management Functions
+        function addNewUser() {
+            showModal('Tambah User Baru', `
+                <form id="addUserForm" class="space-y-4">
                     <div>
-                        <label class="block text-gray-700 font-bold mb-2">Warna Utama Baru</label>
-                        <input type="color" id="bulkPrimary" value="#3b82f6" class="w-full h-12 border rounded-lg">
+                        <label class="block text-gray-700 font-bold mb-2">Username</label>
+                        <input type="text" id="newUsername" placeholder="username" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     </div>
                     
                     <div>
-                        <label class="block text-gray-700 font-bold mb-2">Warna Sekunder Baru</label>
-                        <input type="color" id="bulkSecondary" value="#10b981" class="w-full h-12 border rounded-lg">
+                        <label class="block text-gray-700 font-bold mb-2">Email</label>
+                        <input type="email" id="newUserEmail" placeholder="user@email.com" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     </div>
                     
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
-                            <span class="text-sm text-yellow-800">
-                                Ini akan mengubah warna semua ${Object.keys(schoolsData).length} sekolah!
-                            </span>
-                        </div>
-                    </div>
-                </form>
-            `, [
-                {
-                    text: 'Update Semua',
-                    class: 'bg-orange-600 hover:bg-orange-700',
-                    onclick: () => {
-                        const newPrimary = document.getElementById('bulkPrimary').value;
-                        const newSecondary = document.getElementById('bulkSecondary').value;
-                        
-                        Object.keys(schoolsData).forEach(schoolId => {
-                            schoolsData[schoolId].colors.primary = newPrimary;
-                            schoolsData[schoolId].colors.secondary = newSecondary;
-                        });
-                        
-                        saveData();
-                        loadSchoolsList();
-                        closeModal();
-                        logActivity(`Bulk update warna semua sekolah`);
-                        showNotification('Warna semua sekolah berhasil diupdate!', 'success');
-                    }
-                },
-                {
-                    text: 'Batal',
-                    class: 'bg-gray-600 hover:bg-gray-700',
-                    onclick: closeModal
-                }
-            ]);
-        }
-
-        function bulkUpdateStatus() {
-            showModal('Update Status Semua Sekolah', `
-                <form id="bulkStatusForm" class="space-y-4">
                     <div>
-                        <label class="block text-gray-700 font-bold mb-2">Status Baru</label>
-                        <select id="bulkStatus" class="w-full px-3 py-2 border rounded-lg">
-                            <option value="active">Aktif</option>
-                            <option value="setup">Perlu Setup</option>
-                            <option value="inactive">Tidak Aktif</option>
+                        <label class="block text-gray-700 font-bold mb-2">Password</label>
+                        <input type="password" id="newPassword" placeholder="password" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Role</label>
+                        <select id="newRole" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="teacher">Guru</option>
+                            <option value="school_admin">Admin Sekolah</option>
+                            <option value="super_admin">Super Admin</option>
                         </select>
                     </div>
                     
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
-                            <span class="text-sm text-yellow-800">
-                                Ini akan mengubah status semua ${Object.keys(schoolsData).length} sekolah!
-                            </span>
-                        </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Sekolah</label>
+                        <select id="newUserSchool" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="all">Semua Sekolah</option>
+                            ${Object.keys(schoolsData).map(schoolId => 
+                                `<option value="${schoolId}">${schoolsData[schoolId].name}</option>`
+                            ).join('')}
+                        </select>
                     </div>
                 </form>
             `, [
                 {
-                    text: 'Update Semua',
+                    text: 'Tambah User',
                     class: 'bg-green-600 hover:bg-green-700',
                     onclick: () => {
-                        const newStatus = document.getElementById('bulkStatus').value;
-                        
-                        Object.keys(schoolsData).forEach(schoolId => {
-                            schoolsData[schoolId].status = newStatus;
-                        });
-                        
-                        saveData();
-                        loadSchoolsList();
-                        updateStats();
-                        closeModal();
-                        logActivity(`Bulk update status semua sekolah ke: ${newStatus}`);
-                        showNotification('Status semua sekolah berhasil diupdate!', 'success');
+                        const form = document.getElementById('addUserForm');
+                        if (form.checkValidity()) {
+                            const username = document.getElementById('newUsername').value;
+                            
+                            if (usersData[username]) {
+                                showNotification('Username sudah ada! Gunakan username yang berbeda.', 'error');
+                                return;
+                            }
+                            
+                            usersData[username] = {
+                                username: username,
+                                email: document.getElementById('newUserEmail').value,
+                                role: document.getElementById('newRole').value,
+                                school: document.getElementById('newUserSchool').value,
+                                status: 'active',
+                                last_login: null
+                            };
+                            
+                            loadUsersList();
+                            updateStats();
+                            closeModal();
+                            logActivity(`Menambah user baru: ${username}`);
+                            showNotification(`User ${username} berhasil ditambahkan!`, 'success');
+                        }
                     }
                 },
                 {
@@ -1259,121 +1189,111 @@
             ]);
         }
 
-        function bulkValidate() {
-            let errors = [];
-            let warnings = [];
-            
-            Object.keys(schoolsData).forEach(schoolId => {
-                const school = schoolsData[schoolId];
-                
-                // Check required fields
-                if (!school.name) errors.push(`${schoolId}: Nama sekolah kosong`);
-                if (!school.colors || !school.colors.primary) errors.push(`${schoolId}: Warna utama tidak ada`);
-                if (!school.colors || !school.colors.secondary) errors.push(`${schoolId}: Warna sekunder tidak ada`);
-                if (!school.status) errors.push(`${schoolId}: Status tidak ada`);
-                
-                // Check warnings
-                if (!school.contact || !school.contact.email) warnings.push(`${schoolId}: Email tidak ada`);
-                if (!school.contact || !school.contact.phone) warnings.push(`${schoolId}: Telepon tidak ada`);
-                if (!school.created_at) warnings.push(`${schoolId}: Tanggal pembuatan tidak ada`);
-            });
-            
-            const resultHtml = `
-                <div class="space-y-4">
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-gray-800">Hasil Validasi</div>
-                        <div class="text-gray-600">Total sekolah: ${Object.keys(schoolsData).length}</div>
+        function editUser(userId) {
+            const user = usersData[userId];
+            showModal(`Edit User: ${userId}`, `
+                <form id="editUserForm" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Email</label>
+                        <input type="email" id="editUserEmail" value="${user.email}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold text-red-600">${errors.length}</div>
-                            <div class="text-red-800">Errors</div>
-                        </div>
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold text-yellow-600">${warnings.length}</div>
-                            <div class="text-yellow-800">Warnings</div>
-                        </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Role</label>
+                        <select id="editRole" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="teacher" ${user.role === 'teacher' ? 'selected' : ''}>Guru</option>
+                            <option value="school_admin" ${user.role === 'school_admin' ? 'selected' : ''}>Admin Sekolah</option>
+                            <option value="super_admin" ${user.role === 'super_admin' ? 'selected' : ''}>Super Admin</option>
+                        </select>
                     </div>
                     
-                    ${errors.length > 0 ? `
-                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                            <div class="font-bold text-red-800 mb-2">ERRORS:</div>
-                            <ul class="text-sm text-red-700 space-y-1">
-                                ${errors.map(error => `<li>• ${error}</li>`).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Sekolah</label>
+                        <select id="editUserSchool" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="all" ${user.school === 'all' ? 'selected' : ''}>Semua Sekolah</option>
+                            ${Object.keys(schoolsData).map(schoolId => 
+                                `<option value="${schoolId}" ${user.school === schoolId ? 'selected' : ''}>${schoolsData[schoolId].name}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
                     
-                    ${warnings.length > 0 ? `
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <div class="font-bold text-yellow-800 mb-2">WARNINGS:</div>
-                            <ul class="text-sm text-yellow-700 space-y-1">
-                                ${warnings.map(warning => `<li>• ${warning}</li>`).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
-                    
-                    ${errors.length === 0 && warnings.length === 0 ? `
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                            <i class="fas fa-check-circle text-green-600 text-3xl mb-2"></i>
-                            <div class="text-green-800 font-bold">Semua konfigurasi valid!</div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-            
-            showModal('Hasil Validasi Config', resultHtml, [
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Status</label>
+                        <select id="editUserStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="active" ${user.status === 'active' ? 'selected' : ''}>Aktif</option>
+                            <option value="inactive" ${user.status === 'inactive' ? 'selected' : ''}>Tidak Aktif</option>
+                        </select>
+                    </div>
+                </form>
+            `, [
                 {
-                    text: 'Tutup',
+                    text: 'Simpan Perubahan',
+                    class: 'bg-blue-600 hover:bg-blue-700',
+                    onclick: () => {
+                        usersData[userId] = {
+                            ...user,
+                            email: document.getElementById('editUserEmail').value,
+                            role: document.getElementById('editRole').value,
+                            school: document.getElementById('editUserSchool').value,
+                            status: document.getElementById('editUserStatus').value
+                        };
+                        
+                        loadUsersList();
+                        closeModal();
+                        logActivity(`Mengedit user: ${userId}`);
+                        showNotification(`User ${userId} berhasil diupdate!`, 'success');
+                    }
+                },
+                {
+                    text: 'Batal',
                     class: 'bg-gray-600 hover:bg-gray-700',
                     onclick: closeModal
                 }
             ]);
-            
-            logActivity(`Validasi config: ${errors.length} errors, ${warnings.length} warnings`);
         }
 
-        function bulkReset() {
-            if (confirm('Yakin ingin reset semua data sekolah?\n\nTindakan ini akan menghapus SEMUA data dan tidak dapat dibatalkan!')) {
-                if (confirm('Konfirmasi sekali lagi: SEMUA DATA AKAN HILANG!')) {
-                    schoolsData = {
-                        'demo': {
-                            name: 'SD Demo Brangkas',
-                            colors: { primary: '#3b82f6', secondary: '#10b981' },
-                            contact: { phone: '021-12345678', email: 'admin@demo.sch.id' },
-                            status: 'active',
-                            created_at: new Date().toISOString()
-                        }
-                    };
-                    
-                    saveData();
-                    loadSchoolsList();
-                    updateStats();
-                    logActivity('Reset semua data sekolah');
-                    showNotification('Semua data berhasil direset!', 'success');
-                }
+        function deleteUser(userId) {
+            if (userId === 'admin') {
+                showNotification('User admin tidak dapat dihapus!', 'error');
+                return;
+            }
+            
+            if (confirm(`Yakin ingin menghapus user "${userId}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
+                delete usersData[userId];
+                
+                loadUsersList();
+                updateStats();
+                logActivity(`Menghapus user: ${userId}`);
+                showNotification(`User ${userId} berhasil dihapus!`, 'success');
             }
         }
 
-        function exportAllSchools() {
-            const exportData = {
-                timestamp: new Date().toISOString(),
-                total_schools: Object.keys(schoolsData).length,
-                schools: schoolsData
-            };
+        // Utility Functions
+        function filterSchools() {
+            const searchTerm = document.getElementById('searchSchools')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('statusFilter')?.value || '';
             
-            const dataStr = JSON.stringify(exportData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `all-schools-${new Date().toISOString().slice(0, 10)}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
+            const cards = document.querySelectorAll('#schoolsList > div');
             
-            logActivity('Export semua data sekolah');
-            showNotification('Semua data sekolah berhasil diexport!', 'success');
+            cards.forEach(card => {
+                const schoolName = card.querySelector('h4')?.textContent.toLowerCase() || '';
+                const schoolStatus = card.querySelector('.inline-block')?.textContent.toLowerCase() || '';
+                
+                const matchesSearch = schoolName.includes(searchTerm);
+                const matchesStatus = !statusFilter || schoolStatus.includes(statusFilter);
+                
+                if (matchesSearch && matchesStatus) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function refreshSchoolsList() {
+            loadSchoolsList();
+            updateStats();
+            showNotification('Daftar sekolah berhasil direfresh!', 'success');
         }
 
         function importSchools() {
@@ -1388,17 +1308,13 @@
                         try {
                             const importedData = JSON.parse(e.target.result);
                             
-                            // Check if it's a full export or just schools data
-                            const schoolsToImport = importedData.schools || importedData;
-                            
                             // Merge with existing data
-                            schoolsData = { ...schoolsData, ...schoolsToImport };
+                            schoolsData = { ...schoolsData, ...importedData };
                             
-                            saveData();
                             loadSchoolsList();
                             updateStats();
-                            logActivity(`Import ${Object.keys(schoolsToImport).length} sekolah`);
-                            showNotification(`${Object.keys(schoolsToImport).length} sekolah berhasil diimport!`, 'success');
+                            logActivity(`Import ${Object.keys(importedData).length} sekolah`);
+                            showNotification(`${Object.keys(importedData).length} sekolah berhasil diimport!`, 'success');
                         } catch (error) {
                             showNotification('File JSON tidak valid!', 'error');
                         }
@@ -1409,9 +1325,30 @@
             input.click();
         }
 
+        function exportData() {
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                schools: schoolsData,
+                users: usersData,
+                activity_log: activityLog
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `admin-panel-export-${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            logActivity('Export semua data sistem');
+            showNotification('Semua data berhasil diexport!', 'success');
+        }
+
         function createBackup() {
             const backupType = document.getElementById('backupType')?.value || 'full';
-            const backupName = document.getElementById('backupName')?.value || `backup-${new Date().toISOString().slice(0, 10)}`;
+            const backupName = `backup-${backupType}-${new Date().toISOString().slice(0, 10)}`;
             
             let backupData = {};
             
@@ -1422,16 +1359,9 @@
                         type: 'full',
                         name: backupName,
                         schools: schoolsData,
+                        users: usersData,
                         activity_log: activityLog,
                         backup_history: backupHistory
-                    };
-                    break;
-                case 'config':
-                    backupData = {
-                        timestamp: new Date().toISOString(),
-                        type: 'config',
-                        name: backupName,
-                        schools: schoolsData
                     };
                     break;
                 case 'schools':
@@ -1440,6 +1370,24 @@
                         type: 'schools',
                         name: backupName,
                         schools: schoolsData
+                    };
+                    break;
+                case 'users':
+                    backupData = {
+                        timestamp: new Date().toISOString(),
+                        type: 'users',
+                        name: backupName,
+                        users: usersData
+                    };
+                    break;
+                case 'settings':
+                    backupData = {
+                        timestamp: new Date().toISOString(),
+                        type: 'settings',
+                        name: backupName,
+                        settings: {
+                            // Add settings data here
+                        }
                     };
                     break;
             }
@@ -1454,7 +1402,6 @@
             };
             
             backupHistory.push(backupRecord);
-            localStorage.setItem('backupHistory', JSON.stringify(backupHistory));
             
             // Download backup file
             const dataStr = JSON.stringify(backupData, null, 2);
@@ -1489,6 +1436,10 @@
                                     schoolsData = backupData.schools;
                                 }
                                 
+                                if (backupData.users) {
+                                    usersData = backupData.users;
+                                }
+                                
                                 if (backupData.activity_log) {
                                     activityLog = backupData.activity_log;
                                 }
@@ -1497,8 +1448,8 @@
                                     backupHistory = backupData.backup_history;
                                 }
                                 
-                                saveData();
                                 loadSchoolsList();
+                                loadUsersList();
                                 updateStats();
                                 loadRecentActivity();
                                 loadBackupHistory();
@@ -1516,81 +1467,50 @@
             input.click();
         }
 
-        function loadBackupHistory() {
-            const container = document.getElementById('backupHistory');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            if (backupHistory.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-database text-4xl mb-4"></i>
-                        <p>Belum ada backup yang dibuat</p>
-                    </div>
-                `;
-                return;
+        function downloadBackup(backupId) {
+            const backup = backupHistory.find(b => b.id == backupId);
+            if (backup) {
+                showNotification(`Download backup: ${backup.name}`, 'info');
+                // In a real implementation, you would download the actual backup file
             }
-            
-            backupHistory.slice(-10).reverse().forEach(backup => {
-                const backupItem = document.createElement('div');
-                backupItem.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg';
-                backupItem.innerHTML = `
-                    <div>
-                        <div class="font-semibold">${backup.name}</div>
-                        <div class="text-sm text-gray-600">
-                            ${backup.type.toUpperCase()} • ${new Date(backup.timestamp).toLocaleString('id-ID')} • ${(backup.size / 1024).toFixed(1)} KB
-                        </div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button onclick="downloadBackup('${backup.id}')" class="text-blue-600 hover:text-blue-800 text-sm">
-                            <i class="fas fa-download mr-1"></i>Download
-                        </button>
-                        <button onclick="deleteBackup('${backup.id}')" class="text-red-600 hover:text-red-800 text-sm">
-                            <i class="fas fa-trash mr-1"></i>Hapus
-                        </button>
-                    </div>
-                `;
-                container.appendChild(backupItem);
-            });
         }
 
-        function loadRecentActivity() {
-            const container = document.getElementById('recentActivity');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            if (activityLog.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-500 py-4">
-                        <i class="fas fa-history text-2xl mb-2"></i>
-                        <p>Belum ada aktivitas</p>
-                    </div>
-                `;
-                return;
+        function deleteBackup(backupId) {
+            if (confirm('Yakin ingin menghapus backup ini?')) {
+                backupHistory = backupHistory.filter(b => b.id != backupId);
+                loadBackupHistory();
+                showNotification('Backup berhasil dihapus!', 'success');
             }
+        }
+
+        function syncData() {
+            showNotification('Sinkronisasi data...', 'info');
             
-            activityLog.slice(-5).reverse().forEach(activity => {
-                const activityItem = document.createElement('div');
-                activityItem.className = 'flex items-center space-x-3 p-3 bg-gray-50 rounded-lg';
-                activityItem.innerHTML = `
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-clock text-blue-600 text-sm"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="text-sm font-medium">${activity.action}</div>
-                        <div class="text-xs text-gray-500">${new Date(activity.timestamp).toLocaleString('id-ID')}</div>
-                    </div>
-                `;
-                container.appendChild(activityItem);
-            });
+            // Simulate sync process
+            setTimeout(() => {
+                updateConnectionStatus(true);
+                showNotification('Data berhasil disinkronisasi!', 'success');
+            }, 2000);
+        }
+
+        function updateConnectionStatus(isConnected) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (statusEl) {
+                if (isConnected) {
+                    statusEl.className = 'w-3 h-3 rounded-full bg-green-500';
+                    statusEl.title = 'Terhubung ke server';
+                } else {
+                    statusEl.className = 'w-3 h-3 rounded-full bg-red-500';
+                    statusEl.title = 'Tidak terhubung ke server';
+                }
+            }
         }
 
         function logActivity(action) {
             activityLog.push({
                 id: Date.now(),
                 action: action,
+                user: currentUser.username,
                 timestamp: new Date().toISOString()
             });
             
@@ -1599,340 +1519,50 @@
                 activityLog = activityLog.slice(-100);
             }
             
-            localStorage.setItem('activityLog', JSON.stringify(activityLog));
             loadRecentActivity();
-        }
-
-        function saveData() {
-            // Save to server first, then local as backup
-            saveSchoolsToServer();
-        }
-        
-        function addSyncButton() {
-            document.getElementById('syncButtonContainer').classList.remove('hidden');
-        }
-        
-        async function syncWithServer() {
-            const syncBtn = document.querySelector('#syncButtonContainer button');
-            const originalText = syncBtn.innerHTML;
-            
-            syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Syncing...';
-            syncBtn.disabled = true;
-            
-            try {
-                await loadSchoolsFromServer();
-                updateStats();
-                loadSchoolsList();
-                updateConnectionStatus(true);
-            } catch (error) {
-                updateConnectionStatus(false);
-            } finally {
-                syncBtn.innerHTML = originalText;
-                syncBtn.disabled = false;
-            }
-        }
-        
-        function updateConnectionStatus(isConnected) {
-            const statusEl = document.getElementById('connectionStatus');
-            if (isConnected) {
-                statusEl.className = 'w-3 h-3 rounded-full bg-green-500';
-                statusEl.title = 'Terhubung ke server';
-            } else {
-                statusEl.className = 'w-3 h-3 rounded-full bg-red-500';
-                statusEl.title = 'Tidak terhubung ke server';
-            }
-        }
-        
-        // Test server connection periodically
-        setInterval(async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/ping.php`);
-                updateConnectionStatus(response.ok);
-            } catch (error) {
-                updateConnectionStatus(false);
-            }
-        }, 30000); // Check every 30 seconds
-        
-        function showServerSetupGuide() {
-            showModal('Panduan Setup Server', `
-                <div class="space-y-6">
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 class="font-bold text-blue-800 mb-2">📋 Langkah-langkah Setup:</h4>
-                        <ol class="list-decimal list-inside space-y-2 text-sm text-blue-700">
-                            <li>Buat folder <code class="bg-blue-100 px-2 py-1 rounded">/api/</code> di root hosting Anda</li>
-                            <li>Upload file <code class="bg-blue-100 px-2 py-1 rounded">config.php</code> dan <code class="bg-blue-100 px-2 py-1 rounded">ping.php</code></li>
-                            <li>Pastikan folder memiliki permission 755</li>
-                            <li>Update URL di admin panel (line 438-439)</li>
-                            <li>Test koneksi dengan tombol Sync</li>
-                        </ol>
-                    </div>
-                    
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h4 class="font-bold text-green-800 mb-2">🔧 Struktur Folder:</h4>
-                        <pre class="text-sm text-green-700 bg-green-100 p-3 rounded overflow-x-auto">
-yourdomain.com/
-├── index.html (halaman utama)
-├── admin.html (admin panel ini)
-├── api/
-│   ├── config.php
-│   └── ping.php
-└── schools/
-    ├── demo.html
-    ├── sdn1.html
-    └── ...
-                        </pre>
-                    </div>
-                    
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <h4 class="font-bold text-yellow-800 mb-2">⚠️ Catatan Penting:</h4>
-                        <ul class="list-disc list-inside space-y-1 text-sm text-yellow-700">
-                            <li>Pastikan hosting mendukung PHP 7.4+</li>
-                            <li>File config.php akan menyimpan data dalam format JSON</li>
-                            <li>Backup data secara berkala</li>
-                            <li>Gunakan HTTPS untuk keamanan</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="font-bold text-gray-800 mb-2">🌐 URL yang Perlu Diupdate:</h4>
-                        <div class="space-y-2 text-sm">
-                            <div>
-                                <strong>API_BASE_URL:</strong> 
-                                <code class="bg-gray-100 px-2 py-1 rounded">https://yourdomain.com/api</code>
-                            </div>
-                            <div>
-                                <strong>SCHOOLS_BASE_URL:</strong> 
-                                <code class="bg-gray-100 px-2 py-1 rounded">https://yourdomain.com/schools</code>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `, [
-                {
-                    text: 'Download File PHP',
-                    class: 'bg-green-600 hover:bg-green-700',
-                    onclick: () => {
-                        downloadServerFiles();
-                        closeModal();
-                    }
-                },
-                {
-                    text: 'Tutup',
-                    class: 'bg-gray-600 hover:bg-gray-700',
-                    onclick: closeModal
-                }
-            ]);
-        }
-        
-        function downloadServerFiles() {
-            // Create config.php content
-            const configPhp = \`<?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-header('Access-Control-Allow-Headers: Content-Type');
-
-$configFile = 'schools_config.json';
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Read configuration
-    if (file_exists($configFile)) {
-        $data = file_get_contents($configFile);
-        echo $data;
-    } else {
-        echo json_encode([]);
-    }
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Save configuration
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
-    
-    if ($data !== null) {
-        file_put_contents($configFile, json_encode($data, JSON_PRETTY_PRINT));
-        
-        // Generate individual school files
-        foreach ($data as $schoolId => $school) {
-            generateSchoolFile($schoolId, $school);
-        }
-        
-        echo json_encode(['status' => 'success', 'message' => 'Configuration saved']);
-    } else {
-        http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'Invalid JSON data']);
-    }
-}
-
-function generateSchoolFile($schoolId, $school) {
-    $schoolsDir = '../schools/';
-    if (!is_dir($schoolsDir)) {
-        mkdir($schoolsDir, 0755, true);
-    }
-    
-    $html = generateSchoolHTML($schoolId, $school);
-    file_put_contents($schoolsDir . $schoolId . '.html', $html);
-}
-
-function generateSchoolHTML($schoolId, $school) {
-    return \`<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{$school['name']} - Brangkas Data Guru</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: {$school['colors']['primary']};
-            --secondary-color: {$school['colors']['secondary']};
-        }
-        .bg-primary { background-color: var(--primary-color); }
-        .text-primary { color: var(--primary-color); }
-        .border-primary { border-color: var(--primary-color); }
-        .bg-secondary { background-color: var(--secondary-color); }
-        .text-secondary { color: var(--secondary-color); }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <header class="bg-primary text-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                        <span class="text-xl font-bold">\` . strtoupper(substr($schoolId, 0, 1)) . \`</span>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold">{$school['name']}</h1>
-                        <p class="text-white text-opacity-80">Sistem Brangkas Data Guru</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="text-sm text-white text-opacity-80">Kontak:</p>
-                    <p class="font-semibold">\` . ($school['contact']['phone'] ?? '-') . \`</p>
-                    <p class="text-sm">\` . ($school['contact']['email'] ?? '-') . \`</p>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <main class="container mx-auto px-6 py-8">
-        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
-            <div class="w-24 h-24 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-school text-4xl text-primary"></i>
-            </div>
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">Selamat Datang di {$school['name']}</h2>
-            <p class="text-gray-600 mb-8">Sistem manajemen data guru yang aman dan terpercaya</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-gray-50 p-6 rounded-lg">
-                    <i class="fas fa-users text-3xl text-primary mb-4"></i>
-                    <h3 class="font-bold text-lg mb-2">Data Guru</h3>
-                    <p class="text-gray-600 text-sm">Kelola informasi lengkap guru</p>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-lg">
-                    <i class="fas fa-shield-alt text-3xl text-secondary mb-4"></i>
-                    <h3 class="font-bold text-lg mb-2">Keamanan</h3>
-                    <p class="text-gray-600 text-sm">Data terlindungi dengan enkripsi</p>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-lg">
-                    <i class="fas fa-chart-bar text-3xl text-primary mb-4"></i>
-                    <h3 class="font-bold text-lg mb-2">Laporan</h3>
-                    <p class="text-gray-600 text-sm">Analisis dan statistik lengkap</p>
-                </div>
-            </div>
-            
-            <button class="bg-primary text-white px-8 py-3 rounded-lg hover:opacity-90 transition-opacity">
-                Masuk ke Sistem
-            </button>
-        </div>
-    </main>
-    
-    <footer class="bg-gray-800 text-white py-8 mt-12">
-        <div class="container mx-auto px-6 text-center">
-            <p>&copy; 2024 {$school['name']}. Semua hak dilindungi.</p>
-            <p class="text-gray-400 text-sm mt-2">Powered by Brangkas Data Guru System</p>
-        </div>
-    </footer>
-</body>
-</html>\`;
-}
-?>\`;
-            
-            // Create ping.php content
-            const pingPhp = \`<?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-
-echo json_encode([
-    'status' => 'ok',
-    'timestamp' => date('c'),
-    'server' => $_SERVER['SERVER_NAME'] ?? 'unknown'
-]);
-?>\`;
-            
-            // Download config.php
-            const configBlob = new Blob([configPhp], {type: 'text/plain'});
-            const configUrl = URL.createObjectURL(configBlob);
-            const configLink = document.createElement('a');
-            configLink.href = configUrl;
-            configLink.download = 'config.php';
-            configLink.click();
-            URL.revokeObjectURL(configUrl);
-            
-            // Download ping.php
-            setTimeout(() => {
-                const pingBlob = new Blob([pingPhp], {type: 'text/plain'});
-                const pingUrl = URL.createObjectURL(pingBlob);
-                const pingLink = document.createElement('a');
-                pingLink.href = pingUrl;
-                pingLink.download = 'ping.php';
-                pingLink.click();
-                URL.revokeObjectURL(pingUrl);
-            }, 500);
-            
-            showNotification('File PHP berhasil didownload! Upload ke folder /api/ di hosting Anda.', 'success');
         }
 
         function saveGeneralSettings(e) {
             e.preventDefault();
             
             const settings = {
+                systemName: document.getElementById('systemName').value,
                 mainDomain: document.getElementById('mainDomain').value,
-                adminEmail: document.getElementById('adminEmail').value,
-                timezone: document.getElementById('timezone').value
+                adminEmail: document.getElementById('adminEmail').value
             };
             
-            localStorage.setItem('generalSettings', JSON.stringify(settings));
             logActivity('Menyimpan pengaturan umum');
             showNotification('Pengaturan umum berhasil disimpan!', 'success');
         }
 
-        function saveDefaultTemplate(e) {
+        function saveSecuritySettings(e) {
             e.preventDefault();
             
-            const template = {
-                colors: {
-                    primary: document.getElementById('defaultPrimary').value,
-                    secondary: document.getElementById('defaultSecondary').value
-                }
+            const settings = {
+                sessionTimeout: document.getElementById('sessionTimeout').value,
+                maxLoginAttempts: document.getElementById('maxLoginAttempts').value,
+                enableTwoFactor: document.getElementById('enableTwoFactor').checked
             };
             
-            localStorage.setItem('defaultTemplate', JSON.stringify(template));
-            logActivity('Menyimpan template default');
-            showNotification('Template default berhasil disimpan!', 'success');
+            logActivity('Menyimpan pengaturan keamanan');
+            showNotification('Pengaturan keamanan berhasil disimpan!', 'success');
+        }
+
+        function showUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('hidden');
         }
 
         function showProfile() {
             showModal('Profil Admin', `
                 <div class="text-center space-y-4">
-                    <div class="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto flex items-center justify-center">
+                    <div class="w-20 h-20 gradient-bg rounded-full mx-auto flex items-center justify-center">
                         <i class="fas fa-user text-white text-2xl"></i>
                     </div>
                     
                     <div>
-                        <h3 class="text-xl font-bold">Administrator</h3>
-                        <p class="text-gray-600">Super Admin Multi-Sekolah</p>
+                        <h3 class="text-xl font-bold">${currentUser.username}</h3>
+                        <p class="text-gray-600">Super Administrator</p>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 text-sm">
@@ -1941,8 +1571,8 @@ echo json_encode([
                             <div class="text-2xl font-bold text-blue-600">${Object.keys(schoolsData).length}</div>
                         </div>
                         <div class="bg-gray-50 p-3 rounded-lg">
-                            <div class="font-semibold">Aktivitas</div>
-                            <div class="text-2xl font-bold text-green-600">${activityLog.length}</div>
+                            <div class="font-semibold">Total User</div>
+                            <div class="text-2xl font-bold text-green-600">${Object.keys(usersData).length}</div>
                         </div>
                     </div>
                     
@@ -1962,14 +1592,39 @@ echo json_encode([
             ]);
         }
 
+        function showSettings() {
+            showSection('settings');
+        }
+
+        function logout() {
+            if (confirm('Yakin ingin logout?')) {
+                showNotification('Logout berhasil!', 'success');
+                // In a real implementation, redirect to login page
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        }
+
+        function loadTemplatesList() {
+            // Placeholder for templates functionality
+            showNotification('Fitur template sedang dalam pengembangan', 'info');
+        }
+
+        function loadReports() {
+            // Placeholder for reports functionality
+            showNotification('Fitur laporan sedang dalam pengembangan', 'info');
+        }
+
+        // Modal Functions
         function showModal(title, content, buttons = []) {
             const modal = document.createElement('div');
-            modal.className = 'modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.className = 'modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
             modal.innerHTML = `
                 <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                     <div class="flex items-center justify-between p-6 border-b border-gray-200">
                         <h3 class="text-xl font-bold">${title}</h3>
-                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
                             <i class="fas fa-times text-xl"></i>
                         </button>
                     </div>
@@ -1982,7 +1637,7 @@ echo json_encode([
                         <div class="flex justify-end space-x-3 p-6 border-t border-gray-200">
                             ${buttons.map(btn => `
                                 <button onclick="${btn.onclick.toString().replace('function ', '').replace('() {', '').replace('}', '')}" 
-                                        class="px-4 py-2 rounded-lg text-white ${btn.class}">
+                                        class="px-4 py-2 rounded-lg text-white transition-colors ${btn.class}">
                                     ${btn.text}
                                 </button>
                             `).join('')}
@@ -2002,12 +1657,13 @@ echo json_encode([
         }
 
         function closeModal() {
-            const modal = document.querySelector('.modal');
+            const modal = document.querySelector('.modal-backdrop');
             if (modal) {
                 modal.remove();
             }
         }
 
+        // Notification Functions
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             const colors = {
@@ -2017,15 +1673,26 @@ echo json_encode([
                 info: 'bg-blue-600'
             };
             
-            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+            const icons = {
+                success: 'check-circle',
+                error: 'times-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            notification.className = `notification ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300`;
             notification.innerHTML = `
                 <div class="flex items-center space-x-2">
-                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : type === 'warning' ? 'exclamation' : 'info'}-circle"></i>
+                    <i class="fas fa-${icons[type]}"></i>
                     <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             `;
             
-            document.body.appendChild(notification);
+            const container = document.getElementById('notificationContainer');
+            container.appendChild(notification);
             
             // Animate in
             setTimeout(() => {
@@ -2034,14 +1701,16 @@ echo json_encode([
             
             // Auto remove
             setTimeout(() => {
-                notification.classList.add('translate-x-full');
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
+                if (notification.parentNode) {
+                    notification.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, 5000);
         }
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dc1d7454789c7b',t:'MTc1NDk2MTI1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
